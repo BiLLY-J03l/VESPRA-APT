@@ -85,4 +85,8 @@ ALYA/
 - Using WinRAR to create a .sfx archive with the correct configuration outputs another .exe file that contains setup.exe and stage_zero.exe
 - The user will continue to setup the cracked game and stage_zero.exe would be done establishing a persistant foothold.
 
+### What Happens when the user clicks on setup.exe?
+
+- 
+
 
