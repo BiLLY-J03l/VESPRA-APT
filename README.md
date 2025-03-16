@@ -86,7 +86,7 @@ ALYA/
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
 
-- Since I understood most of the techniques used in malware, the most important thing I wanted to achieve was escalating my privileges.
+- Since I understood most of the techniques used in malware, the most important thing I had to achieve was escalating my privileges.
 - I kept looking for potential bugs in the latest Windows and couldn't find anything recent.
 - I had two options, either find a zero-day in Windows, or use Social Engineering.
 - When does a user let a program use admin privileges explicitely (UAC)? Program Setups!
