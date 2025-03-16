@@ -62,12 +62,30 @@ ALYA/
 - **ALYA/**
   - **src/**                  # Source code for the malware prototype
     - **stage_zero.c**        # Code for file/net ops, registery manipulation, service creation and VNC installation.
-    - **service.c**           # Code for dumping lsass.exe and exfiltrating the .dmp file and SYSTEM privileged reverse shell.
+    - **win_service32.c**           # Code for dumping lsass.exe and exfiltrating the .dmp file and SYSTEM privileged reverse shell.
     - **dll_injector.c**      # Code for opening a process and injecting legit.dll into it.
     - **legit.c/**            # Code for the malicious dll that logs the keystrokes entered by the user to a .log file and sends it to an FTP server.
   - **docs/**                 # Documentation and research materials
   - **tests/**                # Test scripts and virtual machine setups
   - **README.md**             # This file
+
+### Description
+
+- **stage_zero.c**
+  - It downloads XOR-encrypted files from the malicious HTTP server and decrypts them in memory and store them to hidden files inside a hidden folder.
+  - It modifies the registery hive (HKEY_LOCAL_MACHINE) and adds the "dll_injector.exe /path/to/legit.dll" to execute it everytime ANY user logs into the machine. (System-Level Persistence)
+  - It starts a process to run win_service32.c to install the service on the victim machine. (NOT START)
+  - It install tight_vnc.msi with certain msi properties to ensure proper configuration without any UI.
+  - It starts the malicious service. (if not executed, the service will be executed by next startup)
+  - It modifies the registery hive to disable Windows Defender (can be noisy, if user had to check Defender in Windows Settings)
+
+- **win_service32.c**
+  - I took the service template from Microsoft Docs and tweaked it to dump lsass.exe and sends the file via ftp to my ftp server.
+  - Then it start a reverse connection to the adversary with NT AUTHORITY / SYSTEM privileges.
+
+- **dll_injector.c**
+
+- **legit.c**
 
 
 --------------------------------------------------------------------------------------------------------
