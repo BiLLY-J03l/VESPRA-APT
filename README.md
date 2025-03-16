@@ -61,12 +61,12 @@ ALYA is an advanced malware prototype designed for Windows using C, win32 API, N
 ALYA/
 
 - **ALYA/**
-  - **src/**                  # Source code for the malware prototype
-    - **stage_zero.c**        # Code for file/net ops, registery manipulation, service creation and VNC installation.
-    - **win_service32.c**           # Code for dumping lsass.exe and exfiltrating the .dmp file and SYSTEM privileged reverse shell.
-    - **dll_injector.c**      # Code for opening a process and injecting legit.dll into it.
-    - **legit.c/**            # Code for the malicious dll that logs the keystrokes entered by the user to a .log file and sends it to an FTP server.
-  - **README.md**             # This file
+  - **src/**                  
+    - **stage_zero.c**        
+    - **win_service32.c**     
+    - **dll_injector.c**      
+    - **legit.c/**            
+  - **README.md**             
 
 ### Description
 
