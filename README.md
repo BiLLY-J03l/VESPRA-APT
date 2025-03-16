@@ -55,7 +55,7 @@ ALYA/
     - **stage_zero.c**        
     - **win_service32.c**     
     - **dll_injector.c**      
-    - **legit.c/**            
+    - **legit.c**            
   - **README.md**             
 
 ### Description
