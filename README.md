@@ -41,7 +41,7 @@
   - Virtualization: VirtualBox/VMware for testing in a controlled environment.
   - Process Analysis: Process Hacker 2 for analyzing and debugging processes.
   - Network Analysis: Wireshark for monitoring network traffic.
-  - Programming Language: C/C++ for low-level API usage and performance.
+  - Programming Language: C for low-level API usage and performance.
   - Obfuscation Tools: Custom XOR encryption and other obfuscation techniques.
   
 -----------------------------------------------------------------------------------------------------
