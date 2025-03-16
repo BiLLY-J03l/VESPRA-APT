@@ -5,6 +5,17 @@ ALYA is an advanced malware prototype designed for educational and research purp
 
 **Disclaimer:** This project is intended solely for educational and research purposes. It must not be used for any malicious activities. I am NOT responsible for any misuse of this software.
 ---------------------------------------------------------------------------------------------------------------------------------
+
+## Ethical Considerations
+
+- This project is strictly for educational and research purposes. It is designed to help cybersecurity professionals and researchers understand advanced malware techniques and develop effective countermeasures. The following ethical guidelines must be followed:
+  
+    - Controlled Environment: The malware must only be tested in a virtualized environment with no external network access.
+    - No Malicious Use: The software must not be used to harm or compromise any system without explicit permission.
+    - Compliance with Laws: Ensure compliance with all applicable laws and regulations in your jurisdiction.
+
+
+---------------------------------------------------------------------------------------------------------------------------------
 ## Features
 
 ### 1- Persistence Mechanisms:
