@@ -40,6 +40,7 @@ ALYA is an advanced malware prototype designed for educational and research purp
   - **LSASS Memory Dumping:** Dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
   - **VNC Monitoring:** Allows remote monitoring and control of the target system.
   - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
+  - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs
 
 --------------------------------------------------------------------------------------------------------
 
