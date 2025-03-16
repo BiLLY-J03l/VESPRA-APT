@@ -61,9 +61,9 @@ ALYA/
 
 - **ALYA/**
   - **src/**                  # Source code for the malware prototype
-    - **persistence/**        # Code for persistence mechanisms
-    - **evasion/**            # Code for evasion techniques
-    - **reverse_shell/**      # Code for obfuscated reverse shell
+    - **stage_zero.c**        # Code for the stage 0
+    - **service.c**           # Code for dumping lsass.exe and exfiltrating the .dmp file and SYSTEM privileged reverse shell
+    - **dll_injector.c**      # Code for opening a process and injecting legit.dll into it
     - **keylogger/**          # Code for keylogging functionality
     - **lsass_dump/**         # Code for LSASS memory dumping
   - **docs/**                 # Documentation and research materials
