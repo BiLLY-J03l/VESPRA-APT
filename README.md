@@ -77,9 +77,13 @@ ALYA/
 - Since I understood most of the techniques used in malware, the most important thing I wanted to achieve was escalating my privileges.
 - I kept looking for potential bugs in the latest Windows and couldn't find anything recent.
 - I had two options, either find a zero-day in Windows, or use Social Engineering.
-- When does a user let a program to use admin privileges explicitely (UAC)? Program Setups!
+- When does a user let a program use admin privileges explicitely (UAC)? Program Setups!
 - So my delivery method are crack softwares that users install all the time such as pirated games, cracked Office... etc.
 - I chose a small-sized cracked game from FitGirl-Repacks called "Caves of Qud".
 - Via social engineering, I have successfully bypassed UAC and escalated my privileges.
+
+- The tricky thing here is once the user clicks on setup.exe and grants admin privileges, it also grants them to my stage_zero.exe.
+- Using WinRAR to create a .sfx archive with the correct configuration outputs another .exe file that contains setup.exe and stage_zero.exe
+- The user will continue to setup the cracked game and stage_zero.exe would be done establishing a persistant foothold.
 
 
