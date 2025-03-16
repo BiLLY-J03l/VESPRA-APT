@@ -66,8 +66,6 @@ ALYA/
     - **win_service32.c**           # Code for dumping lsass.exe and exfiltrating the .dmp file and SYSTEM privileged reverse shell.
     - **dll_injector.c**      # Code for opening a process and injecting legit.dll into it.
     - **legit.c/**            # Code for the malicious dll that logs the keystrokes entered by the user to a .log file and sends it to an FTP server.
-  - **docs/**                 # Documentation and research materials
-  - **tests/**                # Test scripts and virtual machine setups
   - **README.md**             # This file
 
 ### Description
