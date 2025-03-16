@@ -4,16 +4,6 @@ ALYA is an advanced malware prototype designed for Windows using C, win32 API, N
 -It demonstrates sophisticated techniques for persistence, evasion, and payload execution, with a focus on implementing an obfuscated reverse shell, keylogging functionality, and LSASS memory dumping. The malware leverages low-level APIs, advanced obfuscation methods, and injection techniques to evade detection and maintain a persistent presence on the target system.
 
 **Disclaimer:** This project is intended solely for educational and research purposes. It must not be used for any malicious activities. I am NOT responsible for any misuse of this software.
----------------------------------------------------------------------------------------------------------------------------------
-
-## Ethical Considerations
-
-- This project is strictly for educational and research purposes. It is designed to help cybersecurity professionals and researchers understand advanced malware techniques and develop effective countermeasures. The following ethical guidelines must be followed:
-  
-    - Controlled Environment: The malware must only be tested in a virtualized environment with no external network access.
-    - No Malicious Use: The software must not be used to harm or compromise any system without explicit permission.
-    - Compliance with Laws: Ensure compliance with all applicable laws and regulations in your jurisdiction.
-
 
 ---------------------------------------------------------------------------------------------------------------------------------
 ## Features
