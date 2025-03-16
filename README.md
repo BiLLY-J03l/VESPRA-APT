@@ -55,12 +55,15 @@ ALYA/
     - **stage_zero.c**        
     - **win_service32.c**     
     - **dll_injector.c**      
-    - **legit.c**            
+    - **legit.c**
+  - **installers/**
+      - setup.exe
+      - tightVNC.msi        
   - **README.md**             
 
 ### Description
 
-- **stage_zero.c**
+- **src/ stage_zero.c**
   - It downloads XOR-encrypted files from the malicious HTTP server and decrypts them in memory and store them to hidden files inside a hidden folder.
   - It modifies the registery hive (HKEY_LOCAL_MACHINE) and adds the "dll_injector.exe /path/to/legit.dll" to execute it everytime ANY user logs into the machine. (System-Level Persistence)
   - It starts a process to run win_service32.exe and installs the service on the victim machine. (NOT START)
@@ -68,20 +71,25 @@ ALYA/
   - It starts the malicious service. (if not executed, the service will be executed by next startup)
   - It modifies the registery hive to disable Windows Defender. (can be noisy, if user had to check Defender in Windows Settings)
 
-- **win_service32.c**
+- **src/ win_service32.c**
   - I took the service template from Microsoft Docs https://learn.microsoft.com/en-us/windows/win32/services/svc-cpp
   - It required some tweaking to dump lsass.exe and send the file to my FTP server.
   - Then it start a reverse connection to the adversary with "NT AUTHORITY\SYSTEM" privileges.
 
-- **dll_injector.c**
+- **src/ dll_injector.c**
   - It takes the full path of legit.dll as an arg.
   - It creates a cmd.exe process with as a hidden window.
   - It uses NT API to load the legit.dll to the cmd.exe process.
   
 
-- **legit.c**
+- **src/ legit.c**
   - a DLL that once loaded into a process's address space, logs keystrokes written by the user to a .log file and sends the file to the adversary's FTP server, periodically.
 
+- **installers/ setup.exe**
+  - the actual FitGirl-Repack crack without stage_zero.exe
+
+- **installers/ tightVNC.msi**
+  - .msi installer for tightVNC
 
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
