@@ -80,12 +80,18 @@ ALYA/
   - It modifies the registery hive to disable Windows Defender (can be noisy, if user had to check Defender in Windows Settings)
 
 - **win_service32.c**
-  - I took the service template from Microsoft Docs and tweaked it to dump lsass.exe and sends the file via ftp to my ftp server.
-  - Then it start a reverse connection to the adversary with NT AUTHORITY / SYSTEM privileges.
+  - I took the service template from Microsoft Docs https://learn.microsoft.com/en-us/windows/win32/services/svc-cpp
+  - It required some tweaking to dump lsass.exe and send the file to my ftp server.
+  - Then it start a reverse connection to the adversary with "NT AUTHORITY\SYSTEM" privileges.
 
 - **dll_injector.c**
+  - It takes the full path of legit.dll as an arg.
+  - It creates a cmd.exe process with hidden windows.
+  - It uses NT API to load the legit.dll to the cmd.exe process.
+  
 
 - **legit.c**
+  - a DLL that once loaded into a process's address space, logs keystrokes written by the user to a .log file and sends the file to the adversary's FTP server, periodically.
 
 
 --------------------------------------------------------------------------------------------------------
