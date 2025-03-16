@@ -1,7 +1,7 @@
 # ALYA
 - ALYA is an advanced malware prototype designed for Windows using C, win32 API, NT API and advancd obfuscation methods.
 
-- ALYA showcases how a cracked software or a pirated game can compromise your whole system quietly without you even knowing it and maintain long-term persistence on the system.
+- ALYA showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
 - It demonstrates sophisticated techniques for persistence, evasion, and payload execution, with a focus on implementing an obfuscated reverse shell, keylogging functionality, and LSASS memory dumping. The malware leverages low-level APIs, advanced obfuscation methods, and injection techniques to evade detection and maintain a persistent presence on the target system.
 
 **Disclaimer:** This project is intended solely for educational and research purposes. It must not be used for any malicious activities. I am NOT responsible for any misuse of this software.
