@@ -57,6 +57,7 @@ ALYA/
     - **win_service32.c**     
     - **dll_injector.c**      
     - **legit.c**
+    - **enc.c**
   - **installers/**
       - setup.exe
       - tightVNC.msi        
