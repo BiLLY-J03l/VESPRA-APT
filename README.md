@@ -31,7 +31,9 @@
   - **LSASS Memory Dumping:** Dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
   - **VNC Monitoring:** Allows remote monitoring and control of the target system.
   - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
-  - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs
+  - **Adding Users:** Adds a user and adds it to the Administrators group.
+  - **RDP functionality:** Enables RDP on the machine and configure the Windows Firewall accordingly.
+  - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
 
 --------------------------------------------------------------------------------------------------------
 
