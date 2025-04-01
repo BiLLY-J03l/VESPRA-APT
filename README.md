@@ -98,7 +98,7 @@ ALYA/
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
 
-- Since I understood most of the techniques used in malware, the most important thing I had to achieve was escalating my privileges.
+- Since I understood some of the techniques used in malware, the most important thing I had to achieve was escalating my privileges.
 - I kept looking for potential bugs in the latest Windows Versions and couldn't find anything relatively simple to exploit.
 - I had two options, either find a zero-day in Windows, or use Social Engineering.
 - When does a user let a program use admin privileges explicitely (UAC)? Program Setups!
@@ -108,9 +108,17 @@ ALYA/
 - Now, once the user clicks on setup.exe and grants admin privileges, it also grants them to my stage_zero.exe.
 - Using WinRAR to create a .sfx archive with the correct configuration outputs another .exe file that contains setup.exe and stage_zero.exe
 - The user will continue to setup the cracked game and stage_zero.exe would be done establishing a persistant foothold.
+  
+--------------------------------------------------------------------------------------------------------
+## Execution Theory
 
 ### What Happens when the user clicks on setup.exe?
+- Caves Of Qud game asks for admin privileges along with stage_zero.exe
+- Once the user clicks ok, the game setup UI appears to begin the setup and stage_zero.exe starts executing in the background.
 
-- 
+### What will stage_zero.exe do?
+- the most important thing in stage_zero.exe is to include zero injection, shellcode executions or reverse shell connections or other techniques to communicate with the attacker.
+- stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
+
 
 
