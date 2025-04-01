@@ -59,8 +59,8 @@ ALYA/
     - **legit.c**
     - **enc.c**
   - **installers/**
-      - setup.exe
-      - tightVNC.msi        
+      - **setup.exe**
+      - **tightvnc-setup.msi**    
   - **README.md**             
 
 ### Description
@@ -90,7 +90,7 @@ ALYA/
 - **installers/ setup.exe**
   - the actual FitGirl-Repack crack without stage_zero.exe
 
-- **installers/ tightVNC.msi**
+- **installers/ tightvnc-setup.msi**
   - .msi installer for tightVNC
 
 --------------------------------------------------------------------------------------------------------
