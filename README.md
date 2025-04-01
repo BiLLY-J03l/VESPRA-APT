@@ -119,6 +119,15 @@ ALYA/
 ### What will stage_zero.exe do?
 - the most important thing in stage_zero.exe is to include zero injection, shellcode executions or reverse shell connections or other techniques to communicate with the attacker.
 - stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
-
-
+- stage_zero.exe creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
+  - win_service32.exe:
+    - dumps lsass.exe to a .dmp file and sends it to the adversary's FTP server.
+    - downloads and decrypts an encrypted shellcode and injects it into a process.
+    - implements sockets to start a reverse connection to the adversary open port with SYSTEM privileges (Highest Ever Privilege).
+  - legit.dll:
+    - a dll file that is injected to a process and provides keylogging functionality and sends the .log file to the adversary's FTP server.
+  - dll_injector.exe:
+    - its purpose is to take legit.dll full path and injects it to a dummy process that it created, then exits.
+  - tightvnc-setup.msi:
+    - a perfectly safe .msi installer that is executed with certain options to install it without UI with proper configuration.
 
