@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <winbase.h>
 
+
 #define OBJ_CASE_INSENSITIVE 0x00000040L
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
 #define NtCurrentProcess() ((HANDLE)(LONG_PTR)-1)
