@@ -15,6 +15,7 @@ what this dll should do?
 */
 
 
+
 HMODULE Get_Module(LPCWSTR Module_Name)
 {
 	HMODULE hModule;
