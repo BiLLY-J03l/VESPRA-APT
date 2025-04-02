@@ -62,7 +62,7 @@ ALYA/
     - **enc.c**
   - **installers/**
       - **setup.exe**
-      - **tightvnc-setup.msi**    
+      - **tightVNC.msi**    
   - **README.md**             
 
 ### Description
@@ -127,7 +127,7 @@ ALYA/
   - legit.dll:
     - a dll file that is injected to a process and provides keylogging functionality and sends the .log file to the adversary's FTP server.
   - dll_injector.exe:
-    - its purpose is to take legit.dll full path and injects it to a dummy process that it created, then exits.
+    - its purpose is to take legit.dll full path as an arg and injects it to a dummy process that it created, then exits.
   - tightvnc-setup.msi:
     - a perfectly safe .msi installer that is executed with certain options to install it without UI with proper configuration.
 
