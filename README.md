@@ -119,7 +119,7 @@ ALYA/
 ### What will stage_zero.exe do?
 - the most important thing in stage_zero.exe is to include zero injection, shellcode executions or reverse shell connections or other techniques to communicate with the attacker.
 - stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
-- stage_zero.exe creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
+- it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
   - win_service32.exe:
     - dumps lsass.exe to a .dmp file and sends it to the adversary's FTP server.
     - downloads and decrypts an encrypted shellcode and injects it into a process.
@@ -130,4 +130,8 @@ ALYA/
     - its purpose is to take legit.dll full path as an arg and injects it to a dummy process that it created, then exits.
   - tightVNC.msi:
     - a perfectly safe .msi installer that is executed with certain options to install it without UI with proper configuration.
+- Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
+- Then, it enables RDP through registery and service manipulation.
+- Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
+- This makes sure that if ANY user logs onto this machine the keylogger will keep logs of the keystrokes and sends it to the adversary's FTP server.
 
