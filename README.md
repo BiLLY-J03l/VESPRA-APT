@@ -129,7 +129,7 @@ ALYA/
   - dll_injector.exe:
     - its purpose is to take legit.dll full path as an arg and injects it to a dummy process that it created, then exits.
   - tightVNC.msi:
-    - a perfectly safe .msi installer that is executed with certain options to install it without UI with proper configuration.
+    - a perfectly safe .msi installer that is executed with certain options to be installed without UI and with proper configuration.
 - Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
 - Then, it enables RDP through registery and service manipulation.
 - Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
