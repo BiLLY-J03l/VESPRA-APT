@@ -89,6 +89,9 @@ ALYA/
 - **src/ legit.c**
   - a DLL that once loaded into a process's address space, logs keystrokes written by the user to a .log file and sends the file to the adversary's FTP server, periodically.
 
+- **src/ enc.c**
+  - the encryption program I used to encrypt the files to be received and decrypted by stage_zero.exe.
+
 - **installers/ setup.exe**
   - the actual FitGirl-Repack crack without stage_zero.exe
 
