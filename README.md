@@ -134,7 +134,7 @@ ALYA/
 - Then, it enables RDP through registery and service manipulation.
 - Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
 - This makes sure that if ANY user logs onto this machine the keylogger will keep logs of the keystrokes and sends it to the adversary's FTP server.
-- Then, stage_zero.exe executes win_service32.exe which installs the service to the service control manager (SCM) database, in which its startup is automatic to ensure that the service starts up with system bootup.
+- Then, stage_zero.exe executes win_service32.exe which installs the service to the service control manager (SCM) database, with automatic startup to ensure that the service starts up with system bootup.
 - It then, starts the service explicitly. (You can delete that anyway).
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
 
