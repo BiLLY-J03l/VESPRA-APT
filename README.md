@@ -138,3 +138,5 @@ ALYA/
 - It then, starts the service explicitly. (You can delete that anyway).
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
 
+### What happens after (upon restart)?
+
