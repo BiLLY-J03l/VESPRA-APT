@@ -62,7 +62,9 @@ ALYA/
     - **enc.c**
   - **installers/**
       - **setup.exe**
-      - **tightVNC.msi**    
+      - **tightVNC.msi**
+  - **docs/**
+      - **TightVNC_2.7_for_Windows_Installing_from_MSI_Packages.pdf**
   - **README.md**             
 
 ### Description
@@ -97,6 +99,9 @@ ALYA/
 
 - **installers/ tightvnc-setup.msi**
   - .msi installer for tightVNC
+ 
+- **docs/ TightVNC_2.7_for_Windows_Installing_from_MSI_Packages.pdf**
+  - tightVNC msi installer documentation that I used to install tightvnc-setup.msi package with the proper configurations and without any UI.
 
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
