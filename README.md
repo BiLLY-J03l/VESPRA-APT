@@ -60,6 +60,7 @@ ALYA/
     - **dll_injector.c**      
     - **legit.c**
     - **enc.c**
+    - **app.manifest**
   - **installers/**
       - **setup.exe**
       - **tightVNC.msi**
@@ -94,6 +95,9 @@ ALYA/
 - **src/ enc.c**
   - the encryption program I used to encrypt the files to be received and decrypted by stage_zero.exe.
 
+- **src/ app.manifest**
+  - the manifest file that prompts the victim for UAC and asks for admin privileges.
+    
 - **installers/ setup.exe**
   - the actual FitGirl-Repack crack without stage_zero.exe
 
