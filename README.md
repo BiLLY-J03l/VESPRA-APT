@@ -80,8 +80,8 @@ ALYA/
 
 - **src/ win_service32.c**
   - I took the service template from Microsoft Docs https://learn.microsoft.com/en-us/windows/win32/services/svc-cpp
-  - It required some tweaking to dump lsass.exe and send the file to my FTP server.
-  - Then it start a reverse connection to the adversary with "NT AUTHORITY\SYSTEM" privileges.
+  - It required some tweaking to port the code into C, and more tweaking to dump lsass.exe, send the file to my FTP server and start a reverse shell.
+  - Then it starts a reverse connection to the adversary with "NT AUTHORITY\SYSTEM" privileges.
 
 - **src/ dll_injector.c**
   - It takes the full path of legit.dll as an arg.
