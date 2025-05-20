@@ -153,4 +153,6 @@ ALYA/
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
 
 ### What happens after Stage 0 (upon restart)?
+#### win_service32.exe
 
+#### dll_injector.exe legit.dll
