@@ -1,7 +1,7 @@
-# NYX
+# VESPRA
 - An advanced malware prototype designed for Windows using C, win32 API and NT API.
-- NYX is inspired by Carbanak APT -> https://attack.mitre.org/software/S0030/
-- NYX showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
+- VESPRA is inspired by Carbanak APT -> https://attack.mitre.org/software/S0030/
+- VESPRA showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
 - It demonstrates sophisticated techniques for persistence, evasion, and payload execution, with a focus on implementing reverse shell, keylogging functionality, and LSASS memory dumping. The malware leverages low-level APIs, advanced obfuscation methods, and injection techniques to evade detection and maintain a persistent presence on the target system.
 
 **Disclaimer:** This project is intended solely for educational and research purposes. It must not be used for any malicious activities. I am NOT responsible for any misuse of this software.
@@ -51,9 +51,9 @@
 
 ## Project Structure
 
-NYX/
+VESPRA/
 
-- **NYX/**
+- **VESPRA/**
   - **src/**                  
     - **stage_zero.c**        
     - **win_service32.c**     
