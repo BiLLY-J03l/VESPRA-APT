@@ -33,6 +33,7 @@
   - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
   - **Adding Users:** Adds a user and adds it to the Administrators group.
   - **RDP functionality:** Enables RDP on the machine and configure the Windows Firewall accordingly.
+  - **WinRM Monitoring:** Establishes WinRM access, so adversary can utilize evil-winrm in post-exploitation phase.
   - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
 
 --------------------------------------------------------------------------------------------------------
