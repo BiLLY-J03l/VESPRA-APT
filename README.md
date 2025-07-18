@@ -171,6 +171,7 @@ VESPRA/
   - It keeps connecting to the adversary's listening port ensuring SYSTEM privileges.
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
 
-5  - 
+#### dll_injector.exe legit.dll:
+1  - dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
 
-#### dll_injector.exe legit.dll
+2  -
