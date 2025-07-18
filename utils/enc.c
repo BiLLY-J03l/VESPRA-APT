@@ -82,7 +82,7 @@ int main() {
         return 1;
     }
 
-    printf("[+] Encrypted data written to enc_code.bin\n");
+    printf("[+] Encrypted data written to file\n");
 
     // Clean up
     free(data);
