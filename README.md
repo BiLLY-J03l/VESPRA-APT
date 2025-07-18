@@ -174,4 +174,9 @@ VESPRA/
 #### dll_injector.exe legit.dll:
 1  - dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
 
-2  -
+2  - legit.dll:
+  - it creates a mutex to prevent it from running too many instances.
+  - it logs the keystrokes typed by the victim and into a .log file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log.
+  - Then it puts this file via FTPS on the adversary's FTP server.
+  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
+  - The .dmp file then can be later inspected by the adversary and search for sensitive data.
