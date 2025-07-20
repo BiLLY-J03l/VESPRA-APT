@@ -17,6 +17,7 @@
   - Employs XOR decryption for payload obfuscation.
   - Avoids high-level API calls to reduce detection by antivirus software.
   - Uses advanced injection methods, such as process and DLL injection, to execute malicious code within legitimate processes.
+  - Employs Anti-VM, Anti-Debugging and Anti-Disassembly techniques
 
 ### 3- Obfuscated Reverse Shell:
   - Implements a reverse shell with advanced obfuscation techniques to evade detection.
@@ -31,7 +32,7 @@
   - **LSASS Memory Dumping:** Dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
   - **VNC Monitoring:** Allows remote monitoring and control of the target system.
   - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
-  - **Adding Users:** Adds a user and adds it to the Administrators group.
+  - **Adding Users:** Creates a user and adds it to the Administrators group.
   - **RDP functionality:** Enables RDP on the machine and configure the Windows Firewall accordingly.
   - **WinRM Monitoring:** Establishes WinRM access, so adversary can utilize evil-winrm in post-exploitation phase.
   - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
@@ -126,7 +127,7 @@ VESPRA/
 ## Execution Theory
 
 ### What Happens when the user clicks on setup.exe?
-- Caves Of Qud game asks for admin privileges along with stage_zero.exe
+- Caves Of Qud game asks for admin privileges via UAC along with stage_zero.exe
 - Once the user clicks ok, the game setup UI appears to begin the setup and stage_zero.exe starts executing in the background.
 
 ### What will stage_zero.exe do?
@@ -135,8 +136,7 @@ VESPRA/
 - stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
 - it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
   - win_service32.exe:
-    - dumps lsass.exe to a .dmp file and sends it to the adversary's FTP server.
-    - downloads and decrypts an encrypted shellcode and injects it into a process.
+    - downloads and decrypts an encrypted MSF shellcode and injects it into a process.
     - implements sockets to start a reverse connection to the adversary open port with SYSTEM privileges (Highest Ever Privilege).
   - legit.dll:
     - a dll file that is injected to a process and provides keylogging functionality and sends the .log file to the adversary's FTP server.
@@ -144,30 +144,29 @@ VESPRA/
     - its purpose is to take legit.dll full path as an arg and injects it to a dummy process that it created, then exits.
   - tightVNC.msi:
     - a perfectly safe .msi installer that is executed with certain options to be installed without UI and with proper configuration.
+- Then, it enables SeDebugPrivilege and dumps lsass.exe to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
+  - Then it puts this file via FTPS on the adversary's FTP server.
+  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
+  - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
 - Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
 - Then, it enables RDP through registery and service manipulation and configure windows firewall accordingly.
 - Then, it insalls TightVNC with certain msi options to ensure its installation without any user interaction nor UI.
 - Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
 - This makes sure that if ANY user logs onto this machine the keylogger will keep logs of the keystrokes and sends it to the adversary's FTP server.
 - Then, stage_zero.exe executes win_service32.exe which installs the service to the service control manager (SCM) database, with automatic startup to ensure that the service starts up with system bootup.
-- It then, starts the service explicitly. (You can delete that anyway).
+- It then, starts the service explicitly. (You can disable that anyway).
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
 
 ### What happens after Stage 0 (upon restart)?
 #### win_service32.exe:
 1  - The malicious service executes on startup.
 
-2  - It dumps lsass.exe to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
-  - Then it puts this file via FTPS on the adversary's FTP server.
-  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
-  - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
-
-3  - It downloads XOR-encrypted msf shellcode and keeps it in memory.
+2  - It downloads XOR-encrypted msf shellcode and keeps it in memory.
   - It spawns a cmd.exe process in the machine.
   - It decrypts the XOR-encrypted shellcode in memory then allocates and writes it in the address space of the spawned cmd.exe proceess.
   - Then, it executes the shellcode in the context of that remote process.
 
-4  - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
+3  - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
   - It keeps connecting to the adversary's listening port ensuring SYSTEM privileges.
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
 
