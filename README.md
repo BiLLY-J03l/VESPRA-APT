@@ -144,10 +144,6 @@ VESPRA/
     - its purpose is to take legit.dll full path as an arg and injects it to a dummy process that it created, then exits.
   - **tightVNC.msi:**
     - a perfectly safe .msi installer that is executed with certain options to be installed without UI and with proper configuration.
-- Then, it enables SeDebugPrivilege and dumps lsass.exe to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
-  - Then it puts this file via FTPS on the adversary's FTP server.
-  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
-  - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
 - Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
 - Then, it enables RDP through registery and service manipulation and configure windows firewall accordingly.
 - Then, it insalls TightVNC with certain msi options to ensure its installation without any user interaction nor UI.
@@ -161,12 +157,17 @@ VESPRA/
 #### win_service32.exe:
 1  - The malicious service executes on startup.
 
-2  - It downloads XOR-encrypted msf shellcode and keeps it in memory.
+2  - It dumps lsass.exe to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
+  - Then it puts this file via FTPS on the adversary's FTP server.
+  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
+  - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
+
+3  - It downloads XOR-encrypted msf shellcode and keeps it in memory.
   - It spawns a cmd.exe process in the machine.
   - It decrypts the XOR-encrypted shellcode in memory then allocates and writes it in the address space of the spawned cmd.exe proceess.
   - Then, it executes the shellcode in the context of that remote process.
 
-3  - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
+4  - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
   - It keeps connecting to the adversary's listening port ensuring SYSTEM privileges.
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
 
