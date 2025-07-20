@@ -60,13 +60,14 @@ VESPRA/
     - **win_service32.c**     
     - **dll_injector.c**      
     - **legit.c**
-    - **enc.c**
     - **app.manifest**
   - **installers/**
       - **setup.exe**
       - **tightVNC.msi**
   - **docs/**
       - **TightVNC_2.7_for_Windows_Installing_from_MSI_Packages.pdf**
+  - **utils/**
+      - **file_enc.c**
   - **README.md**             
 
 ### Description
@@ -89,12 +90,8 @@ VESPRA/
   - It creates a cmd.exe process with as a hidden window.
   - It uses NT API to load the legit.dll to the cmd.exe process.
   
-
 - **src/ legit.c**
   - a DLL that once loaded into a process's address space, logs keystrokes written by the user to a .log file and sends the file to the adversary's FTP server, periodically.
-
-- **src/ enc.c**
-  - the encryption program I used to encrypt the files to be received and decrypted by stage_zero.exe.
 
 - **src/ app.manifest**
   - the manifest file that prompts the victim for UAC and asks for admin privileges.
@@ -107,6 +104,9 @@ VESPRA/
  
 - **docs/ TightVNC_2.7_for_Windows_Installing_from_MSI_Packages.pdf**
   - tightVNC msi installer documentation that I used to install tightvnc-setup.msi package with the proper configurations and without any UI.
+ 
+- **utils/ file_enc.c**
+  - the encryption program I used to encrypt the files to be received and decrypted by stage_zero.exe.
 
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
