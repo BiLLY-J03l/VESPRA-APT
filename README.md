@@ -123,7 +123,7 @@ VESPRA/
 - I chose a small-sized cracked game from FitGirl-Repacks called "Caves of Qud". You can use any other .exe file to do that.
 - Via social engineering, I have successfully bypassed UAC and escalated my privileges.
 - Now, once the user clicks on setup.exe and grants admin privileges, it also grants them to my stage_zero.exe.
-- Using WinRAR to create a .sfx archive with the correct configuration outputs another .exe file that contains setup.exe and stage_zero.exe
+- Using WinRAR to create a .sfx archive, with the correct configuration, outputs another .exe file that contains setup.exe and stage_zero.exe
 - The user will continue to setup the cracked game and stage_zero.exe would be done establishing a persistant foothold.
   
 --------------------------------------------------------------------------------------------------------
