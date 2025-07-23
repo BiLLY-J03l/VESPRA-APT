@@ -29,7 +29,7 @@
   - Exfiltrates captured data securely to the attacker's server.
 
 ### 5- Additional Functionality:
-  - **LSASS Memory Dumping:** Dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
+  - **LSASS Memory Dumping:** Evasively dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
   - **VNC Monitoring:** Allows remote monitoring and control of the target system.
   - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
   - **Adding Users:** Creates a user and adds it to the Administrators group.
@@ -37,6 +37,7 @@
   - **WinRM Monitoring:** Establishes WinRM access, so adversary can utilize evil-winrm in post-exploitation phase.
   - **Anti-Debugging Techniques**: Employs low-level methods to check if a debugger is present.
   - **Anti-VM Techniques**: Employs further techniques to check for VM presence and evade sandbox analysis.
+  - **Anti-Disassembly Techniques**: Employs standard C math operations to obfuscate the main graph flow.
   - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
 
 --------------------------------------------------------------------------------------------------------
