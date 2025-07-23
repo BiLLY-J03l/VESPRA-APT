@@ -2,7 +2,7 @@
 - An advanced malware prototype designed for Windows using C, win32 API and NT API.
 - VESPRA is inspired by Carbanak APT -> https://attack.mitre.org/software/S0030/
 - VESPRA showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
-- It demonstrates sophisticated techniques for persistence, evasion, and payload execution, with a focus on implementing reverse shell, keylogging functionality, and LSASS memory dumping. The malware leverages low-level APIs, advanced obfuscation methods, and injection techniques to evade detection and maintain a persistent presence on the target system.
+- It demonstrates sophisticated techniques for persistence, evasion, and payload execution, with a focus on implementing reverse shell, keylogging functionality, and evasive LSASS memory dumping. The malware leverages low-level APIs, advanced obfuscation methods, and injection techniques to evade detection and maintain a persistent presence on the target system.
 
 **Disclaimer:** This project is intended solely for educational and research purposes. It must not be used for any malicious activities. I am NOT responsible for any misuse of this software.
 
@@ -35,6 +35,8 @@
   - **Adding Users:** Creates a user and adds it to the Administrators group.
   - **RDP functionality:** Enables RDP on the machine and configure the Windows Firewall accordingly.
   - **WinRM Monitoring:** Establishes WinRM access, so adversary can utilize evil-winrm in post-exploitation phase.
+  - **Anti-Debugging Techniques**: Employs low-level methods to check if a debugger is present.
+  - **Anti-VM Techniques**: Employs further techniques to check for VM presence and evade sandbox analysis.
   - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
 
 --------------------------------------------------------------------------------------------------------
