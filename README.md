@@ -153,7 +153,7 @@ VESPRA/
     - a perfectly safe .msi installer that is executed with certain options to be installed without UI and with proper configuration.
 - Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
 - Then, it enables RDP through registery and service manipulation and configure windows firewall accordingly.
-- Then, it insalls TightVNC with certain msi options to ensure its installation without any user interaction nor UI.
+- Then, it installs TightVNC with certain msi options to ensure its installation without any user interaction nor UI.
 - Then, it enables WinRM, so the adversary can use evil-winrm for further post-exploitation.
 - Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
 - This makes sure that if ANY user logs onto this machine the keylogger will keep logs of the keystrokes and sends it to the adversary's FTP server.
