@@ -140,7 +140,7 @@ VESPRA/
 - the most important thing in stage_zero.exe is to include very little, if not any, injections, shellcode executions or reverse shell connections or other techniques to communicate with the attacker.
 - Consider it as if it's configuring the machine only.
 - stage_zero.exe is only here to configure the machine, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
-- it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
+- it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 files:
   - **win_service32.exe:**
     - dumps lsass.exe evasively
     - downloads and decrypts an encrypted MSF shellcode and injects it into a process.
