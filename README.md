@@ -1,4 +1,4 @@
-<img width="1918" height="918" alt="image" src="https://github.com/user-attachments/assets/9b72f5b2-5a9c-4480-9128-1982ed4fd747" /><img width="1521" height="846" alt="image" src="https://github.com/user-attachments/assets/8f3abc99-e551-42eb-86c6-a3112b5df414" /># VESPRA
+# VESPRA
 - An advanced malware prototype designed for Windows using C, win32 API and NT API.
 - VESPRA is inspired by Carbanak APT -> https://attack.mitre.org/software/S0030/
 - VESPRA showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
