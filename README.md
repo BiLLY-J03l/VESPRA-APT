@@ -139,7 +139,7 @@ VESPRA/
 ### What will stage_zero.exe do?
 - the most important thing in stage_zero.exe is to include very little, if not any, injections, shellcode executions or reverse shell connections or other techniques to communicate with the attacker.
 - Consider it as if it's configuring the machine only.
-- stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
+- stage_zero.exe is only here to configure the machine, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
 - it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
   - **win_service32.exe:**
     - dumps lsass.exe evasively
@@ -154,10 +154,11 @@ VESPRA/
 - Then, stage_zero.exe creates a new user with a fairly convincing name, so that the user doesn't touch it or delete it.
 - Then, it enables RDP through registery and service manipulation and configure windows firewall accordingly.
 - Then, it insalls TightVNC with certain msi options to ensure its installation without any user interaction nor UI.
+- Then, it enables WinRM, so the adversary can use evil-winrm for further post-exploitation.
 - Then, it furthur modifies the registery "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"and adds the dll_injector.exe with the legit.dll full path to achieve system-level keylogging persistance.
 - This makes sure that if ANY user logs onto this machine the keylogger will keep logs of the keystrokes and sends it to the adversary's FTP server.
 - Then, stage_zero.exe executes win_service32.exe which installs the service to the service control manager (SCM) database, with automatic startup to ensure that the service starts up with system bootup.
-- It then, starts the service explicitly. (You can disable that anyway).
+- It then, starts the service explicitly. (It was used for debugging, You should disable that as it's configured to run on autostart).
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
 
 ### What happens after Stage 0 (upon restart)?
@@ -185,8 +186,8 @@ VESPRA/
 1  - dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
 
 2  - legit.dll:
-  - it creates a mutex to prevent it from running too many instances.
+  - it creates a mutex to prevent it from running too many instances, in case of multiple logins.
   - it logs the keystrokes typed by the victim and into a .log file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log.
   - Then it puts this file via FTPS on the adversary's FTP server.
-  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
-  - The .dmp file then can be later inspected by the adversary and search for sensitive data.
+  - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the log file.
+  - The log file then can be later inspected by the adversary and search for sensitive data.
