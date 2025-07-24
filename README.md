@@ -163,29 +163,31 @@ VESPRA/
 
 ### What happens after Stage 0 (upon restart)?
 #### win_service32.exe:
-1  - The malicious service executes on startup.
-2  - It opens a handle to a file called fawf3na.chkf in this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\fawf3na.chkf.
-     - If the file exists, it proceeds to skip the lsass dumping part and starts from point **4.**.
-     - If the file doesn't exist, it creates that file and continues to point **3.**.
-     - WHY? Lsass dumping, on windows 11, doesn't work with mere Admin privileges, and only with NT AUTHORITY ones, so I proceeded to add that simple logic to dump lsass.exe and send it via FTP only once, making the service more e as it interacts with lsass.exe only once.
-3  - It clones lsass.exe memory and dumps that clone to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
+- The malicious service executes on startup.
+
+- It opens a handle to a file called fawf3na.chkf in this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\fawf3na.chkf.
+  - If the file exists, it proceeds to skip the lsass dumping part and starts from point **4.**.
+  - If the file doesn't exist, it creates that file and continues to point **3.**.
+  - WHY? Lsass dumping, on windows 11, doesn't work with mere Admin privileges, and only with NT AUTHORITY ones, so I proceeded to add that simple logic to dump lsass.exe and send it via FTP only once, making the service more e as it interacts with lsass.exe only once.
+
+- It clones lsass.exe memory and dumps that clone to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
   - Then it puts this file via FTPS on the adversary's FTP server.
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
   - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
 
-4  - It downloads XOR-encrypted msf shellcode and keeps it in memory.
+- It downloads XOR-encrypted msf shellcode and keeps it in memory.
   - It spawns a cmd.exe process in the machine.
   - It decrypts the XOR-encrypted shellcode in memory then allocates and writes it in the address space of the spawned cmd.exe proceess.
   - Then, it executes the shellcode in the context of that remote process.
 
-5  - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
+- It uses a hand-written implementation of reverse shell using Winsock and socket programming.
   - It keeps connecting to the adversary's listening port ensuring SYSTEM privileges.
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
 
 #### dll_injector.exe legit.dll:
-1  - dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
+- dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
 
-2  - legit.dll:
+- legit.dll:
   - it creates a mutex to prevent it from running too many instances, in case of multiple logins.
   - it logs the keystrokes typed by the victim and into a .log file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log.
   - Then it puts this file via FTPS on the adversary's FTP server.
