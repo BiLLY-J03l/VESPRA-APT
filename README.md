@@ -72,6 +72,7 @@ VESPRA/
       - **TightVNC_2.7_for_Windows_Installing_from_MSI_Packages.pdf**
   - **utils/**
       - **file_enc.c**
+      - **shellcode_enc.c**
   - **README.md**             
 
 ### Description
@@ -112,6 +113,8 @@ VESPRA/
 - **utils/ file_enc.c**
   - the encryption program I used to encrypt the files to be received and decrypted by stage_zero.exe.
 
+- **utils/ shellcode_enc.c**
+  - the encryption program I used to encrypt the shellcode file to be received, decrypted and injected by win_service32.exe.
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
 
@@ -139,6 +142,7 @@ VESPRA/
 - stage_zero.exe is only here to maintain access, modify registery keys, download, decrypt encrypted files from the adversary's HTTP server.
 - it creates a hidden folder called "C:\Windows\Temp\SSS_ce1aaa99ce4bdb0101000000984b2414aa\" and downloads 4 xor-encrypted files and decrypt them in memory and store them to 4 hidden files:
   - **win_service32.exe:**
+    - dumps lsass.exe evasively
     - downloads and decrypts an encrypted MSF shellcode and injects it into a process.
     - implements sockets to start a reverse connection to the adversary open port with SYSTEM privileges (Highest Privilege Possible).
   - **legit.dll:**
@@ -162,7 +166,7 @@ VESPRA/
 2  - It opens a handle to a file called fawf3na.chkf in this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\fawf3na.chkf.
      - If the file exists, it proceeds to skip the lsass dumping part and starts from point **4.**.
      - If the file doesn't exist, it creates that file and continues to point **3.**.
-     - WHY? Lsass dumping, on windows 11, doesn't work with mere Admin privileges, and only with NT AUTHORITY ones, so I proceeded to add that simple logic to dump lsass.exe and send it via FTP only once, making the service more evasive as it interacts with lsass.exe only once.
+     - WHY? Lsass dumping, on windows 11, doesn't work with mere Admin privileges, and only with NT AUTHORITY ones, so I proceeded to add that simple logic to dump lsass.exe and send it via FTP only once, making the service more e as it interacts with lsass.exe only once.
 3  - It clones lsass.exe memory and dumps that clone to a .dmp file to this path C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp.
   - Then it puts this file via FTPS on the adversary's FTP server.
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
