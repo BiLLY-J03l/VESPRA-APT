@@ -1,4 +1,4 @@
-# VESPRA
+<img width="1918" height="918" alt="image" src="https://github.com/user-attachments/assets/9b72f5b2-5a9c-4480-9128-1982ed4fd747" /><img width="1521" height="846" alt="image" src="https://github.com/user-attachments/assets/8f3abc99-e551-42eb-86c6-a3112b5df414" /># VESPRA
 - An advanced malware prototype designed for Windows using C, win32 API and NT API.
 - VESPRA is inspired by Carbanak APT -> https://attack.mitre.org/software/S0030/
 - VESPRA showcases how a cracked software or a pirated game can compromise your whole system quietly and maintain a long-term presence on the system.
@@ -195,3 +195,25 @@ VESPRA/
   - Then it puts this file via FTPS on the adversary's FTP server.
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the log file.
   - The log file then can be later inspected by the adversary and search for sensitive data.
+--------------------------------------------------------------------------------------------------------
+## VirusTotal and Cuckoo Sandbox Analysis:
+- **stage_zero.exe:**
+  - <img width="1455" height="867" alt="image" src="https://github.com/user-attachments/assets/410eb8e2-26ca-43f0-91d7-f71e7fe8358b" />
+  - <img width="1919" height="892" alt="image" src="https://github.com/user-attachments/assets/8547ddc3-f16f-4594-8e2e-aff7ce63d455" />
+
+- **win_service32.exe:**
+  - <img width="1919" height="915" alt="image" src="https://github.com/user-attachments/assets/91fb2a12-304f-493a-872c-f0d163a5b554" />
+  - <img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/fa8c4037-ef4c-4ebd-8e0b-7601d8431f9b" />
+
+- **dll_injector.exe:**
+  - <img width="1521" height="846" alt="image" src="https://github.com/user-attachments/assets/daf993e4-71f6-44c3-a6c0-73cd4eef3aeb" />
+  - <img width="1919" height="883" alt="image" src="https://github.com/user-attachments/assets/3858485e-3c77-49bd-b563-e0f7beb3f53c" />
+
+- **legit.dll:**
+  - <img width="1918" height="918" alt="image" src="https://github.com/user-attachments/assets/afc68177-f56a-47b4-91b2-4739ef1f9b70" />
+  - <img width="1915" height="905" alt="image" src="https://github.com/user-attachments/assets/8c35babe-0b86-4a6c-98a1-759a68ed82b3" />
+
+
+
+
+
