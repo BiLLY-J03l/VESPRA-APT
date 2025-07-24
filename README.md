@@ -175,6 +175,8 @@ VESPRA/
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
   - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
 
+- It, then, deletes the .dmp file from the folder and continues the execution.
+
 - It downloads XOR-encrypted msf shellcode and keeps it in memory.
   - It spawns a cmd.exe process in the machine.
   - It decrypts the XOR-encrypted shellcode in memory then allocates and writes it in the address space of the spawned cmd.exe proceess.
