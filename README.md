@@ -17,29 +17,28 @@
   - Employs XOR decryption for payload obfuscation.
   - Avoids high-level API calls to reduce detection by antivirus software.
   - Uses advanced injection methods, such as process and DLL injection, to execute malicious code within legitimate processes.
-  - Employs Anti-VM, Anti-Debugging and Anti-Disassembly techniques
+  - Evasively dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials and send them securely via FTP over TLS/SSL.
+  - Employs low-level **Anti-Debugging** methods to check if a debugger is present.
+  - Employs **Anti-VM** techniques that check for VM presence and evade sandbox analysis.
+  - Employs **Anti-Disassembly** techniques using standard C math operations to obfuscate the main graph flow.
 
-### 3- Obfuscated Reverse Shell:
+### 3- Obfuscation Techniques:
   - Implements a reverse shell with advanced obfuscation techniques to evade detection.
-  - Ensures NT/SYSTEM privileges for elevated access to the compromised system.
-  - Establishes a secure connection to a remote server for command and control.
-
+    - This reverse shell NT/SYSTEM privileges for elevated access to the compromised system.
+    - It Establishes a secure connection to a remote server for command and control.
+  - Implements string splitting that constructs strings only in runtime, avoiding static analysis.
+  - Implements offset obfuscation that is used to for the functions to hinder the analysis of the malware.
+    
 ### 4- Keylogging Functionality:
   - Captures keystrokes from the target system using low-level APIs.
-  - Exfiltrates captured data securely to the attacker's server.
+  - Exfiltrates captured data securely to the attacker's server using FTP over TLS/SSL.
 
-### 5- Additional Functionality:
-  - **LSASS Memory Dumping:** Evasively dumps the memory of the Local Security Authority Subsystem Service (LSASS) to extract credentials.
+### 5- Monitoring Functionality:
   - **VNC Monitoring:** Allows remote monitoring and control of the target system.
-  - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
-  - **Adding Users:** Creates a user and adds it to the Administrators group.
   - **RDP functionality:** Enables RDP on the machine and configure the Windows Firewall accordingly.
   - **WinRM Monitoring:** Establishes WinRM access, so adversary can utilize evil-winrm in post-exploitation phase.
-  - **Anti-Debugging Techniques**: Employs low-level methods to check if a debugger is present.
-  - **Anti-VM Techniques**: Employs further techniques to check for VM presence and evade sandbox analysis.
-  - **Anti-Disassembly Techniques**: Employs standard C math operations to obfuscate the main graph flow.
-  - All the code written in that repo is obfuscated either by offsets or string splitting, hence evading EDRs and AVs.
-
+  - **Adding Users:** Creates a user and adds it to the Administrators group.
+  - **Backdoor Communication:** Establishes a persistent backdoor that connects to a malicious server on system boot.
 --------------------------------------------------------------------------------------------------------
 
 ## Development Environment
@@ -117,6 +116,12 @@ VESPRA/
 
 - **utils/ shellcode_enc.c**
   - the encryption program I used to encrypt the shellcode file to be received, decrypted and injected by win_service32.exe.
+ 
+- **utils/ offset.c**
+  - the offset program I used to get the offsets of the functions I used across the APT.
+
+- **utils/ string_splitting.c**
+  - the string splitting program I used to get the split the strings and test their validity before I added them across the APT.
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
 
