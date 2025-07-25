@@ -73,6 +73,8 @@ VESPRA/
   - **utils/**
       - **file_enc.c**
       - **shellcode_enc.c**
+      - **string_splitting.c**
+      - **offset.c**
   - **README.md**             
 
 ### Description
