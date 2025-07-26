@@ -198,7 +198,7 @@ VESPRA/
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
 
 #### dll_injector.exe legit.dll:
-- dll_injector.exe spawns cmd.exe process and makes that process loads legit.dll into its address space.
+- dll_injector.exe spawns cmd.exe process and uses a basic DLL injection method to make that spawned process load legit.dll into its address space.
 
 - legit.dll:
   - it creates a mutex to prevent it from running too many instances, in case of multiple logins.
