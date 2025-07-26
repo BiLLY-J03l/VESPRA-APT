@@ -74,6 +74,7 @@ VESPRA/
       - **shellcode_enc.c**
       - **string_splitting.c**
       - **offset.c**
+      - **download_prototype.c**
   - **README.md**             
 
 ### Description
@@ -122,6 +123,9 @@ VESPRA/
 
 - **utils/ string_splitting.c**
   - the string splitting program I used to get the split the strings and test their validity before I added them across the APT.
+ 
+- **utils/ download_prototype.c**
+  - a downloader program I tested before adding to the main APT logic.
 --------------------------------------------------------------------------------------------------------
 ## Development Methodology
 
