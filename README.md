@@ -171,6 +171,7 @@ VESPRA/
 - Then, stage_zero.exe executes win_service32.exe which installs the service to the service control manager (SCM) database, with automatic startup to ensure that the service starts up with system bootup.
 - It then, starts the service explicitly. (It was used for debugging, You should disable that as it's configured to run on autostart).
 - **(OPTIONAL)** It can also disable Windows Defender through registery manipulation which I don't recommend as it can become **VERY NOISY** to the user if he/she casually went to open up Defender Settings.
+- <img width="1042" height="399" alt="image" src="https://github.com/user-attachments/assets/366f0e58-9d89-4f8b-a1f5-cd92fdbe31d1" />
 
 ### What happens after Stage 0 (upon restart)?
 #### win_service32.exe:
