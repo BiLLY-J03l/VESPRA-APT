@@ -211,6 +211,8 @@ VESPRA/
   - Then it puts this file via FTPS on the adversary's FTP server.
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the log file.
   - The log file then can be later inspected by the adversary and search for sensitive data.
+  - <img width="1075" height="557" alt="image" src="https://github.com/user-attachments/assets/a9c2938b-cbe1-43df-b6f0-b968599068a5" />
+
 --------------------------------------------------------------------------------------------------------
 ## VirusTotal and Cuckoo Sandbox Analysis:
 - **stage_zero.exe:**
