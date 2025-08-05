@@ -186,17 +186,21 @@ VESPRA/
   - Then it puts this file via FTPS on the adversary's FTP server.
   - Even if the analyst monitored the network traffic, they won't be able to know the credentials of the FTP server or the contents of the .dmp file.
   - The .dmp file then can be later inspected by mimikatz and the adversary can crack the hashes offline.
-
 - It, then, deletes the .dmp file from the folder and continues the execution.
+- <img width="1121" height="362" alt="image" src="https://github.com/user-attachments/assets/ec475a26-3f88-4491-8109-b8b87aa3dbc5" />
+
 
 - It downloads XOR-encrypted msf shellcode and keeps it in memory.
   - It spawns a cmd.exe process in the machine.
   - It decrypts the XOR-encrypted shellcode in memory then allocates and writes it in the address space of the spawned cmd.exe proceess.
   - Then, it executes the shellcode in the context of that remote process.
+- <img width="1081" height="281" alt="image" src="https://github.com/user-attachments/assets/1ac211bf-2644-4ba0-bcee-17bad4d67508" />
 
 - It uses a hand-written implementation of reverse shell using Winsock and socket programming.
   - It keeps connecting to the adversary's listening port ensuring SYSTEM privileges.
   - Even if some network issue occurs and the connection crashes, the service keeps trying to connect to the adversary.
+- <img width="997" height="201" alt="image" src="https://github.com/user-attachments/assets/07792ab4-6abd-439d-a366-1179d300a87b" />
+
 
 #### dll_injector.exe legit.dll:
 - dll_injector.exe spawns cmd.exe process and uses a basic DLL injection method to make that spawned process load legit.dll into its address space.
